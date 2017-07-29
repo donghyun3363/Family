@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Family</string>
+    <string name="log_in">로그인</string>
+    <string name="sign_up">회원가입</string>
+
+
+    <string name="auth_failed">인증에 실패했습니다.</string>
+    <string name="text_error">빈칸을 입력해주세요.</string>
+    <string name="email_error">잘못 된 이메일 형식입니다.</string>
+    <string name="short_error">비밀번호 6자리 이상을 입력해주세요.</string>
+    <string name="nomatech_error">비밀번호가 일치하지 않습니다.</string>
+
+
+
+    <string-array name="photodialog_item">
+        <item>사진ㅊ</item>
+        <item>item select two...</item>
+        <item>item select three...</item>
+        <item>item select four...</item>
+    </string-array>
+
+
+</resources>
