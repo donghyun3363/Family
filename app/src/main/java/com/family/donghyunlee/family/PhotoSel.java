@@ -33,6 +33,8 @@ public class PhotoSel extends AppCompatActivity {
     @BindView(R.id.photosel_cancel)
     Button photoselCancel;
 
+    private Bitmap photo;
+
     private static final int PICK_FROM_CAMERA = 0;
     private static final int PICK_FROM_ALBUM = 1;
     private static final int CROP_FROM_IMAGE = 2;
@@ -48,18 +50,22 @@ public class PhotoSel extends AppCompatActivity {
     @OnClick(R.id.photosel_camera)
     void camereClick(){
         doTakePhotoAction();
-
     }
 
     @OnClick(R.id.photosel_album)
     void albumClick(){
         doTakeAlbumAction();
-
     }
 
     @OnClick(R.id.photosel_cancel)
     void cancelClick(){
         finish();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
     }
 
     // 카메라 촬영 후 이미지 가져오기
@@ -123,9 +129,12 @@ public class PhotoSel extends AppCompatActivity {
 
                 if(extras != null) {
                     // CROP된 BITMAP
-                    Bitmap photo = extras.getParcelable("data"); // 넘겨줄 데이터(poto)
+                    photo = extras.getParcelable("data"); // 넘겨줄 데이터(poto)
                     storeCropImage(photo, filePath);    // CROP된 이미지를 외부저장소, 앨범에 저장한다.
                     absolutePatt = filePath;
+
+                    BusProvider.getInstance().post(new DataEvent(photo));
+
                     break;
                 }
 
@@ -135,7 +144,6 @@ public class PhotoSel extends AppCompatActivity {
                     file.delete();
                 }
                 break;
-
             default:
                 break;
 

@@ -1,9 +1,14 @@
 package com.family.donghyunlee.family;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
@@ -19,6 +24,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -27,6 +33,7 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.squareup.otto.Subscribe;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -71,6 +78,19 @@ public class ProfileFragment extends Fragment{
         return profileFragment;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        BusProvider.getInstance().register(this);
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        BusProvider.getInstance().unregister(this);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -84,6 +104,7 @@ public class ProfileFragment extends Fragment{
         setListener();
         email = getArguments().getString("email");
         password = getArguments().getString("password");
+        Glide.with(this).load(R.drawable.ic_profileblack).into(profileImage);
     }
     // EditText Listener Watcher Function (완료 및 다음 키 활성화)
     private void setListener(){
@@ -219,6 +240,17 @@ public class ProfileFragment extends Fragment{
         Intent intent = new Intent(getActivity(), PhotoSel.class);
         startActivity(intent);
     }
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @Subscribe
+    public void FinishLoad(DataEvent dataEvent) {
+// 이벤트가 발생한뒤 수행할 작업
+        Bitmap photo = dataEvent.getPhoto();
+        profileImage.setBackground(new ShapeDrawable(new OvalShape()));
+        profileImage.setClipToOutline(true);
+        profileImage.setImageBitmap(photo);
+
+    }
+
 }
 
 

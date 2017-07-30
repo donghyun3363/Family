@@ -53,23 +53,17 @@
             android:orientation="horizontal"
             android:weightSum="1">
 
-            <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_gravity="center"
-                android:layout_marginLeft="10dp"
-                card_view:cardCornerRadius="38dp"
-                card_view:cardElevation="5dp">
+
 
                 <ImageButton    android:id="@+id/profile_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="10dp"
                     android:background="@android:color/transparent"
-                    android:scaleType="center"
-                    android:src="@drawable/ic_action_name"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_profileblack"
                     android:onClick="profileClick"/>
-            </android.support.v7.widget.CardView>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -172,7 +166,7 @@
                             android:background="@null"
                             android:hint="ex)엄마"
                             android:imeOptions="actionDone|actionNext"
-                            android:inputType="textPassword"
+                            android:inputType="text"
                             android:textSize="16sp" />
                     </LinearLayout>
                 </android.support.v7.widget.CardView>
