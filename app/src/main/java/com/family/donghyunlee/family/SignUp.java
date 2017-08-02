@@ -45,33 +45,37 @@ public class SignUp extends AppCompatActivity {
         ButterKnife.bind(this);
         setInit();
     }
+
     // Initializing Setup
     private void setInit() {
         setListener();
     }
+
     // ButterKnife OnClick
     @OnClick(R.id.signup_next)
-    void nextClick(){
+    void nextClick() {
         // 유효성 검사
-        if(validateForm() == false) {
+        if (validateForm() == false) {
             return;
         }
         startFragment(profileFragment.newInstance(signupEmail.getText().toString(), signupPassword.getText().toString()));
     }
+
     @OnClick(R.id.signup_back)
-    void backClick(){
+    void backClick() {
         finish();
     }
 
     // Start Fragment function (fragment replace)
-    void startFragment(final ProfileFragment fragment){
-        Log.e(TAG,">>>>>>>>>> profile 등록 fragment 입장");
+    void startFragment(final ProfileFragment fragment) {
+        Log.e(TAG, ">>>>>>>>>> profile 등록 fragment 입장");
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.signup_container, fragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
+
     private boolean validateForm() {
         boolean valid = true;
 
@@ -93,17 +97,17 @@ public class SignUp extends AppCompatActivity {
             signupRepassword.requestFocus();
             valid = false;
         }
-        if(android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() == false){
+        if (android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() == false) {
             signupEmail.setError(getResources().getString(R.string.email_error));
             signupEmail.requestFocus();
             valid = false;
         }
-        if(signupPassword.length() < 6){
+        if (signupPassword.length() < 6) {
             signupPassword.setError(getResources().getString(R.string.short_error));
             signupPassword.requestFocus();
             valid = false;
         }
-        if(password.equals(rePassword) == false){
+        if (password.equals(rePassword) == false) {
             signupPassword.setError(getResources().getString(R.string.nomatech_error));
             signupPassword.requestFocus();
             valid = false;
@@ -112,23 +116,23 @@ public class SignUp extends AppCompatActivity {
     }
 
 
-
-
     // EditText Listener Watcher Function (완료 및 다음 키 활성화)
-    private void setListener(){
+    private void setListener() {
         TextWatcher watcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if( signupEmail.length() > 0 && signupPassword.length() > 0 && signupRepassword.length() > 0){
+                if (signupEmail.length() > 0 && signupPassword.length() > 0 && signupRepassword.length() > 0) {
                     signupNext.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorBlack));
-                } else{
+                } else {
                     signupNext.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorWhGray));
                 }
             }
+
             @Override
             public void afterTextChanged(Editable s) {
 

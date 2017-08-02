@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorWhite">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <ImageButton    android:id="@+id/timeline_back"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@android:color/transparent"
+                    android:onClick="backClick"
+                    android:src="@drawable/ic_back" />
+
+                <TextView
+                    android:layout_width="@dimen/dp_zero"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="타임라인"
+                    android:textColor="@color/colorBlack" />
+
+                <Button
+                    android:id="@+id/login_done"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@android:color/transparent"
+                    android:onClick="doneClick"
+                    android:textColor="@color/colorWhGray"
+                    android:textSize="11sp" />
+            </LinearLayout>
+        </android.support.v7.widget.Toolbar>
+
+        <LinearLayout
+            android:layout_height="@dimen/dp_zero"
+            android:layout_width="match_parent"
+            android:layout_weight="1">
+
+
+        </LinearLayout>>
+
+        <android.support.v7.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorWhite">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <ImageButton    android:id="@+id/timeline_photo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_photo"
+                    android:background="@android:color/transparent"
+                    android:onClick="photoClick"/>
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_timeline"
+                    android:background="@android:color/transparent"/>
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_timeline"
+                    android:background="@android:color/transparent"/>
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_timeline"
+                    android:background="@android:color/transparent"/>
+            </LinearLayout>
+        </android.support.v7.widget.Toolbar>
+    </LinearLayout>
+</FrameLayout>

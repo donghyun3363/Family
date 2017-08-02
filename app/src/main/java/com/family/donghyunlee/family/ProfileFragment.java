@@ -1,14 +1,18 @@
 package com.family.donghyunlee.family;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
@@ -25,7 +29,10 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.family.donghyunlee.family.data.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,7 +40,13 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.squareup.otto.Subscribe;
+
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,9 +56,10 @@ import butterknife.OnClick;
  * Created by DONGHYUNLEE on 2017-07-26.
  */
 
-public class ProfileFragment extends Fragment{
+public class ProfileFragment extends Fragment {
 
 
+    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 0;
     @BindView(R.id.profile_name)
     EditText profileName;
     @BindView(R.id.profile_phone)
@@ -59,13 +73,16 @@ public class ProfileFragment extends Fragment{
     private static final String TAG = ProfileFragment.class.getSimpleName();
     private String email;
     private String password;
-
+    private Bitmap photo;
+    private Uri filePath;
+    private String filename;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference = database.getReference("users");
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
-
-
+    FirebaseStorage storage = FirebaseStorage.getInstance();
+    //  Root Ref
     private User userData;
+
     // Fragment newInstance by adding Bundle Object
     public static ProfileFragment newInstance(String email, String password) {
 
@@ -106,21 +123,24 @@ public class ProfileFragment extends Fragment{
         password = getArguments().getString("password");
         Glide.with(this).load(R.drawable.ic_profileblack).into(profileImage);
     }
+
     // EditText Listener Watcher Function (완료 및 다음 키 활성화)
-    private void setListener(){
+    private void setListener() {
         TextWatcher watcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if( profileName.length() > 0 && profilePhone.length() > 0 && profileType.length() > 0){
+                if (profileName.length() > 0 && profilePhone.length() > 0 && profileType.length() > 0) {
                     profileDone.setTextColor(ContextCompat.getColor(getContext(), R.color.colorBlack));
-                } else{
+                } else {
                     profileDone.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhGray));
                 }
             }
+
             @Override
             public void afterTextChanged(Editable s) {
 
@@ -131,16 +151,7 @@ public class ProfileFragment extends Fragment{
         profileType.addTextChangedListener(watcher);
     }
 
-
-    @OnClick(R.id.profile_done)
-    void doneClick(){
-        if(validateForm() == false)
-            return;
-        signUpUser();
-
-    }
-
-    private void signUpUser(){
+    private void signUpUser() {
         Log.d(TAG, "createAccount:" + email);
 
         mAuth.createUserWithEmailAndPassword(email, password)
@@ -148,27 +159,31 @@ public class ProfileFragment extends Fragment{
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            uploadFile(filePath);
                             FirebaseUser user = mAuth.getCurrentUser();
                             // TODO profile image 구현하기.
-                            userData = new User(email, password, profileName.getText().toString()
+                            userData = new User(user.getUid(), email, password, profileName.getText().toString()
                                     , profilePhone.getText().toString()
-                                    , profileType.getText().toString(), 0);
+                                    , profileType.getText().toString(), filename, "empty");
                             databaseReference.child(userData.getId()).setValue(userData);
                             sendEmailVerification();
-                            updateUI(user);
-                            Toast.makeText(getContext(), "등록한 메일에서 인증 클릭을 해주세요.", Toast.LENGTH_SHORT).show();
+                           // updateUI(user);
+                            getActivity().finish();
                         } else {
 
                             if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                                Toast.makeText(getContext(), "이미 존재하는 이메일입니다.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), getResources().getString(R.string.already_email_error),
+                                        Toast.LENGTH_SHORT).show();
                             } else {
-                                Toast.makeText(getContext(), "Authentication failed.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), getResources().getString(R.string.auth_failed),
+                                        Toast.LENGTH_SHORT).show();
                             }
-                            updateUI(null);
+                            //updateUI(null);
                         }
                     }
                 });
     }
+
     private void sendEmailVerification() {
 
         // Send verification email
@@ -179,13 +194,12 @@ public class ProfileFragment extends Fragment{
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         // [START_EXCLUDE]
-
                         if (task.isSuccessful()) {
-                            Toast.makeText(getActivity(), "Verification email sent to " + user.getEmail(),
+                            Toast.makeText(getActivity(), user.getEmail() + getResources().getString(R.string.sending_email),
                                     Toast.LENGTH_SHORT).show();
                         } else {
                             Log.e(TAG, "sendEmailVerification", task.getException());
-                            Toast.makeText(getActivity(), "Failed to send verification email.",
+                            Toast.makeText(getActivity(), getResources().getString(R.string.sending_email_failed),
                                     Toast.LENGTH_SHORT).show();
                         }
                         // [END_EXCLUDE]
@@ -194,14 +208,16 @@ public class ProfileFragment extends Fragment{
         // [END send_email_verification]
     }
 
-    private void updateUI(FirebaseUser user) {
-        if (user != null) {
+    // 회원가입 후 로그인 창으로간다면 필요 없을 듯!
+//    private void updateUI(FirebaseUser user) {
+//        if (user != null) {
+//
+//        } else {
+//
+//
+//        }
+//    }
 
-        } else{
-
-
-        }
-    }
     // 유효성 검사
     private boolean validateForm() {
         boolean valid = true;
@@ -227,28 +243,113 @@ public class ProfileFragment extends Fragment{
         return valid;
     }
 
+    @OnClick(R.id.profile_done)
+    void doneClick() {
+        if (validateForm() == false)
+            return;
+        // 회원가입
+        signUpUser();
+    }
 
     @OnClick(R.id.profile_back)
-    void backClick(){
+    void backClick() {
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         fragmentManager.beginTransaction().remove(ProfileFragment.this).commit();
         fragmentManager.popBackStack();
     }
-    @OnClick(R.id.profile_image)
-    void profileClick(){
 
+    @OnClick(R.id.profile_image)
+    void profileClick() {
+        //  Permission Check & Request Permission
+        if (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                // Explain to the user why we need to read
+            } else {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+            }
+        }
         Intent intent = new Intent(getActivity(), PhotoSel.class);
         startActivity(intent);
     }
+
+    //TODO 듀플리케이트 인지 확인 할 것.
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Subscribe
     public void FinishLoad(DataEvent dataEvent) {
-// 이벤트가 발생한뒤 수행할 작업
-        Bitmap photo = dataEvent.getPhoto();
+        // 이벤트가 발생한뒤 수행할 작업
+        photo = dataEvent.getPhoto();
+        filePath = dataEvent.getFilePath();
+        Log.e("TAG", ">>>>>>>>>>>>>>>       " + String.valueOf(filePath));
         profileImage.setBackground(new ShapeDrawable(new OvalShape()));
         profileImage.setClipToOutline(true);
         profileImage.setImageBitmap(photo);
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d(TAG, ">>>>>리퀘스트 요청 Success     " + grantResults[0]);
+
+                } else {
+                    Log.d(TAG, ">>>>>리퀘스트 요청 Fail     " + grantResults[0]);
+                }
+                return;
+            }
+
+            // other case
+        }
+    }
+    // TODO 어싱크나 서비스를 쓰자.
+    private void uploadFile(Uri filePath) {
+
+        if (filePath != null) {
+
+            java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat(getResources().getString(R.string.date_format));
+            Date now = new Date();
+            filename = formatter.format(now) + getResources().getString(R.string.file_extension);
+            Log.e(TAG, ">>>>>>>     filename : " + filename);
+            //업로드 진행 Dialog 보이기
+            final ProgressDialog progressDialog = new ProgressDialog(getContext());
+            progressDialog.setTitle(getResources().getString(R.string.uploading));
+            progressDialog.show();
+
+            StorageReference storageRef = storage.getReferenceFromUrl(getResources().getString(R.string.firebase_storage))
+                    .child(getResources().getString(R.string.storage_profiles_folder) + "/" + filename);
+
+            storageRef.putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                    progressDialog.dismiss();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                    progressDialog.dismiss();
+                    Toast.makeText(getActivity(), getResources().getString(R.string.uploading_failed), Toast.LENGTH_SHORT).show();
+                }
+            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                    @SuppressWarnings("VisibleForTests")
+                    double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                    progressDialog.setMessage(getResources().getString(R.string.uploading_progress)
+                            + ((int) progress)
+                            + getResources().getString(R.string.uploading_percent));
+                }
+            });
+        } else {
+            Log.d(TAG, ">>>>>>      filePath is null");
+        }
     }
 
 }

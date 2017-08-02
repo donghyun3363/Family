@@ -1,10 +1,8 @@
-package com.family.donghyunlee.family;
-
-import java.util.StringTokenizer;
+package com.family.donghyunlee.family.data;
 
 /**
  * Created by DONGHYUNLEE on 2017-07-26.
- *
+ * <p>
  * Uset Data set
  */
 
@@ -16,28 +14,33 @@ public class User {
     private String userNicname;
     private String userPhone;
     private String userType;
-    private int userImage;
-    private String userDate;
+    private String userImage;
+    private String groupId;
 
-    User(){
+    User() {
 
     }
 
     // Overload
-    User(String userEmail, String userPassword,
-         String userNicname, String userPhone, String userType, int userImage){
-        id = new String(userEmail);
-        StringTokenizer stringTokenizer = new StringTokenizer(id, ".");
-        this.id = stringTokenizer.nextToken();
+    public User(String id, String userEmail, String userPassword,
+                String userNicname, String userPhone, String userType, String userImage, String groupId) {
+//        id = new String(userEmail);
+//        StringTokenizer stringTokenizer = new StringTokenizer(id, ".");
+//        this.id = stringTokenizer.nextToken();
 
+        this.id = id;
         this.userEmail = userEmail;
         this.userPassword = userPassword;
         this.userNicname = userNicname;
         this.userPhone = userPhone;
         this.userType = userType;
         this.userImage = userImage;
+        this.groupId = groupId;
     }
 
+    public String getGroupId() {
+        return groupId;
+    }
 
     // Getter
     public String getUserEmail() {
@@ -60,7 +63,7 @@ public class User {
         return userType;
     }
 
-    public int getUserImage() {
+    public String getUserImage() {
         return userImage;
     }
 
@@ -70,6 +73,12 @@ public class User {
 
 
     // Setter
+
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+
     public void setUserEmail(String userEmail) {
         this.userEmail = userEmail;
     }
@@ -94,7 +103,7 @@ public class User {
         this.id = id;
     }
 
-    public void setUserImage(int userImage) {
+    public void setUserImage(String userImage) {
         this.userImage = userImage;
     }
 

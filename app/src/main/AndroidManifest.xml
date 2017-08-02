@@ -6,6 +6,8 @@
     <uses-sdk android:minSdkVersion="21"
         android:targetSdkVersion="25"
         android:maxSdkVersion="25"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
 
     <application
         android:allowBackup="true"
@@ -15,6 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:screenOrientation="portrait">
+
         <activity android:name=".MainActivity"
             android:theme="@style/NoStateTheme">
             <intent-filter>
@@ -34,11 +37,22 @@
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
         <activity android:name=".PhotoSel"
-            android:theme="@style/Theme.AppCompat.Translucent"
-            >
+            android:theme="@style/Theme.AppCompat.Translucent" >
+        </activity>
+
+        <activity android:name=".photoalbum.PhotoAlbum"
+            android:theme="@style/AppTheme" >
 
         </activity>
 
+        <activity android:name=".Waiting"
+            android:theme="@style/AppTheme" >
+
+        </activity>
+        <activity android:name=".timeline.TimeLine"
+            android:theme="@style/AppTheme" >
+
+        </activity>
     </application>
 
 </manifest>

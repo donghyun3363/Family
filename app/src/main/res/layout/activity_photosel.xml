@@ -17,14 +17,13 @@
         android:orientation="vertical"
         android:background="@color/colorWhGray">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="사진 편집"
-                android:textColor="@color/colorBlack"
-                android:layout_gravity="center"
-                android:layout_margin="20dp"
-                />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="사진 편집"
+            android:textColor="@color/colorBlack"
+            android:layout_gravity="center"
+            android:layout_margin="20dp"/>
 
         <Button android:id="@+id/photosel_camera"
             android:layout_width="match_parent"
@@ -54,7 +53,6 @@
             android:layout_marginRight="20dp"
             android:background="@color/colorWhite"
             android:onClick="cancelClick"/>
-
-
     </LinearLayout>
+
 </LinearLayout>

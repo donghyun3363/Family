@@ -11,6 +11,16 @@
     <string name="nomatech_error">비밀번호가 일치하지 않습니다.</string>
 
 
+    <string name="sending_email">에서 인증 확인해주세요.</string>
+    <string name="sending_email_failed">이메일 전송에 실패하였습니다.</string>
+    <string name="already_email_error">이미 존재하는 이메일입니다.</string>
+
+
+
+    <string name="uploading">업로드중입니다.</string>
+    <string name="uploading_failed">업로드 실패 하였습니다.</string>
+    <string name="uploading_progress">Uploaded</string>
+    <string name="uploading_percent">% ....</string>
 
     <string-array name="photodialog_item">
         <item>사진ㅊ</item>
@@ -18,6 +28,19 @@
         <item>item select three...</item>
         <item>item select four...</item>
     </string-array>
+    <string-array name="photoalbum_title">
+        <item>추억 앨범</item>
+        <item>여행 앨범</item>
+    </string-array>
+
+    <string name="firebase_storage">gs://family-4fbc8.appspot.com</string>
+    <string name="storage_profiles_folder">profiles</string>
+    <string name="file_extension">.png</string>
+    <string name="date_format">yyyyMMHH_mmss</string>
 
 
+    <string name="dialog_title">앨범 만들기</string>
+    <string name="dialog_message">앨범을 만들어 가족들과 사진을 모아보세요.</string>
+    <string name="dialog_posi">확인</string>
+    <string name="dialog_negati">취소</string>
 </resources>
