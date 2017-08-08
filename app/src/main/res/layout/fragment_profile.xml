@@ -1,51 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/profile_container"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWhGray">
+    android:background="@color/colorWhGray"
+    android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorWhite">
+
         <LinearLayout
-            android:layout_height="match_parent"
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:orientation="horizontal">
-            <ImageButton android:id="@+id/profile_back"
+
+            <ImageButton
+                android:id="@+id/profile_back"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:background="@android:color/transparent"
-                android:src="@drawable/ic_back"
-                android:onClick="backClick"/>
+                android:onClick="backClick"
+                android:src="@drawable/ic_back" />
+
             <TextView
                 android:layout_width="@dimen/dp_zero"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="프로필 생성"
-                android:textColor="@color/colorBlack"/>
-            <Button android:id="@+id/profile_done"
+                android:textColor="@color/colorBlack" />
+
+            <Button
+                android:id="@+id/profile_done"
                 android:layout_width="50dp"
                 android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:text="완료"
-                android:textSize="11sp"
                 android:layout_gravity="center"
-                android:textColor="@color/colorWhGray"
+                android:background="@android:color/transparent"
                 android:onClick="doneClick"
-                />
+                android:text="완료"
+                android:textColor="@color/colorWhGray"
+                android:textSize="11sp" />
         </LinearLayout>
     </android.support.v7.widget.Toolbar>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:background="@color/colorBlack" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="20dp">
+        android:background="@color/colorWhGray"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="60dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -53,17 +68,16 @@
             android:orientation="horizontal"
             android:weightSum="1">
 
-
-
-                <ImageButton    android:id="@+id/profile_image"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="10dp"
-                    android:background="@android:color/transparent"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/ic_profileblack"
-                    android:onClick="profileClick"/>
+            <ImageButton
+                android:id="@+id/profile_image"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="20dp"
+                android:background="@android:color/transparent"
+                android:onClick="profileClick"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_profileblack" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -76,23 +90,31 @@
                     android:layout_height="50dp"
                     android:layout_gravity="center"
                     android:layout_marginBottom="10dp"
-                    card_view:cardCornerRadius="5dp"
+                    card_view:cardCornerRadius="@dimen/little_cardround"
                     card_view:cardElevation="5dp">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="horizontal">
+
                         <TextView
                             android:layout_width="60dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="5dp"
-                            android:text="닉네임" />
+                            android:layout_marginLeft="10dp"
+                            android:text="닉네임"
+                            android:textColor="@color/colorBlack"/>
+
                         <LinearLayout
                             android:layout_width="2dp"
                             android:layout_height="match_parent"
-                            android:background="@color/colorWhGray"
-                            android:layout_marginRight="10dp"/>
-                        <EditText   android:id="@+id/profile_name"
+                            android:layout_marginRight="10dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="@color/colorWhGray" />
+
+                        <EditText
+                            android:id="@+id/profile_name"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:background="@null"
@@ -109,23 +131,28 @@
                     android:layout_height="50dp"
                     android:layout_gravity="center"
                     android:layout_marginBottom="10dp"
-                    card_view:cardCornerRadius="5dp"
+                    card_view:cardCornerRadius="@dimen/little_cardround"
                     card_view:cardElevation="5dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="horizontal">
+
                         <TextView
                             android:layout_width="60dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="5dp"
-                            android:text="휴대전화" />
+                            android:layout_marginLeft="10dp"
+                            android:text="휴대전화"
+                            android:textColor="@color/colorBlack"/>
+
                         <LinearLayout
                             android:layout_width="2dp"
                             android:layout_height="match_parent"
-                            android:background="@color/colorWhGray"
-                            android:layout_marginRight="10dp"/>
+                            android:layout_marginRight="10dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="@color/colorWhGray" />
 
                         <EditText
                             android:id="@+id/profile_phone"
@@ -146,25 +173,33 @@
                     android:layout_gravity="center"
                     card_view:cardCornerRadius="5dp"
                     card_view:cardElevation="5dp">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="horizontal">
+
                         <TextView
                             android:layout_width="60dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="5dp"
-                            android:text="가족관계" />
+                            android:layout_marginLeft="10dp"
+                            android:text="가족관계"
+                            android:textColor="@color/colorBlack"/>
+
                         <LinearLayout
                             android:layout_width="2dp"
                             android:layout_height="match_parent"
-                            android:background="@color/colorWhGray"
-                            android:layout_marginRight="10dp"/>
-                        <EditText   android:id="@+id/profile_type"
+                            android:layout_marginRight="10dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="@color/colorWhGray" />
+
+                        <EditText
+                            android:id="@+id/profile_type"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:background="@null"
-                            android:hint="ex)엄마"
+                            android:hint="ex) 막내아들"
                             android:imeOptions="actionDone|actionNext"
                             android:inputType="text"
                             android:textSize="16sp" />

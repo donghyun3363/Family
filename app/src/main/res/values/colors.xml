@@ -5,9 +5,17 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorBlack">#000000</color>
     <color name="colorWhite">#FFFFFF</color>
-    <color name="colorWhGray">#e6e6e6</color>
+    <color name="colorWhGray">#E0E0E0</color>
     <color name="transparent">#00000000</color>
     <color name="active_color">#000</color>
     <color name="inactive_color">#c4c4c4</color>
     <color name="mainText_color">#FF5722</color>
+
+
+
+    <color name="transparent_black">#20000000</color>
+    <color name="light_green">#84BD00</color>
+    <color name="tea_grean">#88B04B</color>
+    <color name="best_grean">#93b658</color>
+    <color name="best_violet">#a76dd3</color>
 </resources>

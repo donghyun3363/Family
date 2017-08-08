@@ -1,6 +1,7 @@
 package com.family.donghyunlee.family;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -27,13 +28,15 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference databaseReference = database.getReference("users");
+    FirebaseDatabase database;
+    DatabaseReference databaseReference;
+
     @Override
     public void onStart() {
         super.onStart();
+        Log.e(TAG, ">>>>>>          mAuth: " + mAuth);
         currentUser = mAuth.getCurrentUser();
-        Log.e(TAG, ">>>>>>          ID: " + currentUser.getUid());
+        //Log.e(TAG, ">>>>>>          ID: " + currentUser.getUid());
         updateUI(currentUser);
     }
 
@@ -48,11 +51,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setInit() {
+        database = FirebaseDatabase.getInstance();
         mAuth = FirebaseAuth.getInstance();
-
+        databaseReference = database.getReference("users");
         ImageView iv_mainImg = (ImageView) findViewById(R.id.main_img);
-
-        Glide.with(this).load(R.drawable.img_family).into(iv_mainImg);
+        Glide.with(this).load(R.drawable.img_family1).into(iv_mainImg);
 
     }
 
@@ -73,24 +76,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateUI(FirebaseUser user) {
-//
-//        Intent intent = new Intent(getApplicationContext(), PhotoAlbum.class);
-//        startActivity(intent);
-//
         if (user != null) {
-            //---- HERE YOU CHECK IF EMAIL IS VERIFIED
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
 
                     while(child.hasNext()) {
-                        //찾고자 하는 ID값은 key로 존재하는 값
                         User user = child.next().getValue(User.class);
                         if(user.getId().equals(currentUser.getUid())){
-                            Log.e(TAG,"222222222222222222222222222222222");
-                            Log.e(TAG,"??: " + user.getGroupId());
-
+                            SharedPreferences pref = getSharedPreferences("pref", MODE_PRIVATE);
+                            SharedPreferences.Editor editor = pref.edit();
+                            editor.putString("userId", currentUser.getUid());
+                            editor.putString("groupId", user.getGroupId());
+                            editor.commit();
                             if(user.getGroupId().equals("empty")){
                                 Intent intent = new Intent(getApplicationContext(), Waiting.class);
                                 startActivity(intent);
@@ -100,19 +99,17 @@ public class MainActivity extends AppCompatActivity {
                                 startActivity(intent);
                                 finish();
                             }
-
                         }
                        return;
                     }
-
                 }
-
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
                 }
             });
-        } else {
+        }
+
+        else {
 
 
         }

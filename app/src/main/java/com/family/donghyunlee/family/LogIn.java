@@ -1,6 +1,7 @@
 package com.family.donghyunlee.family;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -47,12 +48,12 @@ public class LogIn extends AppCompatActivity {
     Button loginDone;
 
     private static final String TAG = LogIn.class.getSimpleName();
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference databaseReference = database.getReference("users");
-    FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseDatabase database;
+    private DatabaseReference databaseReference;
+    private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
-
+    private SharedPreferences pref;
+    private SharedPreferences.Editor editor;
     private String email;
     private String password;
 
@@ -61,7 +62,7 @@ public class LogIn extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         currentUser = mAuth.getCurrentUser();
-        Log.e(TAG, ">>>>>>          ID: " + currentUser.getUid());
+        //Log.e(TAG, ">>>>>>          ID: " + currentUser.getUid());
         updateUI(currentUser);
     }
 
@@ -78,24 +79,24 @@ public class LogIn extends AppCompatActivity {
     // Initializing SetUp
     private void setInit() {
         // FireBase 인증 객체 생성
+        pref = getSharedPreferences("pref", MODE_PRIVATE);
+        editor = pref.edit();
+        database = FirebaseDatabase.getInstance();
         mAuth = FirebaseAuth.getInstance();
-        setListener();
+        databaseReference = database.getReference("users");
+        settingListener();
     }
 
-    // ButterKnife OnClick
     @OnClick(R.id.login_back)
     void backClick() {
         //TODO 확인 작업 후 삭제.
         //FirebaseAuth.getInstance().signOut();
         finish();
     }
-
     @OnClick(R.id.login_done)
     void doneClick() {
         logInUser();
-
     }
-
     private void logInUser() {
         // 이메일, 패스퉈드 유효성 검사
         if (validateForm() == false)
@@ -142,11 +143,8 @@ public class LogIn extends AppCompatActivity {
                     Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
 
                     while(child.hasNext()) {
-                        //찾고자 하는 ID값은 key로 존재하는 값
                         User user = child.next().getValue(User.class);
                         if(user.getId().equals(currentUser.getUid())){
-
-                            Log.e(TAG,"??: " + child.next().getValue());
                             if(user.getGroupId() == null){
                                 Intent intent = new Intent(getApplicationContext(), Waiting.class);
                                 // 기존 스택에 있던 task를 초기화하고 새로 생성한 액티비티가 root가 된다.
@@ -155,6 +153,10 @@ public class LogIn extends AppCompatActivity {
                                 startActivity(intent);
                                 finish();
                             } else{
+                                // shared preference에 디비 정보 저장
+                                editor.putString("userId", currentUser.getUid());
+                                editor.putString("groupId", user.getGroupId());
+                                editor.commit();
                                 Intent intent = new Intent(getApplicationContext(), TimeLine.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -167,15 +169,13 @@ public class LogIn extends AppCompatActivity {
                     }
 
                 }
-
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
 
                 }
             });
         } else {
-
-
+            Log.i(TAG, "사용자에 대한 Auth가 없으므로 로그인 및 회원가입을 직접해야함.");
         }
     }
 
@@ -207,7 +207,7 @@ public class LogIn extends AppCompatActivity {
         return valid;
     }
 
-    private void setListener() {
+    private void settingListener() {
         // EditText Listener Watcher Function (버튼 키 색 변경.)
         TextWatcher watcher = new TextWatcher() {
             @Override

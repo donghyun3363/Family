@@ -1,59 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="@color/colorWhGray">
 
-    <android.support.v7.widget.CardView
-        xmlns:android="http://schemas.android.com/apk/res/android"
+
+    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/cv_memory_album"
         android:layout_width="match_parent"
         android:layout_height="250dp"
         android:layout_margin="10dp"
-        android:id="@+id/cv_memory_album"
-        card_view:cardCornerRadius="13dp"
-        card_view:cardElevation="5dp">
+        card_view:cardElevation="2dp"
+        card_view:cardCornerRadius="5dp">
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
+        <ImageView
+            android:id="@+id/img_memory_album"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:foreground="#88000000"
+            android:onClick="albumClick"
+            android:scaleType="fitXY"
+            android:src="@drawable/img_default"
+            android:transitionName="@string/transitionName"/>
 
-                    <ImageView
-                        android:id="@+id/img_memory_album"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentTop="true"
-                        android:foreground="#88000000"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/img_default"
-                        />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/title_memory_album"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:layout_marginLeft="30dp"
-                        android:layout_marginRight="30dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="앨범 명"
-                        android:textStyle="bold"
-                        android:textColor="@color/colorWhite"
-                        android:textSize="20sp" />
-                    <TextView
-                        android:layout_alignParentEnd="true"
-                        android:id="@+id/num_memory_album"
-                        android:layout_height="wrap_content"
-                        android:layout_width="wrap_content"
-                        android:text="0000년 00월"
-                        android:textColor="@color/colorWhite"
-                        android:textStyle="bold"/>
-                </RelativeLayout>
+            <TextView
+                android:id="@+id/date_memory_album"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="0000년 00월 00일"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/small_textsize"
+                android:layout_margin="10dp"/>
 
+            <TextView
+                android:id="@+id/title_memory_album"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_zero"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="앨범 명~"
+                android:textColor="@color/colorWhite"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:transitionName="@string/transitionName2"/>
+
+            <RelativeLayout
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_gravity="center"
+
+                android:layout_marginBottom="7dp"
+                android:background="@drawable/circle_solid_shape">
+
+                <ImageView
+                    android:id="@+id/profile_memory_album"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/circle_solid_shape"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_profile" />
+            </RelativeLayout>
+
+        </LinearLayout>
     </android.support.v7.widget.CardView>
-</FrameLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp" />
+
+</LinearLayout>

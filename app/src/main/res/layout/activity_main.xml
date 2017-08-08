@@ -9,7 +9,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="@dimen/dp_zero"
         android:layout_weight="1"
         android:background="@color/colorWhGray">
 
@@ -17,48 +17,51 @@
             android:id="@+id/main_img"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="fitXY"
-            />
-        <com.sdsmdg.harjot.rotatingtext.RotatingTextWrapper
-            android:id="@+id/text_switcher"
+            android:src="@drawable/img_family1"
+            android:scaleType="fitXY" />
+
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"/>
-    </RelativeLayout>
+            android:layout_alignParentBottom="true">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:background="@color/colorWhGray">
-        <android.support.v7.widget.CardView
-            xmlns:card_view="http://schemas.android.com/apk/res-auto"
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            card_view:cardCornerRadius="5dp"
-            card_view:cardElevation="5dp"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_margin="10dp" >
-            <Button android:id="@+id/signup"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/sign_up"
-                android:textStyle="bold|italic"
-                android:background="@android:color/transparent"
-                android:onClick="signupClick"/>
-        </android.support.v7.widget.CardView>
+                android:layout_height="110dp"
+                android:background="@color/colorWhGray"
+                android:orientation="vertical"
+                android:backgroundTint="@android:color/transparent">
 
-        <TextView
-            android:id="@+id/login"
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:gravity="center"
-            android:text="@string/log_in"
-            android:textSize="12sp"
-            android:textColor="@color/colorBlack"
-            android:textStyle="bold"
-            android:onClick="loginClick"/>
-    </LinearLayout>
+                <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_margin="10dp"
+                    card_view:cardCornerRadius="@dimen/little_cardround"
+                    card_view:cardElevation="5dp">
 
+                    <Button
+                        android:id="@+id/signup"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/tea_grean"
+                        android:onClick="signupClick"
+                        android:textColor="@color/colorWhite"
+                        android:text="@string/sign_up"
+                        android:textStyle="bold" />
+                </android.support.v7.widget.CardView>
+
+                <TextView
+                    android:id="@+id/login"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:onClick="loginClick"
+                    android:text="@string/log_in"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="@dimen/small_textsize"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </RelativeLayout>
+    </RelativeLayout>
 </LinearLayout>

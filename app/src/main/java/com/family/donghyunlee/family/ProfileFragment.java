@@ -4,14 +4,13 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -44,13 +43,15 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.otto.Subscribe;
 
 import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by DONGHYUNLEE on 2017-07-26.
@@ -71,6 +72,7 @@ public class ProfileFragment extends Fragment {
     @BindView(R.id.profile_image)
     ImageButton profileImage;
     private static final String TAG = ProfileFragment.class.getSimpleName();
+    private static final int REQUESTCODE_PHOTOSEL_PROFILEFRAGMENT = 99;
     private String email;
     private String password;
     private Bitmap photo;
@@ -82,6 +84,7 @@ public class ProfileFragment extends Fragment {
     FirebaseStorage storage = FirebaseStorage.getInstance();
     //  Root Ref
     private User userData;
+
 
     // Fragment newInstance by adding Bundle Object
     public static ProfileFragment newInstance(String email, String password) {
@@ -121,7 +124,9 @@ public class ProfileFragment extends Fragment {
         setListener();
         email = getArguments().getString("email");
         password = getArguments().getString("password");
-        Glide.with(this).load(R.drawable.ic_profileblack).into(profileImage);
+        Glide.with(getContext()).load(R.drawable.ic_profileblack).centerCrop()
+                .crossFade().bitmapTransform(new CropCircleTransformation(getContext())).into(profileImage);
+
     }
 
     // EditText Listener Watcher Function (완료 및 다음 키 활성화)
@@ -208,16 +213,6 @@ public class ProfileFragment extends Fragment {
         // [END send_email_verification]
     }
 
-    // 회원가입 후 로그인 창으로간다면 필요 없을 듯!
-//    private void updateUI(FirebaseUser user) {
-//        if (user != null) {
-//
-//        } else {
-//
-//
-//        }
-//    }
-
     // 유효성 검사
     private boolean validateForm() {
         boolean valid = true;
@@ -274,21 +269,26 @@ public class ProfileFragment extends Fragment {
             }
         }
         Intent intent = new Intent(getActivity(), PhotoSel.class);
-        startActivity(intent);
+        //intent.putExtra("WHATCALL", "PROFILE");
+        startActivityForResult(intent, REQUESTCODE_PHOTOSEL_PROFILEFRAGMENT);
+
     }
 
-    //TODO 듀플리케이트 인지 확인 할 것.
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    @Subscribe
-    public void FinishLoad(DataEvent dataEvent) {
-        // 이벤트가 발생한뒤 수행할 작업
-        photo = dataEvent.getPhoto();
-        filePath = dataEvent.getFilePath();
-        Log.e("TAG", ">>>>>>>>>>>>>>>       " + String.valueOf(filePath));
-        profileImage.setBackground(new ShapeDrawable(new OvalShape()));
-        profileImage.setClipToOutline(true);
-        profileImage.setImageBitmap(photo);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if(requestCode == REQUESTCODE_PHOTOSEL_PROFILEFRAGMENT){
+            if(resultCode == RESULT_OK) {
+                Bundle bundle = data.getExtras();
+                byte[] byteArray = bundle.getByteArray("PHOTO");
+                photo = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+                filePath = Uri.parse(bundle.getString("IMAGE_URI"));
+                profileImage.setBackground(new ShapeDrawable(new OvalShape()));
+                profileImage.setClipToOutline(true);
+                profileImage.setImageBitmap(photo);
+            }
+        }
     }
 
     @Override
@@ -303,7 +303,6 @@ public class ProfileFragment extends Fragment {
                 }
                 return;
             }
-
             // other case
         }
     }

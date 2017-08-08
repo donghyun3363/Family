@@ -12,6 +12,7 @@ import android.util.Log;
 import android.widget.Button;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 
@@ -34,13 +35,13 @@ public class PhotoSel extends AppCompatActivity {
     Button photoselCancel;
 
     private Bitmap photo;
-
     private static final int PICK_FROM_CAMERA = 0;
     private static final int PICK_FROM_ALBUM = 1;
     private static final int CROP_FROM_IMAGE = 2;
     private Uri mImageCaptureUri;
-    private String absolutePatt;
-
+    private static final int REQUESTCODE_PHOTOSEL_PROFILEFRAGMENT = 99;
+    private static final int REQUESTCODE_PHOTOSEL_INALBUM = 100;
+    private static final int REQUESTCODE_PHOTOSEL_ALBUM = 101;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +67,10 @@ public class PhotoSel extends AppCompatActivity {
         finish();
     }
 
+    @OnClick(R.id.photosel_back)
+    void backClick(){
+        finish();
+    }
     // 카메라 촬영 후 이미지 가져오기
     private void doTakePhotoAction() {
 
@@ -127,14 +132,21 @@ public class PhotoSel extends AppCompatActivity {
                 if (extras != null) {
                     // CROP된 BITMAP
                     photo = extras.getParcelable("data"); // 넘겨줄 데이터(poto)
-                    storeCropImage(photo, filePath);    // CROP된 이미지를 외부저장소, 앨범에 저장한다.
-                    absolutePatt = filePath;
+                    storeCropImage(photo, filePath);    // CROP된 이미지를 내부저장소, 앨범에 저장한다.
 
+                    // Bitmap을 Byte Array로 쪼개기
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    photo.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                    byte[] byteArray = stream.toByteArray();
 
-                    //TODO '확인' 클릭 시 액티비티 종료 처리 finish()
-                    // Data BUS POST
-                    BusProvider.getInstance().post(new DataEvent(photo, mImageCaptureUri));
-                    Log.e("TAG", ">>>>>>>>>>>>>>>       " + String.valueOf(mImageCaptureUri));
+                    // TODO  수정하기 if()
+                    Intent sendIntent = new Intent(this, ProfileFragment.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putByteArray("PHOTO", byteArray);
+                    sendIntent.putExtras(bundle);
+                    sendIntent.putExtra("IMAGE_URI", mImageCaptureUri.toString());
+                    setResult(RESULT_OK, sendIntent);
+                    finish();
                     break;
                 }
                 // 임시파일 삭제

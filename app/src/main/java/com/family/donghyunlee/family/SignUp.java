@@ -48,7 +48,7 @@ public class SignUp extends AppCompatActivity {
 
     // Initializing Setup
     private void setInit() {
-        setListener();
+        settingListener();
     }
 
     // ButterKnife OnClick
@@ -117,7 +117,7 @@ public class SignUp extends AppCompatActivity {
 
 
     // EditText Listener Watcher Function (완료 및 다음 키 활성화)
-    private void setListener() {
+    private void settingListener() {
         TextWatcher watcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

@@ -24,10 +24,6 @@ public class User {
     // Overload
     public User(String id, String userEmail, String userPassword,
                 String userNicname, String userPhone, String userType, String userImage, String groupId) {
-//        id = new String(userEmail);
-//        StringTokenizer stringTokenizer = new StringTokenizer(id, ".");
-//        this.id = stringTokenizer.nextToken();
-
         this.id = id;
         this.userEmail = userEmail;
         this.userPassword = userPassword;

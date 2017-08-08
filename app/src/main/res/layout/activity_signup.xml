@@ -1,41 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/signup_container"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWhGray">
+    android:background="@color/colorWhGray"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
         <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorWhite">
+
             <LinearLayout
-                android:layout_height="match_parent"
                 android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:orientation="horizontal">
-                <ImageButton android:id="@+id/signup_back"
+
+                <ImageButton
+                    android:id="@+id/signup_back"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:background="@android:color/transparent"
-                    android:src="@drawable/ic_back"
-                    android:onClick="backClick"/>
+                    android:onClick="backClick"
+                    android:src="@drawable/ic_back" />
+
                 <TextView
                     android:layout_width="@dimen/dp_zero"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="계정 만들기"
-                    android:textColor="@color/colorBlack"/>
+                    android:textColor="@color/colorBlack" />
 
-                <Button android:id="@+id/signup_next"
+                <Button
+                    android:id="@+id/signup_next"
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -47,11 +52,24 @@
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2px"
+            android:background="@color/colorBlack" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="10dp"
+            android:background="@color/colorWhGray"
             android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:text="FAMILY 계정으로 회원 가입"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/small_textsize" />
 
             <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:card_view="http://schemas.android.com/apk/res-auto"
@@ -61,21 +79,27 @@
                 android:layout_margin="10dp"
                 card_view:cardCornerRadius="5dp"
                 card_view:cardElevation="5dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
+
                     <TextView
                         android:layout_width="60dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
+                        android:layout_marginLeft="10dp"
+                        android:text="이메일"
+                        android:textColor="@color/colorBlack" />
 
-                        android:text="이메일" />
                     <LinearLayout
                         android:layout_width="2dp"
                         android:layout_height="match_parent"
-                        android:background="@color/colorWhGray"
-                        android:layout_marginRight="10dp"/>
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@color/colorWhGray" />
+
                     <EditText
                         android:id="@+id/signup_email"
                         android:layout_width="240dp"
@@ -100,29 +124,36 @@
                 android:layout_marginRight="20dp"
                 card_view:cardCornerRadius="5dp"
                 card_view:cardElevation="5dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
-                <TextView
-                    android:layout_width="60dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:text="비밀번호" />
-                <LinearLayout
-                    android:layout_width="2dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/colorWhGray"
-                    android:layout_marginRight="10dp"/>
-                <EditText
-                    android:id="@+id/signup_password"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@null"
-                    android:hint="비밀번호 5자이상"
-                    android:imeOptions="actionDone|actionNext"
-                    android:inputType="textPassword"
-                    android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="60dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:text="비밀번호"
+                        android:textColor="@color/colorBlack" />
+
+                    <LinearLayout
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@color/colorWhGray" />
+
+                    <EditText
+                        android:id="@+id/signup_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@null"
+                        android:hint="비밀번호 6자리 이상"
+                        android:imeOptions="actionDone|actionNext"
+                        android:inputType="textPassword"
+                        android:textSize="16sp" />
                 </LinearLayout>
             </android.support.v7.widget.CardView>
 
@@ -133,29 +164,35 @@
                 android:layout_gravity="center"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                card_view:cardCornerRadius="5dp"
+                card_view:cardCornerRadius="@dimen/little_cardround"
                 card_view:cardElevation="5dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
+
                     <TextView
                         android:layout_width="60dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
+                        android:layout_marginLeft="10dp"
+                        android:text="재 확인"
+                        android:textColor="@color/colorBlack" />
 
-                        android:text="재확인" />
                     <LinearLayout
                         android:layout_width="2dp"
                         android:layout_height="match_parent"
-                        android:background="@color/colorWhGray"
-                        android:layout_marginRight="10dp"/>
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@color/colorWhGray" />
+
                     <EditText
                         android:id="@+id/signup_repassword"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@null"
-                        android:hint="비밀번호 확인 "
+                        android:hint="비밀번호 재 확인 "
                         android:imeOptions="actionDone|actionNext"
                         android:inputType="textPassword"
                         android:textSize="16sp" />

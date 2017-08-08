@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.family.donghyunlee.family">
-
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <uses-sdk android:minSdkVersion="21"
         android:targetSdkVersion="25"
@@ -17,6 +19,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:screenOrientation="portrait">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBgLonFIkYO-7BJgCRR35a3Yj9L2XqqO_c" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
 
         <activity android:name=".MainActivity"
             android:theme="@style/NoStateTheme">
@@ -51,8 +61,13 @@
         </activity>
         <activity android:name=".timeline.TimeLine"
             android:theme="@style/AppTheme" >
-
         </activity>
+
+        <activity android:name=".photoalbum.InAlbum"
+            android:theme="@style/AppTheme" >
+        </activity>
+
+
     </application>
 
 </manifest>

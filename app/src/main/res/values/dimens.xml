@@ -2,5 +2,6 @@
 <resources>
 
     <dimen name = "dp_zero">0dp</dimen>
-
+    <dimen name = "small_textsize">12sp</dimen>
+    <dimen name = "little_cardround">5dp</dimen>
 </resources>
