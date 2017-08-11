@@ -55,7 +55,6 @@ public class MemoryAlbumRecyclerAdapter extends RecyclerView.Adapter<RecyclerVie
     MemoryAlbum item;
     private String groupId;
 
-    // 어뎁터 생성자
     public MemoryAlbumRecyclerAdapter(Context context, List<MemoryAlbum> items, int item_layout, String groupId) {
         this.context = context;
         this.items = items;
@@ -69,30 +68,13 @@ public class MemoryAlbumRecyclerAdapter extends RecyclerView.Adapter<RecyclerVie
         currentUser = mAuth.getCurrentUser();
     }
 
-    // 뷰홀더 생성(인플레터 후)
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-//        if (viewType == TYPE_HEADER) {
-//            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_oneofitems, null);
-//            Log.d(TAG, "Header");
-//            return new HeaderViewHolder(v);
-//        } else if (viewType == TYPE_ITEM) {   // TYPE_BODY
-//            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_memoryphoto, null);
-//            Log.d(TAG, "Body");
-//            return new ViewHolder(v);
-//        }
+
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_memoryphoto, null);
           Log.d(TAG, "Body");
         return new ViewHolder(v);
     }
-
-//    public class HeaderViewHolder extends RecyclerView.ViewHolder {
-//        // 뷰홀더에서 각 뷰들을 참조 함수
-//        public HeaderViewHolder(View itemView) {
-//            super(itemView);
-//
-//        }
-//    }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         // 뷰홀더에서 각 뷰들을 참조 함수
@@ -108,12 +90,10 @@ public class MemoryAlbumRecyclerAdapter extends RecyclerView.Adapter<RecyclerVie
 
 
         public ViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
+                super(itemView);
+                ButterKnife.bind(this, itemView);
 
         }
-
-
         @OnClick(R.id.img_memory_album)
         void albumClick() {
             Toast.makeText(context, "앨범 클릭", Toast.LENGTH_SHORT).show();
@@ -121,17 +101,11 @@ public class MemoryAlbumRecyclerAdapter extends RecyclerView.Adapter<RecyclerVie
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) { // view position
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
-//        if (holder instanceof HeaderViewHolder) {
-//
-//        } else if (holder instanceof ViewHolder) {
-//            position--;
             item = items.get(position);
             ((ViewHolder) holder).imgMemoryAlbum.setTransitionName("memoryImg");
 
-             //mainimg가 존재할 경우
-            Log.e("22222222222", "item.get:"+item.getMainImgPath());
             if ((item.getMainImgPath()).equals("empty") == false) {
                 mainImgDownload(((ViewHolder) holder).imgMemoryAlbum);
             }else{
@@ -140,12 +114,11 @@ public class MemoryAlbumRecyclerAdapter extends RecyclerView.Adapter<RecyclerVie
             profileImgDownload(((ViewHolder) holder).profileMemoryAlbum);
             ((ViewHolder) holder).titleMemoryAlbum.setText(item.getAlbumTitle());
             ((ViewHolder) holder).dateMemoryAlbum.setText(item.getAlbumDate());
-  //      }
+
     }
 
     private void mainImgDownload(final ImageView mainImgMemoryAlbum){
 
-        //mainimg가 존재할 경우\
             final String storageMemoryFolder = context.getString(R.string.storage_albumimages_folder);
             StorageReference storageRef = storage.getReferenceFromUrl(context.getString(R.string.firebase_storage));
             StorageReference pathRef = storageRef.child(storageMemoryFolder + "/" + item.getMainImgPath());

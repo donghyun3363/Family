@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <string-array name="list_answer">
+        <item>가족과 1박2일 떠나고 싶은 여름 여행지는 어디인가요?</item>
+        <item>가족과 1박2일 떠나고 싶은 겨울 여행지는 어디인가요?</item>
+        <item>가족과 즐기고 싶은 액티비티 무엇인가요?</item>
+        <item>부모(자녀)에게 듣고싶은 칭찬은 무엇인가요?</item>
+        <item>부모(자녀)와 단둘이 이야기를 나누십니까?</item>
+
+
+    </string-array>
+
+    <string-array name="list_answerhint">
+        <item>ex) 제주도 애월해변</item>
+        <item>ex) 스키장</item>
+        <item>ex) 볼링과 스크린야구</item>
+        <item>ex) 잘하고 있어!</item>
+        <item>ex) 아니오</item>
+    </string-array>
+
+
+</resources>

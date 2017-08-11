@@ -1,1 +1,1 @@
-include ':app', ':infiniteviewpager'
+include ':app', ':infiniteviewpager', ':calenderlibrary'

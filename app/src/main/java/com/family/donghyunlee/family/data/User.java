@@ -16,7 +16,7 @@ public class User {
     private String userType;
     private String userImage;
     private String groupId;
-
+    private String isBucket;
     User() {
 
     }
@@ -32,6 +32,7 @@ public class User {
         this.userType = userType;
         this.userImage = userImage;
         this.groupId = groupId;
+        isBucket = "empty";
     }
 
     public String getGroupId() {
@@ -67,6 +68,9 @@ public class User {
         return id;
     }
 
+    public String getIsBucket() {
+        return isBucket;
+    }
 
     // Setter
 
@@ -103,4 +107,7 @@ public class User {
         this.userImage = userImage;
     }
 
+    public void setIsBucket(String isBucket) {
+        this.isBucket = isBucket;
+    }
 }

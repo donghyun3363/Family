@@ -61,9 +61,9 @@ public class LogIn extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        currentUser = mAuth.getCurrentUser();
-        //Log.e(TAG, ">>>>>>          ID: " + currentUser.getUid());
-        updateUI(currentUser);
+//        currentUser = mAuth.getCurrentUser();
+//        //Log.e(TAG, ">>>>>>          ID: " + currentUser.getUid());
+//        updateUI(currentUser);
     }
 
     @Override
@@ -137,6 +137,7 @@ public class LogIn extends AppCompatActivity {
 
     private void updateUI(FirebaseUser user) {
         if (user != null) {
+
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -144,8 +145,14 @@ public class LogIn extends AppCompatActivity {
 
                     while(child.hasNext()) {
                         User user = child.next().getValue(User.class);
-                        if(user.getId().equals(currentUser.getUid())){
-                            if(user.getGroupId() == null){
+                        if(user.getId().equals(mAuth.getCurrentUser().getUid())){
+                            SharedPreferences pref = getSharedPreferences("pref", MODE_PRIVATE);
+                            SharedPreferences.Editor editor = pref.edit();
+                            editor.putString("userId", user.getId());
+                            editor.putString("groupId", user.getGroupId());
+                            editor.commit();
+
+                            if(user.getGroupId().equals("empty")){
                                 Intent intent = new Intent(getApplicationContext(), Waiting.class);
                                 // 기존 스택에 있던 task를 초기화하고 새로 생성한 액티비티가 root가 된다.
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -165,9 +172,9 @@ public class LogIn extends AppCompatActivity {
                             }
 
                         }
-                        return;
                     }
-
+                    Log.i(TAG, "해당 사용자 존재하지만 로그인 실패.");
+                    return;
                 }
                 @Override
                 public void onCancelled(DatabaseError databaseError) {

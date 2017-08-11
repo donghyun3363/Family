@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#44000000"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="30dp"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorWhGray"
+                    card_view:cardCornerRadius="5dp"
+                    card_view:cardElevation="6dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/best_grean"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:gravity="center"
+                            android:text="버킷 리스트 설문조사"
+                            android:textColor="@color/colorWhite" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="2px"
+                            android:background="#40000000" />
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/rv_bucketlist"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/dp_zero"
+                            android:layout_marginTop="10dp"
+                            android:layout_weight="1"
+                            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="2px"
+                            android:background="#40000000" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:gravity="center">
+
+                            <TextView
+                                android:id="@+id/bucketanswer_cancel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5dp"
+                                android:onClick="onCancelClick"
+                                android:text="나중에"
+                                android:textColor="@color/colorWhite"
+                                android:textSize="@dimen/small_textsize" />
+
+                            <TextView
+                                android:id="@+id/bucketanswer_done"
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentRight="true"
+                                android:layout_marginRight="5dp"
+                                android:gravity="center"
+                                android:onClick="onDoneClick"
+                                android:text="완료"
+                                android:textColor="@color/colorWhite"
+                                android:textSize="@dimen/small_textsize" />
+                        </RelativeLayout>
+                    </LinearLayout>
+                </android.support.v7.widget.CardView>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

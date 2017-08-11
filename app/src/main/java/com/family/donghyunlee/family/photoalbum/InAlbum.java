@@ -258,7 +258,7 @@ public class InAlbum extends AppCompatActivity {
                 if(isExistInAlbum == 0){
                     inalbumTemptext.setText(getResources().getString(R.string.album_temptext));
                 } else{
-                    inalbumTemptext.setText("");
+                    inalbumTemptext.setText(null);
                 }
             }
 

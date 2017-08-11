@@ -18,8 +18,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.Iterator;
-
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -28,15 +26,16 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
-    FirebaseDatabase database;
-    DatabaseReference databaseReference;
-
+    private FirebaseDatabase database;
+    private DatabaseReference databaseReference;
+    private SharedPreferences pref;
+    private String key;
+    private DatabaseReference bucketlistReference;
+    SharedPreferences.Editor editor;
     @Override
     public void onStart() {
         super.onStart();
-        Log.e(TAG, ">>>>>>          mAuth: " + mAuth);
         currentUser = mAuth.getCurrentUser();
-        //Log.e(TAG, ">>>>>>          ID: " + currentUser.getUid());
         updateUI(currentUser);
     }
 
@@ -53,13 +52,12 @@ public class MainActivity extends AppCompatActivity {
     private void setInit() {
         database = FirebaseDatabase.getInstance();
         mAuth = FirebaseAuth.getInstance();
-        databaseReference = database.getReference("users");
         ImageView iv_mainImg = (ImageView) findViewById(R.id.main_img);
         Glide.with(this).load(R.drawable.img_family1).into(iv_mainImg);
-
+        //adminSetAnswer();
     }
 
-    // ButterKnife OnClick
+
     @OnClick(R.id.signup)
     void signupClick() {
         Intent intent = new Intent(MainActivity.this, SignUp.class);
@@ -76,43 +74,55 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateUI(FirebaseUser user) {
+
         if (user != null) {
+
+            databaseReference = database.getReference("users").child(currentUser.getUid());
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
+                    User user = dataSnapshot.getValue(User.class);
+                    pref = getSharedPreferences("pref", MODE_PRIVATE);
+                    editor = pref.edit();
+                    editor.putString("userId", currentUser.getUid());
+                    editor.putString("groupId", user.getGroupId());
+                    editor.commit();
 
-                    while(child.hasNext()) {
-                        User user = child.next().getValue(User.class);
-                        if(user.getId().equals(currentUser.getUid())){
-                            SharedPreferences pref = getSharedPreferences("pref", MODE_PRIVATE);
-                            SharedPreferences.Editor editor = pref.edit();
-                            editor.putString("userId", currentUser.getUid());
-                            editor.putString("groupId", user.getGroupId());
-                            editor.commit();
-                            if(user.getGroupId().equals("empty")){
-                                Intent intent = new Intent(getApplicationContext(), Waiting.class);
-                                startActivity(intent);
-                                finish();
-                            } else{
-                                Intent intent = new Intent(getApplicationContext(), TimeLine.class);
-                                startActivity(intent);
-                                finish();
-                            }
-                        }
-                       return;
+                    if(user.getGroupId().equals("empty")){
+                        Intent intent = new Intent(getApplicationContext(), Waiting.class);
+                        startActivity(intent);
+                        finish();
+                    } else{
+                        Intent intent = new Intent(getApplicationContext(), TimeLine.class);
+                        startActivity(intent);
+                        finish();
                     }
                 }
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
                 }
             });
-        }
-
-        else {
-
+        } else {
+            Log.i(TAG, "USER가 NULL");
 
         }
     }
-
+    // 설문조사 생성지
+//    void adminSetAnswer(){
+//
+//        String[] listAnswer = getResources().getStringArray(R.array.list_answer);
+//        String[] listAnswerHint = getResources().getStringArray(R.array.list_answerhint);
+//        List<String> answer = new ArrayList<>();
+//        List<String> answerHint = new ArrayList<>();
+//
+//        for(int i = 0 ; i < listAnswer.length ; i++){
+//            answer.add(listAnswer[i]);
+//            answerHint.add(listAnswerHint[i]);
+//        }
+//        MakeBucketList makBuketList = new MakeBucketList(answer, answerHint);
+//        bucketlistReference = database.getReference().child("bucketList");
+//        key = bucketlistReference.push().getKey();
+//        bucketlistReference.child(key).setValue(makBuketList);
+//
+//    }
 }

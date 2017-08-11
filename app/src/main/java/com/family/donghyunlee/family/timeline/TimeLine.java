@@ -10,7 +10,9 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.family.donghyunlee.family.R;
+import com.family.donghyunlee.family.bucket.Bucket;
 import com.family.donghyunlee.family.photoalbum.PhotoAlbum;
+import com.family.donghyunlee.family.setting.Setting;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,8 +24,6 @@ import butterknife.OnClick;
 
 public class TimeLine extends AppCompatActivity {
 
-    @BindView(R.id.timeline_back)
-    ImageButton timelineBack;
     @BindView(R.id.bar_photo)
     ImageButton barPhoto;
     @BindView(R.id.bar_calender)
@@ -54,15 +54,17 @@ public class TimeLine extends AppCompatActivity {
     }
     @OnClick(R.id.bar_calender)
     void calenderClick(){
-        Toast.makeText(this, "캘렌더", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(TimeLine.this, Bucket.class);
+        startActivity(intent);
     }
     @OnClick(R.id.bar_push)
     void pushClick(){
-        Toast.makeText(this, "캘렌더", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "알림", Toast.LENGTH_SHORT).show();
     }
     @OnClick(R.id.bar_setting)
     void settingClick(){
-        Toast.makeText(this, "캘렌더", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(TimeLine.this, Setting.class);
+        startActivity(intent);
     }
 
 

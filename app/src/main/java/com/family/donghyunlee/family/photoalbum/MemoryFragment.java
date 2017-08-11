@@ -69,9 +69,9 @@ public class MemoryFragment extends Fragment {
 
 
 
-    MemoryAlbumRecyclerAdapter recyclerAdapter;
-    StaggeredGridLayoutManager staggeredLayoutManager;
-    LinearLayoutManager linearLayoutManger;
+    private MemoryAlbumRecyclerAdapter recyclerAdapter;
+    private StaggeredGridLayoutManager staggeredLayoutManager;
+    private LinearLayoutManager linearLayoutManger;
     List<MemoryAlbum> items = new ArrayList<>();
     private int willChange_flag = 3;
     private static final int GRID_LAYOUT = 0;
@@ -79,13 +79,13 @@ public class MemoryFragment extends Fragment {
     private int position;
     private String albumIdBeforeSel;
     private static final int REQUESTCODEFROMINALBUM = 100;
-    FirebaseAuth mAuth;
-    FirebaseStorage storage;
-    FirebaseUser currentUser;
-    FirebaseDatabase database;
-    DatabaseReference userReference;
-    DatabaseReference groupReference;
-    DatabaseReference albumChangingReference;
+    private FirebaseAuth mAuth;
+    private FirebaseStorage storage;
+    private FirebaseUser currentUser;
+    private FirebaseDatabase database;
+    private DatabaseReference userReference;
+    private DatabaseReference groupReference;
+    private DatabaseReference albumChangingReference;
     ValueEventListener valueEventListener;
     public static MemoryFragment newInstance() {
         Bundle args = new Bundle();
@@ -95,6 +95,17 @@ public class MemoryFragment extends Fragment {
         return fragment;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        getActivity().finish();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        fabPhoto.show();
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -192,6 +203,7 @@ public class MemoryFragment extends Fragment {
                     intent.putExtra("ALBUM_ID", recyclerAdapter.getCurItem(position).getId());
                     intent.putExtra("ALBUM_POSITION", position);
                     startActivityForResult(intent, REQUESTCODEFROMINALBUM, options.toBundle());
+                    fabPhoto.hide();
                 }
                 else {
                     intent.putExtra("TITLE", recyclerAdapter.getCurItem(position).getAlbumTitle());

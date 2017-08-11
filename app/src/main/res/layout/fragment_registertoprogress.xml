@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#44000000"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="30dp"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorWhGray"
+                    card_view:cardCornerRadius="5dp"
+                    card_view:cardElevation="6dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/best_grean"
+                        android:orientation="vertical">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="80dp">
+                            <ImageView
+                                android:id="@+id/registertoprogress_profile"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:layout_marginLeft="10dp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/circle_solid_shape"
+                                android:scaleType="fitXY"
+                                android:src="@drawable/ic_profile" />
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical"
+                                android:layout_marginLeft="10dp"
+                                android:gravity="center"
+                                >
+                                <TextView   android:id="@+id/wishlist_question"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:text="가족들과 가장 가고 싶은 여름 여행지는?"
+                                    android:textColor="@color/colorWhite"
+                                    />
+
+                                <TextView   android:id="@+id/wishlist_answer"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:background="@color/transparent_black"
+                                    android:text="제주도"
+                                    android:layout_marginTop="10dp"
+                                    android:layout_marginRight="10dp"
+                                    android:textColor="@color/colorWhite"
+                                    android:layout_gravity="center"
+                                    />
+
+                            </LinearLayout>
+                        </LinearLayout>
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="2px"
+                            android:background="#40000000" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/dp_zero"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_marginTop="10dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="50dp"
+                                android:orientation="horizontal">
+
+                                <android.support.design.widget.TextInputLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="40dp"
+                                    android:hint="일정이름 "
+                                    android:background="@color/colorGray"
+                                    android:gravity="center"
+                                    android:layout_marginLeft="10dp"
+                                    android:layout_marginRight="10dp"
+                                    >
+
+                                    <EditText
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:ems="10"
+                                        android:background="@null"
+                                        />
+                                </android.support.design.widget.TextInputLayout>
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_marginTop="10dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="50dp"
+                                android:orientation="horizontal">
+
+                                <android.support.design.widget.TextInputLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="40dp"
+                                    android:hint="위치 "
+                                    android:background="@color/colorGray"
+                                    android:gravity="center"
+                                    android:layout_marginLeft="10dp"
+                                    android:layout_marginRight="10dp"
+                                    >
+
+                                    <EditText
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:ems="10"
+                                        android:background="@null"
+                                        />
+                                </android.support.design.widget.TextInputLayout>
+                                <ImageButton
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="50dp"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:text="일정"
+                                    android:gravity="center"
+                                    android:textColor="@color/colorBlack"/>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center"
+                                    android:text="2017년 8월 12일"
+                                    android:textColor="@color/colorBlack"/>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="50dp"
+                                android:orientation="horizontal">
+
+                                <android.support.design.widget.TextInputLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="50dp"
+                                    android:textColorHint="@color/colorWhGray"
+                                    android:hint="메모 "
+                                    android:gravity="center"
+                                    android:layout_marginLeft="10dp"
+                                    android:layout_marginRight="10dp"
+                                    >
+
+                                    <EditText
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:ems="10"
+                                        android:background="@null"
+                                        />
+                                </android.support.design.widget.TextInputLayout>
+                            </LinearLayout>
+
+
+
+                        </LinearLayout>
+
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="2px"
+                            android:background="#40000000" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:gravity="center">
+
+                            <TextView
+                                android:id="@+id/bucketanswer_cancel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5dp"
+                                android:onClick="onCancelClick"
+                                android:text="나중에"
+                                android:textColor="@color/colorWhite"
+                                android:textSize="@dimen/small_textsize" />
+
+                            <TextView
+                                android:id="@+id/bucketanswer_done"
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentRight="true"
+                                android:layout_marginRight="5dp"
+                                android:gravity="center"
+                                android:onClick="onDoneClick"
+                                android:text="완료"
+                                android:textColor="@color/colorWhite"
+                                android:textSize="@dimen/small_textsize" />
+                        </RelativeLayout>
+                    </LinearLayout>
+                </android.support.v7.widget.CardView>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
