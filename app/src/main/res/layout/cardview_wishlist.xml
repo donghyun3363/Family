@@ -8,9 +8,9 @@
 
     <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/cv_memory_album"
+        android:id="@+id/cv_wishlist"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:layout_margin="10dp"
         card_view:cardCornerRadius="5dp"
         card_view:cardElevation="2dp">
@@ -30,8 +30,8 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_centerInParent="true"
-                    android:layout_marginLeft="10dp"
                     android:layout_gravity="center"
+                    android:layout_marginLeft="10dp"
                     android:background="@drawable/circle_solid_shape"
                     android:scaleType="fitXY"
                     android:src="@drawable/ic_profile" />
@@ -46,23 +46,39 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <TextView
-                            android:id="@+id/wishlist_nickname"
+                        <LinearLayout
                             android:layout_width="@dimen/dp_zero"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:paddingLeft="10dp"
-                            android:paddingTop="19dp"
-                            android:text="동이"
-                            android:textColor="@color/colorBlack" />
-                        <ImageButton android:id="@+id/wishlist_delete"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/wishlist_nickname"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:paddingLeft="10dp"
+                                android:paddingTop="19dp"
+                                android:text="동이"
+                                android:textColor="@color/colorBlack" />
+
+                            <TextView
+                                android:layout_width="@dimen/dp_zero"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:paddingTop="19dp"
+                                android:text=" 가 다음 리스트를 희망합니다."
+                                android:textColor="@color/colorBlack" />
+                        </LinearLayout>
+
+                        <ImageButton
+                            android:id="@+id/wishlist_delete"
                             android:layout_width="30dp"
                             android:layout_height="30dp"
-                            android:src="@drawable/ic_delete_black"
-                            android:background="@android:color/transparent"
-                            android:scaleType="fitXY"
                             android:layout_gravity="center"
-                            android:onClick="onDeleteClick"/>
+                            android:background="@android:color/transparent"
+                            android:onClick="onDeleteClick"
+                            android:scaleType="fitXY"
+                            android:src="@drawable/ic_delete_black" />
 
                     </LinearLayout>
 
@@ -82,53 +98,57 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:background="@color/colorWhGray" />
+
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_zero"
-                android:orientation="vertical"
-                android:layout_weight="1">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="30dp"
-                    android:layout_marginTop="25dp">
-                    <TextView   android:id="@+id/wishlist_question"
+                    android:layout_marginTop="25dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/wishlist_question"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="가족들과 가장 가고 싶은 여름 여행지는?"
-                        android:textColor="@color/colorBlack"
-                        />
+                        android:textColor="@color/colorBlack" />
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:layout_marginTop="25dp">
-                        <TextView   android:id="@+id/wishlist_answer"
+                        android:layout_marginTop="25dp"
+                        android:background="@color/transparent_black"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/wishlist_answer"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@color/transparent_black"
                             android:text="제주도"
-                            android:textColor="@color/colorBlack"
-                            />
+                            android:textColor="@color/colorBlack" />
                     </LinearLayout>
                 </LinearLayout>
+
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="50dp">
+
                     <ImageButton
                         android:id="@+id/wishlist_register"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_register"
-                        android:scaleType="fitXY"
                         android:background="@android:color/transparent"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentBottom="true"
+                        android:onClick="onRegisterClick"
                         android:padding="10dp"
-                        android:onClick="onRegisterClick"/>
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_register" />
 
 
                 </RelativeLayout>

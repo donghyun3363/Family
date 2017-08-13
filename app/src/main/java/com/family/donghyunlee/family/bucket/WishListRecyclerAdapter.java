@@ -1,6 +1,7 @@
 package com.family.donghyunlee.family.bucket;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.family.donghyunlee.family.R;
@@ -74,7 +76,7 @@ public class WishListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) { // view position
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) { // view position
         WishListRecyclerItem item = items.get(position);
 
         Glide.with(context).using(new FirebaseImageLoader()).load(storageitem.get(position)).centerCrop()
@@ -90,8 +92,26 @@ public class WishListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
 
             }
         });
-    }
+        ((ViewHolder)holder).wishlistRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+                Intent intent = new Intent(context, RegisterToProgress.class);
+                intent.putExtra("IMGPROFILE", items.get(position).getImgProfilePath());
+                intent.putExtra("QUESTION", items.get(position).getQuestion());
+                intent.putExtra("ANSWER", items.get(position).getAnswer());
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+
+            }
+        });
+        ((ViewHolder)holder).wishlistDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(context, "삭제", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
 
     @Override

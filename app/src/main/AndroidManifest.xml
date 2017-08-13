@@ -73,11 +73,16 @@
         <activity android:name=".bucket.Bucket"
             android:theme="@style/MyMaterialTheme" >
         </activity>
+        <activity android:name=".bucket.Progress"
+            android:theme="@style/MyMaterialTheme" >
+        </activity>
 
         <activity android:name=".setting.Setting"
             android:theme="@style/AppTheme" >
         </activity>
-
+        <activity android:name=".bucket.RegisterToProgress"
+            android:theme="@style/Theme.AppCompat.Translucent" >
+        </activity>
     </application>
 
 </manifest>

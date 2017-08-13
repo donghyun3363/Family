@@ -1,8 +1,10 @@
-package com.family.donghyunlee.family.bucket;
+package com.family.donghyunlee.family.temp;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+
+import com.family.donghyunlee.family.bucket.WishListFragment;
 
 /**
  * Created by DONGHYUNLEE on 2017-08-09.
