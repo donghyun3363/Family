@@ -8,7 +8,7 @@
         android:id="@+id/inalbum_image"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:scaleType="fitXY"
+        android:scaleType="centerCrop"
         android:src="@drawable/img_family1" />
 
 </LinearLayout>

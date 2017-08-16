@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorWhite">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/timeline_Write_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
+                android:onClick="onBackClick"
+                android:src="@drawable/ic_back" />
+
+            <TextView
+                android:layout_width="@dimen/dp_zero"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="글쓰기"
+                android:textColor="@color/colorBlack" />
+
+            <Button
+                android:id="@+id/timeline_write_done"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
+                android:onClick="onDoneClick"
+                android:text="완료"
+                android:textColor="@color/colorWhGray"
+                android:textSize="@dimen/small_textsize" />
+        </LinearLayout>
+    </android.support.v7.widget.Toolbar>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:background="@color/colorBlack" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_zero"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorWhite"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/timeline_write_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:gravity="start"
+                    android:hint="멤버들에게 하루 이야기를 얘기해보세요!"
+                    android:padding="10dp"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="@dimen/small_textsize" />
+
+                <FrameLayout
+                    android:id="@+id/timeline_write_image_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp">
+
+                    <ImageView
+                        android:id="@+id/timeline_write_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"
+                        android:padding="10dp"
+                        android:src="@drawable/img_family1"
+                        android:scaleType="fitXY"
+                        android:visibility="gone"/>
+
+                    <ImageButton
+                        android:id="@+id/timeline_write_delete_image"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_gravity="end"
+                        android:layout_margin="20dp"
+                        android:background="@android:color/transparent"
+                        android:onClick="onDeleteClick"
+                        android:src="@drawable/ic_delete"
+                        android:visibility="gone"/>
+                </FrameLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorWhGray" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:gravity="end">
+
+        <ImageButton
+            android:id="@+id/timeline_write_img_click"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_margin="10dp"
+            android:layout_gravity="center_vertical"
+            android:background="@android:color/transparent"
+            android:onClick="onImgClick"
+            android:src="@drawable/ic_photo" />
+    </LinearLayout>
+</LinearLayout>

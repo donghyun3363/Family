@@ -1,112 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        app:contentScrim="?attr/colorPrimary">
 
-        <LinearLayout
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/timeline_appbar"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@color/light_green">
+            android:layout_height="230dp"
+            android:fitsSystemWindows="true"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-            <LinearLayout
+            <android.support.design.widget.CollapsingToolbarLayout
+                android:id="@+id/timeline_collapsing_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:fitsSystemWindows="true"
+                app:expandedTitleMarginBottom="27dp"
+                app:expandedTitleMarginEnd="50dp"
+                app:expandedTitleMarginStart="40dp"
+                app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed">
 
-                <TextView
+                <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:fitsSystemWindows="true"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/img_family1" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@color/transparent"
                     android:gravity="center"
-                    android:text="타임라인"
-                    android:textColor="@color/colorWhite" />
+                    android:orientation="horizontal"
+                    app:layout_collapseMode="pin">
 
-            </LinearLayout>
-        </LinearLayout>
+                    <TextView
+                        android:id="@+id/timeline_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="타이틀과 사진을 설정해보세요"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="16dp" />
 
-        <View
+                    <ImageButton
+                        android:id="@+id/timeline_edit"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="10dp"
+                        android:background="@android:color/transparent"
+                        android:src="@drawable/ic_write" />
+
+                </RelativeLayout>
+            </android.support.design.widget.CollapsingToolbarLayout>
+
+
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_timeline"
             android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:layout_above="@+id/bottom_navigation"
-            android:background="@drawable/bar_shape" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_zero"
-            android:layout_weight="1">
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:layout_above="@+id/bottom_navigation"
-            android:background="@drawable/bar_shape" />
+            android:layout_height="match_parent"
+            android:background="@color/colorWhGray"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
         <LinearLayout
             android:id="@+id/timeline_bottom"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            app:layout_behavior="@string/bottom_sheet_behavior">
+
             <LinearLayout
                 android:layout_width="match_parent"
-                android:background="@color/light_green"
                 android:layout_height="50dp"
+                android:background="@color/main_color"
                 android:orientation="horizontal">
 
                 <ImageButton
                     android:id="@+id/bar_photo"
-                    android:src="@drawable/ic_bar_photo_white"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
+                    android:layout_gravity="center"
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
-                    android:layout_gravity="center"
                     android:onClick="photoClick"
-                    />
+                    android:src="@drawable/ic_bar_photo_white" />
 
                 <ImageButton
                     android:id="@+id/bar_calender"
-                    android:src="@drawable/ic_event"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
+                    android:layout_gravity="center"
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
-                    android:layout_gravity="center"
                     android:onClick="calenderClick"
-                    />
+                    android:src="@drawable/ic_event" />
 
                 <ImageButton
                     android:id="@+id/bar_push"
-                    android:src="@drawable/ic_bar_photo_white"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
+                    android:layout_gravity="center"
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
-                    android:layout_gravity="center"
                     android:onClick="pushClick"
-                    />
+                    android:src="@drawable/ic_bar_photo_white" />
+
                 <ImageButton
                     android:id="@+id/bar_setting"
-                    android:src="@drawable/ic_set_white"
                     android:layout_width="25dp"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
-                    android:layout_gravity="center"
                     android:onClick="settingClick"
-                    />
+                    android:src="@drawable/ic_set_white" />
 
             </LinearLayout>
-
-
-
         </LinearLayout>
 
-    </LinearLayout>
-</FrameLayout>
+
+    </android.support.design.widget.CoordinatorLayout>
+</RelativeLayout>

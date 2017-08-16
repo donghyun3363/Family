@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
                         finish();
                     } else{
                         Intent intent = new Intent(getApplicationContext(), TimeLine.class);
+                        intent.putExtra("ISFIRSTTIME?", false);
                         startActivity(intent);
                         finish();
                     }

@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.family.donghyunlee.family.R;
 import com.family.donghyunlee.family.data.ToProgressItem;
+import com.family.donghyunlee.family.data.User;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -27,8 +28,11 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
@@ -37,6 +41,7 @@ import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -91,6 +96,18 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
     private static final String TAG = RegisterToProgress.class.getSimpleName();
     private SharedPreferences pref;
     private String groupId;
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
+    private StorageReference pathRef;
+    private String storageProfileFolder;
+    private String imgProfile;
+    private String question;
+    private String answer;
+    private int item_position;
+    private long now;
+    private Date date;
+    private SimpleDateFormat CurDateFormat;
+
     @OnClick(R.id.toprogress_map)
     void onMapClick(){
         try {
@@ -131,7 +148,12 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
     }
     @OnClick(R.id.toprogress_done)
     void onDoneClick(){
-
+        // Bucket 액티비티에 보낼 번들
+        Intent sendIntent = new Intent(this, Bucket.class);
+        Bundle bundle = new Bundle();
+        bundle.putInt("POSITION", item_position);
+        sendIntent.putExtras(bundle);
+        setResult(RESULT_OK, sendIntent);
         if(!validateForm()){
             return;
         }
@@ -148,16 +170,6 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
         finish();
     }
 
-    private FirebaseStorage storage;
-    private StorageReference storageRef;
-    private StorageReference pathRef;
-    private String storageProfileFolder;
-    private String imgProfile;
-    private String question;
-    private String answer;
-    private long now;
-    private Date date;
-    private SimpleDateFormat CurDateFormat;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -178,6 +190,7 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
         imgProfile =(String) intent.getSerializableExtra("IMGPROFILE");
         question = (String) intent.getSerializableExtra("QUESTION");
         answer = (String) intent.getSerializableExtra("ANSWER");
+        item_position = (int) intent.getSerializableExtra("POSITION");
         storage = FirebaseStorage.getInstance();
         storageProfileFolder = getResources().getString(R.string.storage_profiles_folder);
         storageRef = storage.getReferenceFromUrl(getResources().getString(R.string.firebase_storage));
@@ -287,46 +300,77 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
         public Long result = null;
         private DatabaseReference shareReference;
         private DatabaseReference individualReference;
+        private DatabaseReference userReference;
         private FirebaseAuth mAuth;
         private FirebaseUser currentUser;
         private String key;
-        private  ToProgressItem toProgressItem;
+        private ToProgressItem toProgressItem;
+        private User curUser;
+
+        private long now;
+        private Date date;
+        private SimpleDateFormat CurDateFormat;
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             mAuth = FirebaseAuth.getInstance();
             database = FirebaseDatabase.getInstance();
             currentUser = mAuth.getCurrentUser();
+            userReference = database.getReference().child("groups").child(groupId).child("members");
             shareReference = database.getReference().child("groups").child(groupId).child("shareBucket");
-            individualReference = database.getReference().child("groups").child(groupId).child("individualBucket");
-            //(String title, String location, String startDate, String endDate, String startTime,
+            individualReference = database.getReference().child("groups").child(groupId).child("members")
+                    .child(currentUser.getUid()).child("individualBucket");
+            now = System.currentTimeMillis();
+            date = new Date(now);
+            CurDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일");
+            //String userId, String profilePath, String nickName, String date
+            // String title, String location, String startDate, String endDate, String startTime,
             // String endTime, String memo, boolean shareCheck, boolean withCheck)
-//            Log.i(TAG, ">>>>>      " + toprogressTitle.getText().toString());
-//            Log.i(TAG, ">>>>>      " + toprogressLocation.getTransitionName().toString());
-//            Log.i(TAG, ">>>>>      " + toprogressTitle.getText().toString());
-//            Log.i(TAG, ">>>>>      " + toprogressTitle.getText().toString());
-//            Log.i(TAG, ">>>>>      " + toprogressTitle.getText().toString());
-//            Log.i(TAG, ">>>>>      " + toprogressTitle.getText().toString());
-//            Log.i(TAG, ">>>>>      " + toprogressTitle.getText().toString());
 
-            toProgressItem = new ToProgressItem(toprogressTitle.getText().toString(), toprogressLocation.getText().toString()
-                    , toprogressStartDate.getText().toString(), toprogressEndDate.getText().toString(), toprogressStartTime.getText().toString()
-                    , toprogressEndTime.getText().toString(), toprogressMemo.getText().toString(), toprogressShareSwitch.isChecked(), toprogressWithSwitch.isChecked());
-
+            toProgressItem = new ToProgressItem(null, null, null
+                    , CurDateFormat.format(date),toprogressTitle.getText().toString(), toprogressLocation.getText().toString()
+                    , toprogressStartDate.getText().toString(), toprogressEndDate.getText().toString()
+                    , toprogressStartTime.getText().toString(), toprogressEndTime.getText().toString()
+                    , toprogressMemo.getText().toString(), toprogressShareSwitch.isChecked(), toprogressWithSwitch.isChecked());
         }
 
         @Override
-        protected Long doInBackground(Integer... params) {
+        protected Long doInBackground(final Integer... params) {
             // members user id를 가져와서 user에 대한 qeustion과 answer을 가져온다.
-            if (params[0].intValue() == SHARETOSERVER) {
-                key = shareReference.push().getKey();
-                shareReference.child(key).setValue(toProgressItem);
-                return result;
-            }
-            else if(params[0].intValue() == INDIVIDUALTOSERVER){
-                key = shareReference.push().getKey();
-                shareReference.child(key).setValue(toProgressItem);
-            }
+
+            userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
+                    while(child.hasNext()){
+                        User user = child.next().getValue(User.class);
+                        if(currentUser.getUid().equals(user.getId())){
+                            curUser = user;
+                            toProgressItem.setUserId(curUser.getId());
+                            toProgressItem.setProfilePath(curUser.getUserImage());
+                            toProgressItem.setNickName(curUser.getUserNicname());
+                            break;
+                        }
+                    }
+                    if (params[0].intValue() == SHARETOSERVER) {
+                        key = shareReference.push().getKey();
+                        shareReference.child(key).setValue(toProgressItem);
+                        return;
+                    }
+                    else if(params[0].intValue() == INDIVIDUALTOSERVER){
+                        key = individualReference.push().getKey();
+                        individualReference.child(key).setValue(toProgressItem);
+                        return;
+                    }
+
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+
 
             if (this.isCancelled()) {
                 return null;

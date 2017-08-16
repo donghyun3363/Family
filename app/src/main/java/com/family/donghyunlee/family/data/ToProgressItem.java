@@ -5,7 +5,7 @@ package com.family.donghyunlee.family.data;
  */
 
 public class ToProgressItem {
-
+    private String userId;
     private String title;
     private String location;
     private String startDate;
@@ -13,15 +13,23 @@ public class ToProgressItem {
     private String startTime;
     private String endTime;
     private String memo;
+    private String date;
+    private String nickName;
     private boolean shareCheck;
     private boolean withCheck;
-    private String imgPath; // 아직
+    private String profilePath;
 
     public ToProgressItem() {
 
     }
-
-    public ToProgressItem(String title, String location, String startDate, String endDate, String startTime, String endTime, String memo, boolean shareCheck, boolean withCheck) {
+//    ToProgressItem(curUser.getId(), curUser.getUserImage(), curUser.getUserNicname(),toprogressTitle.getText().toString(), toprogressLocation.getText().toString()
+//                    , toprogressStartDate.getText().toString(), toprogressEndDate.getText().toString(), toprogressStartTime.getText().toString()
+//                    , toprogressEndTime.getText().toString(), toprogressMemo.getText().toString(), toprogressShareSwitch.isChecked(), toprogressWithSwitch.isChecked());
+//}
+    public ToProgressItem(String userId, String profilePath, String nickName, String date, String title,
+                          String location, String startDate, String endDate, String startTime,
+                          String endTime, String memo, boolean shareCheck, boolean withCheck) {
+        this.userId = userId;
         this.title = title;
         this.location = location;
         this.startDate = startDate;
@@ -31,6 +39,25 @@ public class ToProgressItem {
         this.memo = memo;
         this.shareCheck = shareCheck;
         this.withCheck = withCheck;
+        this.profilePath = profilePath;
+        this.date = date;
+        this.nickName = nickName;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public String getProfilePath() {
+        return profilePath;
     }
 
     public String getTitle() {
@@ -69,10 +96,9 @@ public class ToProgressItem {
         return withCheck;
     }
 
-    public String getImgPath() {
-        return imgPath;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
-
     public void setTitle(String title) {
         this.title = title;
     }
@@ -109,7 +135,16 @@ public class ToProgressItem {
         this.withCheck = withCheck;
     }
 
-    public void setImgPath(String imgPath) {
-        this.imgPath = imgPath;
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public void setProfilePath(String profilePath) {
+        this.profilePath = profilePath;
     }
 }

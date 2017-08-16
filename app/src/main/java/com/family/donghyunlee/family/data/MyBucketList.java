@@ -11,10 +11,12 @@ import java.util.List;
 */
  public class MyBucketList {
 
-    private String userId;
-    private String date;
+
     private List<String> answer;
+    private String date;
     private List<String> question;
+    private String userId;
+
     public MyBucketList(){
 
     }

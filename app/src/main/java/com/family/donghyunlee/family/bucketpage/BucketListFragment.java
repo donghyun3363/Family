@@ -182,6 +182,8 @@ public class BucketListFragment extends Fragment {
                 }
                 MyBucketList myBucketList = new MyBucketList(currentUser.getUid(), CurDateFormat.format(date), sendAnswer, sendQuestion);
                 userReference.setValue(myBucketList);
+                userReference = database.getReference().child("users").child(currentUser.getUid()).child("isBucket");
+                userReference.setValue(1); // 1이 있는 것을 말함.
                 return result;
             }
 

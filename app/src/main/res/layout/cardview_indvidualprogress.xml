@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorWhGray"
     android:orientation="vertical">
 
 
-    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    <android.support.v7.widget.CardView
         android:id="@+id/cv_individualprogress"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="380dp"
         android:layout_margin="10dp"
         card_view:cardCornerRadius="5dp"
         card_view:cardElevation="2dp">
@@ -26,7 +26,7 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:id="@+id/wishlist_profile"
+                    android:id="@+id/individual_profile"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_centerInParent="true"
@@ -47,7 +47,7 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/wishlist_nickname"
+                            android:id="@+id/individual_nickname"
                             android:layout_width="@dimen/dp_zero"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -57,7 +57,7 @@
                             android:textColor="@color/colorBlack" />
 
                         <ImageButton
-                            android:id="@+id/wishlist_delete"
+                            android:id="@+id/individual_delete"
                             android:layout_width="30dp"
                             android:layout_height="30dp"
                             android:layout_gravity="center"
@@ -69,10 +69,10 @@
                     </LinearLayout>
 
                     <TextView
-                        android:id="@+id/wishlist_date"
+                        android:id="@+id/individual_date"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
+                        android:layout_marginTop="5dp"
                         android:paddingLeft="10dp"
                         android:text="0000년 00월 00일"
                         android:textColor="@color/colorBlack"
@@ -86,6 +86,7 @@
                 android:background="@color/colorWhGray" />
 
             <LinearLayout
+                android:id="@+id/individual_hide_container"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_zero"
                 android:layout_weight="1"
@@ -94,9 +95,9 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginRight="30dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="20dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -105,7 +106,100 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="엄마에게 맛있는 밥 해드리기"
-                        android:textColor="@color/colorBlack" />
+                        android:textColor="@color/colorBlack"
+                        android:textSize="20dp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2px"
+                        android:layout_marginTop="20dp"
+                        android:background="@color/colorWhGray" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_gravity="center"
+                                android:layout_marginRight="10dp"
+                                android:src="@drawable/ic_time" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:gravity=""
+                                android:text="일정 :"
+                                android:textColor="@color/colorBlack" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="30dp">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/individual_startdate"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center_vertical"
+                                    android:text="2017.08.13"
+                                    android:textColor="@color/colorBlack" />
+
+                                <TextView
+                                    android:id="@+id/individual_starttime"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center"
+                                    android:text="18:00"
+                                    android:textColor="@color/colorBlack" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/individual_dump"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="10dp"
+                                android:gravity="center_vertical"
+                                android:text="~"
+                                android:textColor="@color/colorBlack" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/individual_enddate"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="10dp"
+                                    android:gravity="center_vertical"
+                                    android:text="2017.08.13"
+                                    android:textColor="@color/colorBlack" />
+
+                                <TextView
+                                    android:id="@+id/individual_endtime"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center"
+                                    android:text="18:00"
+                                    android:textColor="@color/colorBlack" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
@@ -116,59 +210,11 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp">
+                        android:layout_marginTop="20dp">
 
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginRight="10dp"
-                            android:src="@drawable/ic_time" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:gravity=""
-                            android:text="일정 :"
-                            android:textColor="@color/colorBlack" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_marginLeft="10dp"
-                            android:gravity="center_vertical"
-                            android:text="2017.08.13"
-                            android:textColor="@color/colorBlack" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_marginLeft="10dp"
-                            android:gravity="center_vertical"
-                            android:text="~"
-                            android:textColor="@color/colorBlack" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_marginLeft="10dp"
-                            android:gravity="center_vertical"
-                            android:text="2017.08.13"
-                            android:textColor="@color/colorBlack" />
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="2px"
-                        android:background="@color/colorWhGray" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp">
-
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
                             android:layout_marginRight="10dp"
                             android:src="@drawable/ic_location" />
 
@@ -180,10 +226,10 @@
                             android:textColor="@color/colorBlack" />
 
                         <TextView
-                            android:id="@+id/textView"
+                            android:id="@+id/individual_location"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_marginLeft="10dp"
+                            android:layout_marginLeft="30dp"
                             android:gravity="center_vertical"
                             android:text="우리 집"
                             android:textColor="@color/colorBlack" />
@@ -192,38 +238,37 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="2px"
-                        android:background="@color/colorWhGray" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="2px"
+                        android:layout_marginTop="10dp"
                         android:background="@color/colorWhGray" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/dp_zero"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="20dp"
                         android:layout_weight="1">
 
-                        <ImageView
-                            android:id="@+id/imageView"
+                        <LinearLayout
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginRight="10dp"
-                            android:src="@drawable/ic_memo" />
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginRight="10dp"
+                                android:src="@drawable/ic_memo" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:text="메모 :"
+                                android:textColor="@color/colorBlack" />
+                        </LinearLayout>
 
                         <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:paddingTop="10dp"
-                            android:text="메모 :"
-                            android:textColor="@color/colorBlack" />
-
-                        <TextView
+                            android:id="@+id/individual_memo"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_marginLeft="10dp"
-                            android:paddingTop="10dp"
+                            android:layout_marginLeft="30dp"
                             android:text="떡볶이 메뉴 예정 / 재료 사오기"
                             android:textColor="@color/colorBlack" />
 
@@ -248,24 +293,13 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="5dp"
-                        android:gravity="center"
-                        android:padding="5dp"
-                        android:text="완수"
-                        android:textColor="@color/colorBlack" />
-
-                    <ImageButton
+                    <CheckBox
                         android:id="@+id/individual_check"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:background="@android:color/transparent"
-                        android:onClick="onRegisterClick"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/ic_check_before" />
+                        android:layout_marginLeft="10dp"
+                        android:text="수행 완료" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -284,7 +318,7 @@
                         android:textColor="@color/colorBlack" />
 
                     <Switch
-                        android:id="@+id/individual_check2"
+                        android:id="@+id/individual_hide"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center" />

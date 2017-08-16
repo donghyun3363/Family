@@ -31,7 +31,7 @@
 
 
         <activity android:name=".MainActivity"
-            android:theme="@style/NoStateTheme">
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -63,7 +63,7 @@
 
         </activity>
         <activity android:name=".timeline.TimeLine"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/AppTheme.NoActionBar" >
         </activity>
 
         <activity android:name=".photoalbum.InAlbum"
@@ -79,6 +79,10 @@
 
         <activity android:name=".setting.Setting"
             android:theme="@style/AppTheme" >
+        </activity>
+        <activity android:name=".timeline.TimelineWrite"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
         <activity android:name=".bucket.RegisterToProgress"
             android:theme="@style/Theme.AppCompat.Translucent" >

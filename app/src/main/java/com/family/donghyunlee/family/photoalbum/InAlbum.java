@@ -145,7 +145,7 @@ public class InAlbum extends AppCompatActivity {
         SharedPreferences pref = getSharedPreferences("pref", MODE_PRIVATE);
         // sharedreference에서 가져오기
         groupId = pref.getString("groupId", "");
-        Log.e("111111111111111", "groupId : " + groupId);
+
         // Fragment에 받는 객체
         Intent intent = getIntent();
         titleInalbumPhoto.setText((String) intent.getSerializableExtra("TITLE"));

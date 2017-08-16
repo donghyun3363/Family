@@ -26,4 +26,15 @@
     <color name="tea_grean">#88B04B</color>
     <color name="best_grean">#93b658</color>
     <color name="best_violet">#a76dd3</color>
+
+
+    <color name="main_color">#4CB856</color>
+    <color name="main_color_dark">#43A047</color>
+    <color name="main_color_light">#66BB6A</color>
+    <color name="main_color_light_a">#00C853</color>
+
+
+    <!-- For settings framework -->
+    <color name="lighter_gray">#ddd</color>
+    <color name="darker_gray">#aaa</color>
 </resources>

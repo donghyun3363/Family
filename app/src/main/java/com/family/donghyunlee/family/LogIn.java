@@ -101,6 +101,7 @@ public class LogIn extends AppCompatActivity {
         // 이메일, 패스퉈드 유효성 검사
         if (validateForm() == false)
             return;
+        Log.i(TAG, ">>>>>                    ?????");
         email = loginEmail.getText().toString();
         password = loginPassword.getText().toString();
 
@@ -167,6 +168,7 @@ public class LogIn extends AppCompatActivity {
                                 Intent intent = new Intent(getApplicationContext(), TimeLine.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                intent.putExtra("ISFIRSTTIME?", false);
                                 startActivity(intent);
                                 finish();
                             }

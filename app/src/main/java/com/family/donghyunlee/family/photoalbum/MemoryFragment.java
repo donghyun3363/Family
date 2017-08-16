@@ -110,7 +110,6 @@ public class MemoryFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.e("!!!!!", "requestCode:" + requestCode + "!! resultcoed" + resultCode);
         switch (requestCode) {
 
             case REQUESTCODEFROMINALBUM: {
@@ -161,7 +160,7 @@ public class MemoryFragment extends Fragment {
         // 서버에서 앨범을 얻음
 
         actionLayoutShape();    // 리사이클러뷰 생성 및 레이아웃 셋팅(Item 등)
-        itemTochListener();
+        itemTouchListener();
         getAlbum();
         return v;
     }
@@ -178,7 +177,7 @@ public class MemoryFragment extends Fragment {
         groupReference = database.getReference("groups");
     }
 
-    private void itemTochListener() {
+    private void itemTouchListener() {
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getContext(), recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {

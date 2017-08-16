@@ -55,6 +55,7 @@ public class Bucket extends AppCompatActivity{
     @BindView(R.id.progress)
     ImageButton progress;
 
+    private static final int REQUSETCODE_INADAPTER = 1;
     private static final String TAG = Bucket.class.getSimpleName();
     private static final int GETDATAFROMSERVER= 0;
     private static final int SETDATATOSERVER= 1;
@@ -66,13 +67,19 @@ public class Bucket extends AppCompatActivity{
     private String groupId;
     private List<String> answerList;
     private List<String> questionList;
+    private int item_position;
 
     @OnClick(R.id.progress)
     void onProgressClick(){
         Intent intent = new Intent(Bucket.this, Progress.class);
         startActivity(intent);
     }
+    @OnClick(R.id.fab_bucket)
+    void onFabClick(){
 
+
+
+    }
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,10 +89,10 @@ public class Bucket extends AppCompatActivity{
         if (Build.VERSION.SDK_INT >= 21) {   //상태바 색상 변경
             getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.light_green));
         }
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("버킷 공간");
-
         items = new ArrayList<>();
         pref = getSharedPreferences("pref", MODE_PRIVATE);
         groupId = pref.getString("groupId", "");
@@ -93,17 +100,34 @@ public class Bucket extends AppCompatActivity{
         database = FirebaseDatabase.getInstance();
 
         new AccessDatabaseTask().execute(GETDATAFROMSERVER);
+        actionLayoutShape();
 
-        linearLayoutManager = new LinearLayoutManager(getBaseContext());
-        recyclerAdapter = new WishListRecyclerAdapter(getBaseContext(), items, R.layout.fragment_wishlist, groupId);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(recyclerAdapter);
 
 
 
     }
 
+    private void actionLayoutShape() {
+        // Linear 레이아웃매니저 setting
+        linearLayoutManager = new LinearLayoutManager(this);
+        // 리사이클러뷰 setting
+        recyclerAdapter = new WishListRecyclerAdapter(this, items, R.layout.fragment_wishlist, groupId);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(recyclerAdapter);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUSETCODE_INADAPTER) {
+            if (resultCode == RESULT_OK) {
+                Bundle bundle = data.getExtras();
+                item_position = bundle.getInt("POSITION");
+                recyclerAdapter.notifyItemRemoved(item_position);
+            } else if (resultCode == RESULT_CANCELED) {
+                Log.e(TAG, ">>>>>>      onActivityResult canceled");
+            }
+        }
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         return super.onCreateOptionsMenu(menu);
@@ -125,6 +149,7 @@ public class Bucket extends AppCompatActivity{
         private DatabaseReference groupReference;
         private FirebaseAuth mAuth;
         private FirebaseUser currentUser;
+
         private MyBucketList myBucketList;
         private WishListRecyclerItem item;
         private FirebaseStorage storage;
@@ -132,6 +157,7 @@ public class Bucket extends AppCompatActivity{
         private StorageReference pathRef;
         private ArrayList<StorageReference> storageItems;
         private String storageProfileFolder;
+        private String temp_userId;
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -153,23 +179,22 @@ public class Bucket extends AppCompatActivity{
                 groupReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
+                        Iterator<DataSnapshot> child = dataSnapshot.child(currentUser.getUid())
+                                .child("elseBucketAnswer").getChildren().iterator();
                         while(child.hasNext()){
-                            User user = child.next().getValue(User.class);
-                            if(!user.getId().equals(currentUser.getUid())){
-
-                                myBucketList = child.next().child("myBucketAnswer").getValue(MyBucketList.class);
-                                questionList = myBucketList.getQuestion();
-                                answerList = myBucketList.getAnswer();
+                            myBucketList = child.next().getValue(MyBucketList.class);
+                            temp_userId = myBucketList.getUserId();
+                            questionList = myBucketList.getQuestion();
+                            answerList = myBucketList.getAnswer();
+                            User temp_user = dataSnapshot.child(temp_userId).getValue(User.class);
+                            int firstSize = Math.min(questionList.size(), answerList.size());
+                            for(int i = 0 ; i < firstSize ; i++){
                                 //int imgProfilePath, String nickName, String date, String question, String answer
-                                for(int i = 0 ; i < questionList.size() ; i++){
-                                    item = new WishListRecyclerItem(user.getUserImage(), user.getUserNicname(), myBucketList.getDate(),
-                                            questionList.get(i), answerList.get(i));
-                                    pathRef = storageRef.child(storageProfileFolder + "/" + user.getUserImage());
-                                    storageItems.add(pathRef);
-                                    items.add(item);
-                                }
-                                // 이미지 스토리지 접근
+                                item = new WishListRecyclerItem(temp_user.getUserImage(), temp_user.getUserNicname(), myBucketList.getDate(),
+                                        questionList.get(i), answerList.get(i));
+                                pathRef = storageRef.child(storageProfileFolder + "/" + temp_user.getUserImage());
+                                storageItems.add(pathRef);
+                                items.add(item);
                             }
                         }
                         recyclerAdapter.setStorageitem(storageItems);
@@ -185,16 +210,6 @@ public class Bucket extends AppCompatActivity{
 
                 return result;
             }
-//            else if (params[0].intValue() == SETDATAINTOSERVER)   {
-//                List<String> answer = new ArrayList<>();
-//                answerData = recyclerAdapter.getAnswer();
-//                for(int i = 0 ; i < answerData.length ; i++){
-//                    answer.add(answerData[i]);
-//                }
-//                userReference.setValue(answer);
-//                return result;
-//            }
-
             if (this.isCancelled()) {
                 return null;
             }

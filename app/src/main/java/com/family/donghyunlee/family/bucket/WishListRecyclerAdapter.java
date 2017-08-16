@@ -1,5 +1,6 @@
 package com.family.donghyunlee.family.bucket;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 /**
@@ -29,12 +31,13 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
  */
 public class WishListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = WishListRecyclerAdapter.class.getSimpleName();
+    private static final int REQUSETCODE_INADAPTER = 1;
     private Context context;
     private List<WishListRecyclerItem> items;
     private int item_layout;
     private String groupId;
     private ArrayList<StorageReference> storageitem;
-
+    private Context getContext;
     public WishListRecyclerAdapter(Context context, List<WishListRecyclerItem> items, int item_layout, String groupId) {
         this.context = context;
         this.items = items;
@@ -96,18 +99,32 @@ public class WishListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
             @Override
             public void onClick(View v) {
 
+                Activity origin = (Activity)context;
+
                 Intent intent = new Intent(context, RegisterToProgress.class);
                 intent.putExtra("IMGPROFILE", items.get(position).getImgProfilePath());
                 intent.putExtra("QUESTION", items.get(position).getQuestion());
                 intent.putExtra("ANSWER", items.get(position).getAnswer());
+                intent.putExtra("POSITION", position);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
-
+                origin.startActivityForResult(intent, REQUSETCODE_INADAPTER);
             }
         });
         ((ViewHolder)holder).wishlistDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("정말 삭제하시겠습니까?")
+                        .setContentText("삭제되면 복구되지 않습니다.")
+                        .setConfirmText("삭제되었습니다.")
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sDialog) {
+                                sDialog.dismissWithAnimation();
+                            }
+                        })
+                        .show();
+
                 Toast.makeText(context, "삭제", Toast.LENGTH_SHORT).show();
             }
         });
