@@ -17,13 +17,13 @@
 
             <ImageButton
                 android:id="@+id/imageButton_direct"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
                 android:cropToPadding="true"
                 android:scaleType="fitXY"
-                android:src="@drawable/ic_profile" />
+                android:src="@drawable/ic_user" />
 
             <TextView
                 android:id="@+id/textView_direct"
@@ -33,13 +33,13 @@
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
                 android:text="초대하기"
-                android:textSize="12sp" />
+                android:textSize="@dimen/small_textsize" />
         </LinearLayout>
 
         <View
             android:layout_width="2px"
             android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="5dp"
             android:layout_marginRight="0dp"
             android:layout_weight="1"
             android:background="@color/colorWhGray" />

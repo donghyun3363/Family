@@ -258,16 +258,11 @@ public class MemoryFragment extends Fragment {
     @OnClick(R.id.fab_photo)
     void onFabClick() {
         AlertDialog.Builder dialog = createDialog();
-
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(LAYOUT_INFLATER_SERVICE);
         View layout = inflater.inflate(R.layout.dialog_make_meomory_album, (ViewGroup) getActivity().findViewById(R.id.popup_memory_root));
         inputTitle = (EditText) layout.findViewById(R.id.popup_memory_input);
         dialog.setView(layout);
-
-
         dialog.show();
-
-
 
     }
 

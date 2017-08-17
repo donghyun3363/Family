@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
+
+    <item
+        android:id="@+id/menu_edit_title"
+        android:orderInCategory="100"
+        android:title="타이틀 이름 변경"
+        />
+
+    <item
+        android:id="@+id/menu_edit_titleimage"
+        android:orderInCategory="100"
+        android:title="타이틀 사진 변경"
+        />
+    <item
+        android:id="@+id/menu_edit_reset"
+        android:orderInCategory="100"
+        android:title="되돌리기"
+        />
+</menu>

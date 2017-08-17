@@ -30,9 +30,29 @@
 
     <color name="main_color">#4CB856</color>
     <color name="main_color_dark">#43A047</color>
-    <color name="main_color_light">#66BB6A</color>
-    <color name="main_color_light_a">#00C853</color>
 
+    <color name="main_color_dark_b">#43A047</color>
+    <color name="main_color_dark_c">#388E3C</color>
+    <color name="main_color_dark_d">#2E7D32</color>
+    <color name="main_color_dark_e">#1B5E20</color>
+
+
+    <color name="main_color_light_a">#66BB6A</color>
+    <color name="main_color_light_b">#81C784</color>
+    <color name="main_color_light_c">#A5D6A7</color>
+    <color name="main_color_light_d">#C8E6C9</color>
+    <color name="main_color_light_e">#E8F5E9</color>
+
+    <color name="second_color_light_a">#00C853</color>
+    <color name="second_color_light_b">#00E676</color>
+    <color name="second_color_light_c">#69F0AE</color>
+
+    <color name="main_color_ivory">#F3EEE3</color>
+    <color name="main_color_darkgray">#666666</color>
+    <color name="main_color_lightgray">#BDBDBD</color>
+    <color name="main_color_gray">#9E9E9E</color>
+    <color name="main_color_background_gray">#FFD3D3D3</color>
+    <color name="main_color_font">#323333</color>
 
     <!-- For settings framework -->
     <color name="lighter_gray">#ddd</color>

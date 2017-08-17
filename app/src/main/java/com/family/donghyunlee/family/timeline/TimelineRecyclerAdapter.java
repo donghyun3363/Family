@@ -8,9 +8,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.family.donghyunlee.family.R;
@@ -78,8 +79,9 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
         mChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Toast.makeText(mContext, "추가 + 길이" + items.size(), Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
-                mTimelineIds.add(dataSnapshot.getKey());
+                mTimelineIds.add(0, dataSnapshot.getKey());
                 TimeLineItem timeLineItem = dataSnapshot.getValue(TimeLineItem.class);
                 items.add(0, timeLineItem);
                 notifyDataSetChanged();
@@ -88,7 +90,7 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+                Toast.makeText(mContext, "변경", Toast.LENGTH_SHORT).show();
                 TimeLineItem newTimeLineItem = dataSnapshot.getValue(TimeLineItem.class);
                 String timelineCardKey = dataSnapshot.getKey();
 
@@ -108,6 +110,8 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                Toast.makeText(mContext, "제거 + " +items.size(), Toast.LENGTH_SHORT).show();
                 String timelineCardKey = dataSnapshot.getKey();
                 // [START_EXCLUDE]
                 int timelineIndex = mTimelineIds.indexOf(timelineCardKey);
@@ -116,7 +120,9 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
                     mTimelineIds.remove(timelineIndex);
                     items.remove(timelineIndex);
                     // Update the RecyclerView
-                    notifyItemRemoved(timelineIndex);
+                   // Log.d(TAG, ">>>>>      items: "  +items.get(timelineIndex).getTimeline_date() + "/ index:" + timelineIndex );
+
+                    notifyItemRemoved(timelineIndex+1);
                 } else {
                     Log.w(TAG, "onChildRemoved:unknown_child:" + timelineCardKey);
                 }
@@ -148,10 +154,13 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
         TextView timelineLikeCnt;
         ImageView timelineContentImage;
 
+        // footer의 view
+        ImageView timelineFooterIcon;
+
         // Header 의 view components
         RecyclerView rv_profile;
         TextView tlHeaderContainer;
-        ImageButton tlHeaderAddimage;
+        LinearLayout tlHeaderAddimage;
 
         // viewType 에 따른 viewHolder 정의
         public TimelineViewHolder(View itemView, int viewType) {
@@ -166,11 +175,12 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
                 rv_profile = (RecyclerView) itemView.findViewById(R.id.rv_profile);
                 tlHeaderContainer = (TextView) itemView.findViewById(R.id.tl_header_container);
                 tlHeaderContainer.setOnClickListener(this);
-                tlHeaderAddimage = (ImageButton) itemView.findViewById(R.id.tl_header_addimage);
+                tlHeaderAddimage = (LinearLayout) itemView.findViewById(R.id.tl_header_addimage);
                 tlHeaderAddimage.setOnClickListener(this);
 
             }
             if (TYPE_FOOTER == viewType) {
+                timelineFooterIcon = (ImageView) itemView.findViewById(R.id.timelinefootericon);
 
             } else {
                 timelineNickname = (TextView) itemView.findViewById(R.id.timeline_nickname);
@@ -249,7 +259,7 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
         if (holder.mViewType == TYPE_HEADER) {
             bindHeaderItem(holder);
         } else if (holder.mViewType == TYPE_FOOTER) {
-
+            Glide.with(mContext).load(R.drawable.ic_icon_font).crossFade().into(holder.timelineFooterIcon);
         }
         // 2. body data bind
         else {
