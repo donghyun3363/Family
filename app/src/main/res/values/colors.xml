@@ -29,6 +29,7 @@
 
 
     <color name="main_color">#4CB856</color>
+    <color name="main_color_trans">#8843a047</color>
     <color name="main_color_dark">#43A047</color>
 
     <color name="main_color_dark_b">#43A047</color>

@@ -88,6 +88,12 @@
         <activity android:name=".bucket.RegisterToProgress"
             android:theme="@style/Theme.AppCompat.Translucent" >
         </activity>
-    </application>
 
+        <activity android:name=".timeline.Comment"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize|stateVisible">
+        </activity>
+
+
+    </application>
 </manifest>

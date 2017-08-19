@@ -57,6 +57,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:fitsSystemWindows="true"
+                    android:scaleType="centerCrop"
                     app:layout_collapseMode="parallax"/>
 
 
@@ -75,7 +76,7 @@
                             android:gravity="center_vertical"
                             android:padding="10dp"
                             android:text="We are Fam !"
-                            android:textColor="@color/colorWhite"
+                            android:textColor="@color/main_color_dark"
                             android:textSize="25sp" />
 
                         <ImageButton
@@ -85,6 +86,7 @@
                             android:layout_alignParentRight="true"
                             android:layout_centerVertical="true"
                             android:layout_marginRight="10dp"
+                            android:scaleType="centerCrop"
                             android:background="@android:color/transparent"
                             android:src="@drawable/ic_main_edit"
                             android:onClick="onEditClick"/>

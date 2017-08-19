@@ -80,6 +80,8 @@ dependencies {
     // Overscroll
     compile 'me.everything:overscroll-decor-android:1.0.4'
 
+    // button
+    compile 'com.sackcentury:shinebutton:0.1.9'
 
 }
 

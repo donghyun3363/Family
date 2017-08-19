@@ -2,8 +2,6 @@ package com.family.donghyunlee.family.timeline;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -21,9 +19,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.family.donghyunlee.family.PhotoSel;
 import com.family.donghyunlee.family.R;
+import com.family.donghyunlee.family.data.IsCheck;
 import com.family.donghyunlee.family.data.TimeLineItem;
+import com.family.donghyunlee.family.data.TimelineCountItem;
 import com.family.donghyunlee.family.data.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -67,8 +68,7 @@ public class TimelineWrite extends AppCompatActivity {
 
     private static final int GET_TIMELINE_WRITE_REQUESTCODE = 0;
     private static final String TAG = TimelineWrite.class.getSimpleName();
-    private Uri filePath;
-    private Bitmap photo;
+    private Uri uri;
     private FirebaseStorage storage;
     private FirebaseDatabase database;
     private DatabaseReference groupReference;
@@ -101,11 +101,10 @@ public class TimelineWrite extends AppCompatActivity {
                     timelineWriteImage.setVisibility(timelineWriteImage.VISIBLE);
                     imgaeDelete.setVisibility(timelineWriteImgClick.VISIBLE);
                     switchFlag =1;
-                    Bundle bundle = data.getExtras();
-                    byte[] byteArray = bundle.getByteArray("PHOTO");
-                    photo = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-                    filePath = Uri.parse(bundle.getString("IMAGE_URI"));
-                    timelineWriteImage.setImageBitmap(photo);
+                    uri = data.getParcelableExtra("IMAGE_URI");
+
+                    Log.i(TAG,">>>>>>>>>>>>>     uri" + uri);
+                    Glide.with(getApplicationContext()).load(uri).centerCrop().crossFade().into(timelineWriteImage);
 
 
                     // 파이어베이스 데이터베이스에 추가 및 저장소 올리기.
@@ -148,7 +147,7 @@ public class TimelineWrite extends AppCompatActivity {
             databaseAccess(null);
         } else if(switchFlag == 1){
             Log.i(TAG, "!!!!!!!2" + timelineWriteImage.getResources());
-            fileUpload(filePath);
+            fileUpload(uri);
         }
         finish();
     }
@@ -168,11 +167,11 @@ public class TimelineWrite extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         SharedPreferences pref = getSharedPreferences("pref", MODE_PRIVATE);
         groupId = pref.getString("groupId", "");
-        filePath = null;
     }
 
 
     private void databaseAccess(final String filename){
+
 
         groupReference = database.getReference("groups");
         userReference = database.getReference("groups").child(groupId).child("members").child(currentUser.getUid());
@@ -192,14 +191,19 @@ public class TimelineWrite extends AppCompatActivity {
                 groupReference = groupReference.child(groupId)
                         .child("timelineCard");
                 key = groupReference.push().getKey();
+                TimelineCountItem timelineCountItem = new TimelineCountItem(0, 0);
                 if(filename == null) {
-                    item = new TimeLineItem(userItem.getUserNicname(), userItem.getUserImage(), CurDateFormat.format(date),
-                            timelineWriteContent.getText().toString(), 0, 0, userItem.getId(), "empty");
+                    item = new TimeLineItem(timelineCountItem, key, userItem.getUserNicname(), userItem.getUserImage(), CurDateFormat.format(date),
+                            timelineWriteContent.getText().toString(), userItem.getId(), "empty");
                 } else{
-                    item = new TimeLineItem(userItem.getUserNicname(), userItem.getUserImage(), CurDateFormat.format(date),
-                            timelineWriteContent.getText().toString(), 0, 0, userItem.getId(), filename);
+                    item = new TimeLineItem(timelineCountItem, key, userItem.getUserNicname(), userItem.getUserImage(), CurDateFormat.format(date),
+                            timelineWriteContent.getText().toString(), userItem.getId(), filename);
                 }
                 groupReference.child(key).setValue(item);
+
+                // like of user each set
+                IsCheck ischeck = new IsCheck(false);
+
             }
 
             @Override

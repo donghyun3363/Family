@@ -1,12 +1,8 @@
 package com.family.donghyunlee.family;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.OvalShape;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -77,7 +73,7 @@ public class ProfileFragment extends Fragment {
     private String email;
     private String password;
     private Bitmap photo;
-    private Uri filePath;
+    private Uri uri;
     private String filename;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference = database.getReference("users");
@@ -165,7 +161,7 @@ public class ProfileFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            uploadFile(filePath);
+                            uploadFile(uri);
                             FirebaseUser user = mAuth.getCurrentUser();
                             // TODO profile image 구현하기.
                             userData = new User(user.getUid(), email, password, profileName.getText().toString()
@@ -281,13 +277,9 @@ public class ProfileFragment extends Fragment {
 
         if(requestCode == REQUESTCODE_PHOTOSEL_PROFILEFRAGMENT){
             if(resultCode == RESULT_OK) {
-                Bundle bundle = data.getExtras();
-                byte[] byteArray = bundle.getByteArray("PHOTO");
-                photo = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-                filePath = Uri.parse(bundle.getString("IMAGE_URI"));
-                profileImage.setBackground(new ShapeDrawable(new OvalShape()));
-                profileImage.setClipToOutline(true);
-                profileImage.setImageBitmap(photo);
+                uri = data.getParcelableExtra("IMAGE_URI");
+                Glide.with(getContext()).load(uri).centerCrop().crossFade()
+                        .bitmapTransform(new CropCircleTransformation(getContext())).into(profileImage);
             }
         }
     }
@@ -317,9 +309,9 @@ public class ProfileFragment extends Fragment {
             filename = formatter.format(now) + getResources().getString(R.string.file_extension);
             Log.e(TAG, ">>>>>>>     filename : " + filename);
             //업로드 진행 Dialog 보이기
-            final ProgressDialog progressDialog = new ProgressDialog(getContext());
-            progressDialog.setTitle(getResources().getString(R.string.uploading));
-            progressDialog.show();
+//            final ProgressDialog progressDialog = new ProgressDialog(getContext());
+//            progressDialog.setTitle(getResources().getString(R.string.uploading));
+//            progressDialog.show();
 
             StorageReference storageRef = storage.getReferenceFromUrl(getResources().getString(R.string.firebase_storage))
                     .child(getResources().getString(R.string.storage_profiles_folder) + "/" + filename);
@@ -327,24 +319,24 @@ public class ProfileFragment extends Fragment {
             storageRef.putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                    progressDialog.dismiss();
+//
+//                    progressDialog.dismiss();
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
 
-                    progressDialog.dismiss();
-                    Toast.makeText(getActivity(), getResources().getString(R.string.uploading_failed), Toast.LENGTH_SHORT).show();
+//                    progressDialog.dismiss();
+//                    Toast.makeText(getActivity(), getResources().getString(R.string.uploading_failed), Toast.LENGTH_SHORT).show();
                 }
             }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                    @SuppressWarnings("VisibleForTests")
-                    double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-                    progressDialog.setMessage(getResources().getString(R.string.uploading_progress)
-                            + ((int) progress)
-                            + getResources().getString(R.string.uploading_percent));
+//                    @SuppressWarnings("VisibleForTests")
+//                    double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+//                    progressDialog.setMessage(getResources().getString(R.string.uploading_progress)
+//                            + ((int) progress)
+//                            + getResources().getString(R.string.uploading_percent));
                 }
             });
         } else {

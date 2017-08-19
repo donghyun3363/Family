@@ -66,7 +66,7 @@
             android:gravity="end"
             android:background="@color/main_color_ivory">
 
-            <LinearLayout  android:id="@+id/tl_header_addimage"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -74,7 +74,7 @@
                 android:gravity="center">
 
                 <ImageButton
-
+                    android:id="@+id/tl_header_addimage"
                     android:layout_width="30dp"
                     android:layout_height="20dp"
                     android:layout_gravity="center_vertical"

@@ -3,8 +3,7 @@ package com.family.donghyunlee.family.photoalbum;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,7 +22,6 @@ import com.family.donghyunlee.family.PhotoSel;
 import com.family.donghyunlee.family.R;
 import com.family.donghyunlee.family.data.MemoryAlbum;
 import com.family.donghyunlee.family.data.MemoryPhotoImage;
-import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -46,6 +44,7 @@ import java.util.Iterator;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import jp.wasabeef.glide.transformations.ColorFilterTransformation;
 
 public class InAlbum extends AppCompatActivity {
 
@@ -72,10 +71,9 @@ public class InAlbum extends AppCompatActivity {
     private String albumId;
     private String groupId;
     private String userId;
-    private Bitmap albumPhoto;
-    private Bitmap inAlbumphoto;
-    private Uri inAlbumfilePath;
-    private Uri albumFilePath;
+
+    private Uri inAlbum_uri;
+    private Uri album_uri;
     private ArrayList<MemoryPhotoImage> items = new ArrayList<>();
     private InAlbumPagerAdapter pagerAdapter;
     private FirebaseStorage storage;
@@ -206,12 +204,7 @@ public class InAlbum extends AppCompatActivity {
 
             case GET_INALBUM_PHOTOSEL_REQUESTCODE:{
                 if (resultCode == RESULT_OK) {
-                    Bundle bundle = data.getExtras();
-                    byte[] byteArray = bundle.getByteArray("PHOTO");
-                    inAlbumphoto = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-                    inAlbumfilePath = Uri.parse(bundle.getString("IMAGE_URI"));
-                    Log.e("!!!!!!!!!!", "inAlbumfilePath: "+ inAlbumfilePath);
-                    // 파이어베이스 데이터베이스에 추가 및 저장소 올리기. (IN앨범)
+                    inAlbum_uri = data.getParcelableExtra("IMAGE_URI");
                     oneItemADD(INALBUM);
                 }
                 else{
@@ -222,12 +215,8 @@ public class InAlbum extends AppCompatActivity {
             case GET_ALBUM_PHOTOSEL_REQUESTCODE:{
                 if (resultCode == RESULT_OK) {
                     // 앰범 사진 변경하기, 파이어베이스에 사진 업로드.
-                    Bundle bundle = data.getExtras();
-                    byte[] byteArray = bundle.getByteArray("PHOTO");
-                    albumPhoto = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-                    albumFilePath = Uri.parse(bundle.getString("IMAGE_URI"));
                     // 파이어베이스 데이터베이스에 추가 및 저장소 올리기. (앨범)
-
+                    album_uri = data.getParcelableExtra("IMAGE_URI");
                     oneItemADD(ALBUM);
 
                 }
@@ -291,8 +280,28 @@ public class InAlbum extends AppCompatActivity {
                 }else{
                     String storageAlbumFolder = getResources().getString(R.string.storage_albumimages_folder);
                     StorageReference storageRef = storage.getReferenceFromUrl(getApplicationContext().getString(R.string.firebase_storage));
-                    StorageReference pathRef = storageRef.child(storageAlbumFolder + "/" + mainImgPath);
-                    Glide.with(getApplicationContext()).using(new FirebaseImageLoader()).load(pathRef).crossFade().into(imgalbumPhoto);
+                    //StorageReference pathRef = storageRef.child(storageAlbumFolder + "/" + mainImgPath);
+                    String filepath = storageAlbumFolder + "/" + mainImgPath;
+
+                    // TODO LOADING
+                    storageRef.child(filepath).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            // Got the download URL for 'users/me/profile.png'
+                            Glide.with(getApplicationContext()).load(uri)
+                                    .bitmapTransform(new ColorFilterTransformation(getApplicationContext(), Color.argb(80, 255, 255, 255)))
+                                    .crossFade().into(imgalbumPhoto);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle any errors
+                        }
+                    });
+
+
+
+
                 }
             }
 
@@ -310,10 +319,10 @@ public class InAlbum extends AppCompatActivity {
     private void oneItemADD(int what_album_flag) {
 
         if(what_album_flag == INALBUM){
-            uploadFile(inAlbumfilePath, INALBUM);
+            uploadFile(inAlbum_uri, INALBUM);
         }
         else if(what_album_flag == ALBUM){
-            uploadFile(albumFilePath, ALBUM);
+            uploadFile(album_uri, ALBUM);
         }
     }
 

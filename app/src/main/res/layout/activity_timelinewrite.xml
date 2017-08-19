@@ -90,9 +90,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="250dp"
                         android:padding="10dp"
-                        android:src="@drawable/img_family1"
                         android:scaleType="fitXY"
-                        android:visibility="gone"/>
+                        android:src="@drawable/img_family1"
+                        android:visibility="gone" />
 
                     <ImageButton
                         android:id="@+id/timeline_write_delete_image"
@@ -103,12 +103,13 @@
                         android:background="@android:color/transparent"
                         android:onClick="onDeleteClick"
                         android:src="@drawable/ic_delete"
-                        android:visibility="gone"/>
+                        android:visibility="gone" />
                 </FrameLayout>
             </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"

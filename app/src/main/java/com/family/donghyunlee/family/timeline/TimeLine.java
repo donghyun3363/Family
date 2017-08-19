@@ -3,8 +3,7 @@ package com.family.donghyunlee.family.timeline;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -39,7 +38,6 @@ import com.family.donghyunlee.family.data.TimeLineItem;
 import com.family.donghyunlee.family.data.TitleItem;
 import com.family.donghyunlee.family.data.User;
 import com.family.donghyunlee.family.photoalbum.PhotoAlbum;
-import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -61,6 +59,7 @@ import java.util.Iterator;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import jp.wasabeef.glide.transformations.ColorFilterTransformation;
 
 /**
  * Created by DONGHYUNLEE on 2017-07-31.
@@ -81,6 +80,7 @@ public class TimeLine extends AppCompatActivity {
     private DatabaseReference groupReference;
     private DatabaseReference userReference;
     private DatabaseReference titleReference;
+    private DatabaseReference likeReference;
     private ArrayList<MyBucketList> elseItems;
     private MyBucketList myItem;
     private MyBucketList tempItem;
@@ -95,7 +95,6 @@ public class TimeLine extends AppCompatActivity {
     private StorageReference storageRef;
     private String storageTitleFolder;
     private StorageReference titlepathRef;
-
 
     private EditText inputTitle;
     //  private IOverScrollDecor mVertOverScrollEffect;
@@ -116,8 +115,7 @@ public class TimeLine extends AppCompatActivity {
 
     @BindView(R.id.rv_timeline)
     RecyclerView recyclerView;
-    private Bitmap photo;
-    private Uri filePath;
+    private Uri uri;
 
     @Override
     protected void onStart() {
@@ -169,14 +167,16 @@ public class TimeLine extends AppCompatActivity {
         }
 
     }
+
     @OnClick(R.id.bar_push)
-    void pushClick(){
-
+    void pushClick() {
     }
+
     @OnClick(R.id.bar_setting)
-    void settingClick(){
+    void settingClick() {
 
     }
+
     @OnClick(R.id.bar_photo)
     void photoClick() {
         Intent intent = new Intent(TimeLine.this, PhotoAlbum.class);
@@ -226,7 +226,6 @@ public class TimeLine extends AppCompatActivity {
     }
 
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -234,13 +233,28 @@ public class TimeLine extends AppCompatActivity {
         ButterKnife.bind(this);
         setInit();
         settingRecycler();
-
     }
-    void titleImageDownload(String filename){
-        titlepathRef = storageRef.child(storageTitleFolder + "/" + filename);
-        Glide.with(getApplicationContext()).using(new FirebaseImageLoader()).load(titlepathRef).centerCrop()
-                .crossFade().into(timelineTitleImage);
 
+    //TODO
+    void titleImageDownload(String filename) {
+
+        String filepath = storageTitleFolder + "/" + filename;
+
+        // TODO LOADING
+        storageRef.child(filepath).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                // Got the download URL for 'users/me/profile.png'
+                Glide.with(getApplicationContext()).load(uri)
+                        .bitmapTransform(new ColorFilterTransformation(getApplicationContext(), Color.argb(80, 255, 255, 255)))
+                        .crossFade().into(timelineTitleImage);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle any errors
+            }
+        });
 
     }
 
@@ -277,11 +291,8 @@ public class TimeLine extends AppCompatActivity {
 
             case TIMELINE_TITLE_REQUESTCODE: {
                 if (resultCode == RESULT_OK) {
-                    Bundle bundle = data.getExtras();
-                    byte[] byteArray = bundle.getByteArray("PHOTO");
-                    photo = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-                    filePath = Uri.parse(bundle.getString("IMAGE_URI"));
-                    fileUpload(filePath);
+                    uri = data.getParcelableExtra("IMAGE_URI");
+                    fileUpload(uri);
 
                 } else {
                     Log.e(TAG, ">>>>> " + "TIMELINE_TITLE_REQUESTCODE don't result ");
@@ -297,7 +308,7 @@ public class TimeLine extends AppCompatActivity {
         final String filename;
         if (filePath != null) {
             // 파일이름 생성.
-            Log.i(TAG, "!!!!!!5");
+
             java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat(getResources().getString(R.string.date_format));
             Date now = new Date();
             filename = formatter.format(now) + getResources().getString(R.string.file_extension);
@@ -391,7 +402,7 @@ public class TimeLine extends AppCompatActivity {
 
         linearLayoutManager = new LinearLayoutManager(this);
         // 리사이클러뷰 setting
-        recyclerAdapter = new TimelineRecyclerAdapter(this, timeline_items, profile_items, groupId);
+        recyclerAdapter = new TimelineRecyclerAdapter(TimeLine.this, this, timeline_items, profile_items, groupId);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(recyclerAdapter);
