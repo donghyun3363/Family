@@ -8,7 +8,7 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/main_color_light_a">
+        android:background="@color/colorWhite">
 
         <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:card_view="http://schemas.android.com/apk/res-auto"
@@ -25,6 +25,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
+                android:background="@color/main_color_dark_b"
                 android:orientation="horizontal">
 
                 <TextView
@@ -33,7 +34,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:text="타이틀 명"
-                    android:textColor="@color/colorBlack" />
+                    android:textColor="@color/main_color_font" />
 
                 <LinearLayout
                     android:layout_width="2dp"
@@ -57,8 +58,7 @@
                         android:background="@null"
                         android:imeOptions="actionDone"
                         android:inputType="text"
-                        android:textSize="@dimen/small_textsize"
-                        android:textColor="@color/colorBlack" />
+                        android:textSize="@dimen/edit_textsize" />
                 </android.support.design.widget.TextInputLayout>
 
             </LinearLayout>

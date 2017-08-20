@@ -84,9 +84,10 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
-        commentReference = database.getReference().child("groups").child(groupId).child("commentCard").child(commentKey);
+        commentReference = database.getReference().child("groups").child(groupId).child("commentCard");
+        Log.i(TAG, ">>>>>>>>>  ??" + commentReference);
         mCommentIds = new ArrayList<>();
-
+        Toast.makeText(mContext, "커멘드 리스너 전이야", Toast.LENGTH_SHORT).show();
         mChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -95,6 +96,7 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
                 CommentItem commentItem = dataSnapshot.getValue(CommentItem.class);
                 items.add(commentItem);
                 notifyDataSetChanged();
+                Toast.makeText(mContext, "난 커멘트 리스너야", Toast.LENGTH_SHORT).show();
                 //notifyItemInserted(items.size() - 1); ??
             }
 
@@ -145,7 +147,7 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.i(TAG, ">>>>>>>>>>>>>>>>>> onCancelled: " + databaseError.getDetails());
             }
         };
         commentReference.addChildEventListener(mChildEventListener);
@@ -269,8 +271,8 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
         holder.timelineNickname.setText(timelineItem.getTimeline_nickName());
         holder.timelineDate.setText(timelineItem.getTimeline_date());
         holder.timelineContent.setText(timelineItem.getTimeline_content());
-        holder.timelineCommentCnt.setText(timelineItem.getTimelineCountItem().getCommentCnt());
-        holder.timelineLikeCnt.setText(timelineItem.getTimelineCountItem().getLikeCnt());
+        holder.timelineCommentCnt.setText(String.format("%d", (timelineItem.getTimelineCountItem().getCommentCnt())));
+        holder.timelineLikeCnt.setText(String.format("%d", (timelineItem.getTimelineCountItem().getLikeCnt())));
         profile_pathRef = storageRef.child(storageProfileFolder + "/" + timelineItem.getTimeline_profileImage());
         timeline_pathRef = storageRef.child(storageProfileFolder + "/" + timelineItem.getTimeline_contentImage());
 
@@ -297,6 +299,8 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
 
         Glide.with(mContext).using(new FirebaseImageLoader()).load(profile_pathRef).centerCrop()
                 .crossFade().bitmapTransform(new CropCircleTransformation(mContext)).into(holder.commentProfileImage);
+        Log.i(TAG, ">>>>>>>>>>>20        :"  + items.get(position).getCommentDate());
+
 
         if(!items.get(position).getCommentImage().equals("empty")){
             holder.commentImage.setVisibility(View.VISIBLE);
@@ -316,11 +320,13 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
     private void isCheckLiker(final CommentViewHolder holder, final int position) {
         String key = items.get(position).getCommentKey();
         likeUserReference = database.getReference().child("groups").child(groupId).child("likes")
-                .child("commentCard").child("users").child(currentUser.getUid());
+                .child("commentCard").child(items.get(position).getCommentKey()).child("users").child(currentUser.getUid());
         likeUserReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 IsCheck ischeck = dataSnapshot.getValue(IsCheck.class);
+                if(ischeck == null)
+                    return;
                 if(ischeck.getIsCheck()){
                     holder.commentLike.setSelected(true);
                 } else{
@@ -338,9 +344,9 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
     private void changeLikeCount(final CommentViewHolder holder, final int position) {
         String key = items.get(position).getCommentKey();
         likeUserReference = database.getReference().child("groups").child(groupId).child("likes")
-                .child("commentCard").child("users");
+                .child("commentCard").child(key).child("users").child(currentUser.getUid());
         likeReference = database.getReference().child("groups").child(groupId)
-                .child("commentCard").child(key).child("likeCountItem");
+                .child("commentCard").child(key).child("commentCountItem");
         int cnt = Integer.parseInt(holder.commentLikeCnt.getText().toString());
         if (selectLike == 0) {
             // 트랜지션 like +1

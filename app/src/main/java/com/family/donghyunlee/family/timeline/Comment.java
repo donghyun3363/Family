@@ -3,6 +3,7 @@ package com.family.donghyunlee.family.timeline;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
@@ -15,14 +16,15 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 
 import com.family.donghyunlee.family.PhotoSel;
 import com.family.donghyunlee.family.R;
 import com.family.donghyunlee.family.data.CommentCountItem;
 import com.family.donghyunlee.family.data.CommentItem;
 import com.family.donghyunlee.family.data.TimeLineItem;
+import com.family.donghyunlee.family.data.TimelineCountItem;
 import com.family.donghyunlee.family.data.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -49,12 +51,11 @@ public class Comment extends AppCompatActivity {
     private static final String TAG = Comment.class.getSimpleName();
     @BindView(R.id.rv_comment)
     RecyclerView recyclerView;
-    
+
     @BindView(R.id.comment_edittext)
     EditText commentEdittext;
-    @BindView(R.id.comment_image)
-    ImageView commentImage;
-
+    @BindView(R.id.comment_done)
+    Button commentDone;
 
     private CommentRecyclerAdapter recyclerAdapter;
     private LinearLayoutManager linearLayoutManager;
@@ -71,6 +72,8 @@ public class Comment extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private CommentItem item;
+    private int likeCnt;
+    private int commentCnt;
     private User currentUserItem;
 
     private Uri uri;
@@ -87,9 +90,34 @@ public class Comment extends AppCompatActivity {
         settingListener();
 
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        recyclerAdapter.cleanupListener();
+    }
+
     private void setInit() {
+
+        if (Build.VERSION.SDK_INT >= 21) {   //상태바 색상 변경
+            getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.main_color_dark_b));
+        }
+
+
         Intent inetnt = getIntent();
-        currentItem =  (TimeLineItem)inetnt.getSerializableExtra("TimelineItem");
+        currentItem =  (TimeLineItem)inetnt.getExtras().getParcelable("TimelineItem");
+        commentCnt = (int)inetnt.getIntExtra("CommentCnt", 0);
+        likeCnt = (int)inetnt.getIntExtra("LikeCnt", 0);
+        TimelineCountItem timelineCountItem = new TimelineCountItem(likeCnt, commentCnt);
+        Log.i(TAG, ">>>>>>>>>444" + currentItem.getTimeline_key());
+        Log.i(TAG, ">>>>>>>>>incommentCnt" + commentCnt);
+        Log.i(TAG, ">>>>>>>>>incLikeCnt" + likeCnt);
+        currentItem.setTimelineCountItem(timelineCountItem);
+        Log.i(TAG,">>>>>>>>> 551111 //  " + currentItem.getTimelineCountItem().getLikeCnt());
+
+        Log.i(TAG,">>>>>>>>> 5511///  " + currentItem.getTimelineCountItem().getCommentCnt());
+
+
         database = FirebaseDatabase.getInstance();
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
@@ -117,23 +145,24 @@ public class Comment extends AppCompatActivity {
         finish();
         overridePendingTransition(R.anim.step_in, R.anim.slide_out);    // 기존, 현재 순
     }
+
     @OnClick(R.id.comment_done)
     void onDoneClick(){
         long now = System.currentTimeMillis();
         Date date = new Date(now);
         SimpleDateFormat CurDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분");
         CommentCountItem commentCountItem = new CommentCountItem(0);
-        commentReference = database.getReference().child("groups").child(groupId).child("commendCard");
+        commentReference = database.getReference().child("groups").child(groupId).child("commentCard");
         commentKey = commentReference.push().getKey();
 
         //public CommentItem(String commentKey, String commentNickName, String commentDate,
         // String commentContent, String commentLikeCnt, String commentProfileImage) {
         if(isChecked == 0){ // 이미지가 없을 때
-            item = new CommentItem(commentKey, filePath, currentUserItem.getUserNicname(), CurDateFormat.format(date),
+            item = new CommentItem(commentKey, "empty", currentUserItem.getUserNicname(), CurDateFormat.format(date),
                     commentEdittext.getText().toString(), commentCountItem,currentUserItem.getUserImage());
         }
         else{               // 이미지가 있을 때
-            item = new CommentItem(commentKey, "empty", currentUserItem.getUserNicname(), CurDateFormat.format(date),
+            item = new CommentItem(commentKey, filePath, currentUserItem.getUserNicname(), CurDateFormat.format(date),
                     commentEdittext.getText().toString(), commentCountItem,currentUserItem.getUserImage());
         }
         commentReference.child(commentKey).setValue(item);
@@ -155,12 +184,13 @@ public class Comment extends AppCompatActivity {
             case GET_Comment_Image_REQUESTCODE: {
                 if (resultCode == RESULT_OK) {
                     uri = data.getParcelableExtra("IMAGE_URI");
+                    Log.i(TAG, ">>>>>>>>      9999999999" + uri);
                     filePath = uri.getPath();
                     isChecked=1;
                     startFragment(ImageViewFragment.newInstance(filePath));
                 } else {
-                    Log.e(TAG, ">>>>> " + "GET_Comment_Image_REQUESTCODE don't result ");
-                }
+                Log.e(TAG, ">>>>> " + "GET_Comment_Image_REQUESTCODE don't result ");
+            }
                 break;
             }
             default:
@@ -191,11 +221,11 @@ public class Comment extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (!TextUtils.isEmpty(commentEdittext.getText().toString())) {
-                    commentEdittext.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorBlack));
-                    commentEdittext.setEnabled(true);
+                    commentDone.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorBlack));
+                    commentDone.setEnabled(true);
                 } else {
-                    commentEdittext.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorWhGray));
-                    commentEdittext.setEnabled(false);
+                    commentDone.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorWhGray));
+                    commentDone.setEnabled(false);
                 }
             }
 

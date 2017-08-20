@@ -18,6 +18,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/main_color_ivory"
             android:orientation="vertical">
 
             <LinearLayout
@@ -34,7 +35,7 @@
                     android:layout_marginLeft="10dp"
                     android:background="@drawable/circle_solid_shape"
                     android:scaleType="fitXY"
-                    android:src="@drawable/ic_profile" />
+                    android:src="@drawable/ic_user" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -54,7 +55,7 @@
                             android:paddingLeft="10dp"
                             android:paddingTop="19dp"
                             android:text="동이"
-                            android:textColor="@color/colorBlack" />
+                            android:textColor="@color/main_color_font" />
 
                         <ImageButton
                             android:id="@+id/individual_delete"
@@ -75,7 +76,7 @@
                         android:layout_marginTop="5dp"
                         android:paddingLeft="10dp"
                         android:text="0000년 00월 00일"
-                        android:textColor="@color/colorBlack"
+                        android:textColor="@color/main_color_font"
                         android:textSize="@dimen/small_textsize" />
                 </LinearLayout>
             </LinearLayout>
@@ -106,7 +107,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="엄마에게 맛있는 밥 해드리기"
-                        android:textColor="@color/colorBlack"
+                        android:textColor="@color/main_color_font"
                         android:textSize="20dp" />
 
                     <View
@@ -123,7 +124,7 @@
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:gravity="center">
+                            android:gravity="center_vertical">
 
                             <ImageView
                                 android:layout_width="20dp"
@@ -135,9 +136,9 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="match_parent"
-                                android:gravity=""
+                                android:gravity="center_vertical"
                                 android:text="일정 :"
-                                android:textColor="@color/colorBlack" />
+                                android:textColor="@color/main_color_font" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -156,7 +157,7 @@
                                     android:layout_height="match_parent"
                                     android:gravity="center_vertical"
                                     android:text="2017.08.13"
-                                    android:textColor="@color/colorBlack" />
+                                    android:textColor="@color/main_color_font" />
 
                                 <TextView
                                     android:id="@+id/individual_starttime"
@@ -164,7 +165,7 @@
                                     android:layout_height="match_parent"
                                     android:gravity="center"
                                     android:text="18:00"
-                                    android:textColor="@color/colorBlack" />
+                                    android:textColor="@color/main_color_font" />
                             </LinearLayout>
 
                             <TextView
@@ -174,7 +175,7 @@
                                 android:layout_marginLeft="10dp"
                                 android:gravity="center_vertical"
                                 android:text="~"
-                                android:textColor="@color/colorBlack" />
+                                android:textColor="@color/main_color_font" />
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
@@ -188,7 +189,7 @@
                                     android:layout_marginLeft="10dp"
                                     android:gravity="center_vertical"
                                     android:text="2017.08.13"
-                                    android:textColor="@color/colorBlack" />
+                                    android:textColor="@color/main_color_font" />
 
                                 <TextView
                                     android:id="@+id/individual_endtime"
@@ -223,7 +224,7 @@
                             android:layout_height="match_parent"
                             android:gravity="center"
                             android:text="위치 :"
-                            android:textColor="@color/colorBlack" />
+                            android:textColor="@color/main_color_font" />
 
                         <TextView
                             android:id="@+id/individual_location"
@@ -232,7 +233,7 @@
                             android:layout_marginLeft="30dp"
                             android:gravity="center_vertical"
                             android:text="우리 집"
-                            android:textColor="@color/colorBlack" />
+                            android:textColor="@color/main_color_font" />
                     </LinearLayout>
 
                     <View
@@ -261,7 +262,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="match_parent"
                                 android:text="메모 :"
-                                android:textColor="@color/colorBlack" />
+                                android:textColor="@color/main_color_font" />
                         </LinearLayout>
 
                         <TextView
@@ -270,7 +271,7 @@
                             android:layout_height="match_parent"
                             android:layout_marginLeft="30dp"
                             android:text="떡볶이 메뉴 예정 / 재료 사오기"
-                            android:textColor="@color/colorBlack" />
+                            android:textColor="@color/main_color_font" />
 
                     </LinearLayout>
 
@@ -299,6 +300,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginLeft="10dp"
+                        android:textColor="@color/main_color_font"
                         android:text="수행 완료" />
                 </LinearLayout>
 
@@ -315,7 +317,7 @@
                         android:gravity="center"
                         android:padding="5dp"
                         android:text="감추기"
-                        android:textColor="@color/colorBlack" />
+                        android:textColor="@color/main_color_font" />
 
                     <Switch
                         android:id="@+id/individual_hide"

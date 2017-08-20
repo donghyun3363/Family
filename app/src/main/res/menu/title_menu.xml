@@ -6,7 +6,7 @@
     <item
         android:id="@+id/menu_edit_title"
         android:orderInCategory="100"
-        android:title="타이틀 이름 변경"
+        android:title="타이틀 명 변경"
         />
 
     <item

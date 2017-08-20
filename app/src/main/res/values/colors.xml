@@ -8,15 +8,6 @@
     <color name="colorAccent">#c8e8ff</color>
 
 
-    <color name="colorBlack">#000000</color>
-    <color name="colorWhite">#FFFFFF</color>
-    <color name="colorWhGray">#E0E0E0</color>
-    <color name="transparent">#00000000</color>
-    <color name="active_color">#000</color>
-    <color name="inactive_color">#c4c4c4</color>
-    <color name="mainText_color">#FF5722</color>
-    <color name="colorGray">#BDBDBD</color>
-
 
     <color name="transparent_gray">#99E0E0E0</color>
     <color name="transparent_black">#20000000</color>
@@ -26,6 +17,15 @@
     <color name="tea_grean">#88B04B</color>
     <color name="best_grean">#93b658</color>
     <color name="best_violet">#a76dd3</color>
+
+    <color name="colorBlack">#000000</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorWhGray">#E0E0E0</color>
+    <color name="transparent">#00000000</color>
+    <color name="active_color">#000</color>
+    <color name="inactive_color">#c4c4c4</color>
+    <color name="mainText_color">#FF5722</color>
+    <color name="colorGray">#BDBDBD</color>
 
 
     <color name="main_color">#4CB856</color>
@@ -49,8 +49,8 @@
     <color name="second_color_light_c">#69F0AE</color>
 
     <color name="main_color_ivory">#F3EEE3</color>
-    <color name="main_color_darkgray">#666666</color>
-    <color name="main_color_lightgray">#BDBDBD</color>
+    <color name="main_color_darkgray">#AAA</color>
+    <color name="main_color_lightgray">#E0E0E0</color>
     <color name="main_color_gray">#9E9E9E</color>
     <color name="main_color_background_gray">#FFD3D3D3</color>
     <color name="main_color_font">#323333</color>

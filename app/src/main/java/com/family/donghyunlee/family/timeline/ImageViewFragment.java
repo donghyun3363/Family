@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import butterknife.OnClick;
 
 public class ImageViewFragment extends Fragment {
 
+    private static final String TAG = ImageViewFragment.class.getSimpleName();
     @BindView(R.id.imageview_image)
     ImageView imageViewImage;
 
@@ -35,6 +37,7 @@ public class ImageViewFragment extends Fragment {
         Bundle args = new Bundle();
         args.putString("filePath", filePath);
         imageViewFragment.setArguments(args);
+
         return imageViewFragment;
     }
 
@@ -43,9 +46,13 @@ public class ImageViewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_imageview, container, false);
         ButterKnife.bind(this, v);
+
         uri = uri.parse(getArguments().getString("filePath"));
-        Glide.with(getContext()).load(R.drawable.ic_profileblack).centerCrop()
-                .crossFade().into(imageViewImage);
+
+
+        Log.i(TAG, ">>>>>>>>>>>         19 :" + uri);
+
+        Glide.with(getActivity().getApplication().getApplicationContext()).load(uri).centerCrop().crossFade().into(imageViewImage);
         return v;
     }
 

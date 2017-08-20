@@ -13,6 +13,7 @@ import android.util.Log;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -58,9 +59,10 @@ public class PhotoSel extends AppCompatActivity {
     }
 
     @OnClick(R.id.photosel_back)
-    void backClick(){
+    void backClick() {
         finish();
     }
+
     // 카메라 촬영 후 이미지 가져오기
     private void doTakePhotoAction() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -71,6 +73,7 @@ public class PhotoSel extends AppCompatActivity {
         intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
         startActivityForResult(intent, PICK_FROM_CAMERA);
     }
+
     private void doTakeAlbumAction() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
@@ -90,46 +93,21 @@ public class PhotoSel extends AppCompatActivity {
                 mImageCaptureUri = data.getData();
 
             case PICK_FROM_CAMERA:
-                // 이미지를 가져온 이후의 리사이즈할 이미지 크기를 결정한다.
-                // 이후에 이미지 크롭 어플리케이션을 호출한다.
-                Intent intent = new Intent("com.android.camera.action.CROP");
-                intent.setDataAndType(mImageCaptureUri, "image/*");
-                Log.i(TAG, ">>>>>>>>>>>>>>>> mImageCaptureUri22222222222: " +mImageCaptureUri );
-                Log.i(TAG, ">>>>>>>>>>>>>>>>1");
-                // CROP할 이미지를 400~ 600 크기로 저장
-                intent.putExtra("outputX", 200);    // CROP한 이미지의 x, y축 크기
-                intent.putExtra("outputY", 200);
-                intent.putExtra("aspectX", 1);      // CROP박스의 x, y축 비율
-                intent.putExtra("aspectY", 1);
-                intent.putExtra("scale", true);    // 아마 해상도 조정하는 듯
-                intent.putExtra("return-data", true);
-                Log.i(TAG, ">>>>>>>>>>>>>>>>2");
-                startActivityForResult(intent, CROP_FROM_IMAGE);
-                Log.i(TAG, ">>>>>>>>>>>>>>>>3");
-                break;
-            case CROP_FROM_IMAGE:
-                // 크롭이 된 이후의 이미지를 넘겨받는다.
-                // 이미지뷰에 이미지를 보여주거나 부가적인 작업 이후에 임시 파일을 삭제한다.
-                if (resultCode != RESULT_OK) {
-                    Log.e(TAG, ">>>>>>>>>     RESULT_OK NOT" );
-                    return;
-                }
-                Log.i(TAG, ">>>>>>>>>>>>>>>>4");
-                final Bundle extras = data.getExtras();
-                // CROP된 이미지를 저장하기 위한 FILE 경로
                 String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/SmartWheel" + System.currentTimeMillis() + ".jpg";
                 Log.i(TAG, ">>>>>>>>>>>>>>>>5");
-                if (extras != null) {
-                    // CROP된 BITMAP
-                    photo = extras.getParcelable("data");
-                    storeCropImage(photo, filePath);          // 비트맵을 jpg로 변형후 file로 가져옴.
-                    Intent sendIntent = new Intent();
-                    sendIntent.putExtra("IMAGE_URI", mImageCaptureUri);
-                    setResult(RESULT_OK, sendIntent);
-                    Log.i(TAG, ">>>>>>>>>>>>>>>>6");
-
-                    break;
+                // CROP된 BITMAP
+                try {
+                    photo = MediaStore.Images.Media.getBitmap(getContentResolver(), mImageCaptureUri);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+
+                storeCropImage(photo, filePath);          // 비트맵을 jpg로 변형후 file로 가져옴.
+                Intent sendIntent = new Intent();
+                sendIntent.putExtra("IMAGE_URI", mImageCaptureUri);
+                setResult(RESULT_OK, sendIntent);
+                Log.i(TAG, ">>>>>>>>>>>>>>>>6");
+
                 // 임시파일 삭제
                 File file = new File(mImageCaptureUri.getPath());
                 if (file.exists()) {
@@ -169,7 +147,7 @@ public class PhotoSel extends AppCompatActivity {
             e.printStackTrace();
             Log.e(TAG, "storeCropImage Function");
         }
-        Log.i(TAG, ">>>>>>>>>>>>>>>> filePath: " +filePath );
+        Log.i(TAG, ">>>>>>>>>>>>>>>> filePath: " + filePath);
 
     }
 }

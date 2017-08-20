@@ -58,6 +58,6 @@ public class Setting extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
-
+        overridePendingTransition(R.anim.step_in, R.anim.slide_out);
     }
 }

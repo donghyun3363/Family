@@ -72,7 +72,7 @@
                     android:layout_centerInParent="true"
                     android:background="@drawable/circle_solid_shape"
                     android:scaleType="fitXY"
-                    android:src="@drawable/ic_profile" />
+                    android:src="@drawable/ic_user" />
             </RelativeLayout>
 
         </LinearLayout>

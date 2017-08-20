@@ -40,6 +40,7 @@ public class PhotoAlbum extends AppCompatActivity {
     @OnClick(R.id.photoalbum_back)
     void backClick() {
         finish();
+        overridePendingTransition(R.anim.step_in, R.anim.slide_out);
     }
 
     private void setInit() {

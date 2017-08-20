@@ -25,7 +25,7 @@
             android:layout_gravity="center"
             android:layout_margin="20dp"
             android:text="사진 편집"
-            android:textColor="@color/colorBlack" />
+            android:textColor="@color/main_color_font" />
 
         <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:card_view="http://schemas.android.com/apk/res-auto"
@@ -44,7 +44,7 @@
                 android:background="@color/colorWhite"
                 android:onClick="camereClick"
                 android:text="사진 촬영"
-                android:textColor="@color/colorBlack" />
+                android:textColor="@color/main_color_font" />
         </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -65,7 +65,7 @@
                 android:background="@color/colorWhite"
                 android:onClick="albumClick"
                 android:text="앨범에서 선택"
-                android:textColor="@color/colorBlack" />
+                android:textColor="@color/main_color_font" />
         </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -86,7 +86,7 @@
                 android:background="@color/colorWhite"
                 android:onClick="cancelClick"
                 android:text="취소"
-                android:textColor="@color/colorBlack" />
+                android:textColor="@color/main_color_font" />
         </android.support.v7.widget.CardView>
     </LinearLayout>
 

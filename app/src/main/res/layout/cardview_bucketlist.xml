@@ -12,7 +12,6 @@
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:background="@color/colorGray"
         card_view:cardElevation="2dp"
         card_view:cardCornerRadius="5dp">
         <LinearLayout
@@ -25,16 +24,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:gravity="center"
+                android:background="@color/main_color_ivory"
                 android:orientation="horizontal">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorBlack"
+                    android:textColor="@color/main_color_font"
                     android:text="  Q.   "/>
                 <TextView   android:id="@+id/bucketcard_question"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:textColor="@color/colorBlack"
+                    android:textColor="@color/main_color_font"
                     android:padding="5dp"
                     android:gravity=""
                     android:text="올해 부모님(자녀)과 함께 가고싶은 여행지?"/>
@@ -42,16 +42,17 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2px"
-                android:background="@color/best_grean"/>
+                android:background="@color/main_color_lightgray"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
+                android:background="@color/main_color_ivory"
                 android:orientation="horizontal">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorBlack"
+                    android:textColor="@color/main_color_font"
                     android:text="  A.   "/>
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/bucketcard_answer_hint"
@@ -65,7 +66,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:imeOptions="actionDone|actionNext"
-                        android:textSize="16sp"
+                        android:textSize="@dimen/edit_textsize"
                         />
                 </android.support.design.widget.TextInputLayout>
             </LinearLayout>

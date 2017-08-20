@@ -138,6 +138,7 @@ public class Bucket extends AppCompatActivity{
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                overridePendingTransition(R.anim.step_in, R.anim.slide_out);
                 //onBackPressed();
                 return true;
         }

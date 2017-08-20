@@ -10,17 +10,10 @@
         android:id="@+id/rv_wishlist"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/main_color_lightgray"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <com.wang.avi.AVLoadingIndicatorView
-        android:id="@+id/bucket_avi"
-        style="@style/AVLoadingIndicatorView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="visible"
-        app:indicatorColor="@color/colorPrimaryDark"
-        app:indicatorName="" />
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_bucket"
@@ -32,8 +25,8 @@
         android:layout_margin="16dp"
         android:onClick="onFabClick"
         android:src="@drawable/ic_add"
-        app:backgroundTint="@color/light_green"
-        app:rippleColor="@color/light_green" />
+        app:backgroundTint="@color/main_color"
+        app:rippleColor="@color/main_color" />
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -48,11 +41,31 @@
             app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
                 <ImageButton
+                    android:id="@+id/bucket_back"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@android:color/transparent"
+                    android:onClick="backClick"
+                    android:src="@drawable/ic_back_white" />
+
+                <TextView
+                    android:layout_width="@dimen/dp_zero"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="버킷의 공간"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="@dimen/bar_textsize"
+                    android:textColor="@color/colorWhite" />
+
+               <ImageButton
                     android:id="@+id/progress"
                     android:layout_width="27dp"
                     android:layout_height="27dp"
@@ -62,7 +75,7 @@
                     android:onClick="onProgressClick"
                     android:scaleType="fitXY"
                     android:src="@drawable/ic_progress" />
-            </RelativeLayout>
+            </LinearLayout>
         </android.support.v7.widget.Toolbar>
 
         <LinearLayout
@@ -75,7 +88,8 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="40dp">
+                android:layout_height="50dp"
+                android:background="@color/main_color_ivory">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -89,9 +103,8 @@
                         android:layout_marginLeft="10dp"
                         android:gravity="center_vertical"
                         android:text="리스트"
-                        android:textColor="@color/colorPrimaryDark"
-                        android:textSize="@dimen/small_textsize"
-                        android:textStyle="bold" />
+                        android:textColor="@color/main_color_font"
+                        android:textSize="@dimen/small_textsize" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -113,9 +126,8 @@
                                 android:layout_height="match_parent"
                                 android:gravity="center"
                                 android:text="업데이트순"
-                                android:textColor="@color/colorPrimaryDark"
-                                android:textSize="@dimen/small_textsize"
-                                android:textStyle="bold" />
+                                android:textColor="@color/main_color_font"
+                                android:textSize="@dimen/small_textsize"/>
 
                             <ImageView
                                 android:id="@+id/bucket_click"

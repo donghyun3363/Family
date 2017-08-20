@@ -34,7 +34,7 @@
                     android:layout_marginLeft="10dp"
                     android:background="@drawable/circle_solid_shape"
                     android:scaleType="fitXY"
-                    android:src="@drawable/ic_profile" />
+                    android:src="@drawable/ic_user" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -59,7 +59,7 @@
                                 android:paddingLeft="10dp"
                                 android:paddingTop="19dp"
                                 android:text="동이"
-                                android:textColor="@color/colorBlack" />
+                                android:textColor="@color/main_color_font" />
 
                             <TextView
                                 android:layout_width="@dimen/dp_zero"
@@ -89,7 +89,7 @@
                         android:layout_margin="5dp"
                         android:paddingLeft="10dp"
                         android:text="0000년 00월 00일"
-                        android:textColor="@color/colorBlack"
+                        android:textColor="@color/main_color_font"
                         android:textSize="@dimen/small_textsize" />
                 </LinearLayout>
             </LinearLayout>
@@ -118,13 +118,12 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="가족들과 가장 가고 싶은 여름 여행지는?"
-                        android:textColor="@color/colorBlack" />
+                        android:textColor="@color/main_color_font" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="25dp"
-                        android:background="@color/transparent_black"
                         android:gravity="center">
 
                         <TextView
@@ -132,7 +131,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="제주도"
-                            android:textColor="@color/colorBlack" />
+                            android:textColor="@color/main_color_font" />
                     </LinearLayout>
                 </LinearLayout>
 

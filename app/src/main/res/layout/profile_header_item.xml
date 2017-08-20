@@ -16,9 +16,9 @@
             android:orientation="vertical">
 
             <ImageButton
-                android:id="@+id/imageButton_direct"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:id="@+id/profie_invite"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
                 android:cropToPadding="true"

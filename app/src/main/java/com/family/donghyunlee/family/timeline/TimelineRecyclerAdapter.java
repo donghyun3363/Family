@@ -3,6 +3,7 @@ package com.family.donghyunlee.family.timeline;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -21,6 +22,7 @@ import com.family.donghyunlee.family.data.IsCheck;
 import com.family.donghyunlee.family.data.TimeLineItem;
 import com.family.donghyunlee.family.data.TimelineCountItem;
 import com.family.donghyunlee.family.data.User;
+import com.family.donghyunlee.family.dialog.TimelineCardDialogFragment;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -82,15 +84,16 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
     Activity activity;
     // like enable
     private int selectLike = 0;
-
-    public TimelineRecyclerAdapter(Activity activity, Context context, final ArrayList<TimeLineItem> items, ArrayList<User> profile_items, String groupId) {
+    FragmentManager fragmentManager;
+    public TimelineRecyclerAdapter(Activity activity, Context context, final ArrayList<TimeLineItem> items,
+                                   ArrayList<User> profile_items, String groupId, FragmentManager fragmentManager) {
         this.activity = activity;
         this.mContext = context;
         this.items = items;
         this.mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.profile_items = profile_items;
         this.groupId = groupId;
-
+        this.fragmentManager = fragmentManager;
         database = FirebaseDatabase.getInstance();
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
@@ -177,7 +180,7 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
         ImageButton timelineLike;
         LinearLayout timelineLikeContainer;
         LinearLayout timelineCommentContainer;
-
+        LinearLayout timelineContentContainer;
         // footer의 view
         ImageView timelineFooterIcon;
 
@@ -185,7 +188,7 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
         RecyclerView rv_profile;
         TextView tlHeaderContainer;
         ImageButton tlHeaderAddimage;
-
+        ImageButton timelineExpand;
 
 
 
@@ -220,7 +223,8 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
                 timelineContentImage = (ImageView) itemView.findViewById(R.id.timeline_contentimage);
                 timelineLikeContainer = (LinearLayout) itemView.findViewById(R.id.timeline_like_container);
                 timelineCommentContainer = (LinearLayout) itemView.findViewById(R.id.timeline_comment_container);
-
+                timelineContentContainer = (LinearLayout) itemView.findViewById(R.id.timeline_content_container);
+                timelineExpand = (ImageButton) itemView.findViewById(R.id.timeline_expand);
             }
 
         }
@@ -325,7 +329,7 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
         Glide.with(mContext).using(new FirebaseImageLoader()).load(profile_pathRef).centerCrop()
                 .crossFade().bitmapTransform(new CropCircleTransformation(mContext)).into(holder.timelineProfileImage);
 
-        isCheckLiker(holder, position);
+            isCheckLiker(holder, position);
 
         if (!items.get(position).getTimeline_contentImage().equals("empty")) {
             holder.timelineContentImage.setVisibility(View.VISIBLE);
@@ -354,10 +358,31 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, Comment.class);
-                mContext.startActivity(intent);
                 intent.putExtra("TimelineItem", items.get(position));
+                intent.putExtra("LikeCnt", items.get(position).getTimelineCountItem().getLikeCnt());
+                intent.putExtra("commentCnt", items.get(position).getTimelineCountItem().getCommentCnt());
+                mContext.startActivity(intent);
                 activity.overridePendingTransition(R.anim.slide_in, R.anim.step_back);
 
+            }
+        });
+        holder.timelineContentContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, Comment.class);
+                intent.putExtra("TimelineItem", items.get(position));
+                intent.putExtra("LikeCnt", items.get(position).getTimelineCountItem().getLikeCnt());
+                intent.putExtra("commentCnt", items.get(position).getTimelineCountItem().getCommentCnt());
+                mContext.startActivity(intent);
+                activity.overridePendingTransition(R.anim.slide_in, R.anim.step_back);
+            }
+        });
+
+        holder.timelineExpand.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TimelineCardDialogFragment dialogFragment = new TimelineCardDialogFragment();
+                dialogFragment.show(fragmentManager, "fragment_dialog_test");
             }
         });
 
@@ -375,10 +400,12 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
                 if(ischeck == null)
                     return;
                 if(ischeck.getIsCheck()){
-                    selectLike = 1;
+                    items.get(position).setIsSelect(1);
+                    //selectLike = 1;
                     holder.timelineLike.setSelected(true);
                 } else{
-                    selectLike = 0;
+                    //selectLike = 0;
+                    items.get(position).setIsSelect(0);
                     holder.timelineLike.setSelected(false);
                 }
 
@@ -402,8 +429,8 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
         likeReference = database.getReference().child("groups").child(groupId)
                 .child("timelineCard").child(key).child("timelineCountItem");
 
-        if (selectLike == 0) { // 좋아요 클릭
-            selectLike = 1;
+        if (items.get(position).getIsSelect() == 0) { // 좋아요 클릭
+            items.get(position).setIsSelect(1);
             // 개인 사용자 좋아요 클릭 설정
             isCheck = new IsCheck(true);
             likeUserReference.child(currentUser.getUid()).setValue(isCheck);
@@ -438,7 +465,7 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
                 }
             });
         } else { // 좋아요 클릭 해제
-            selectLike = 0;
+            items.get(position).setIsSelect(0);
             // 개인 사용자 좋아요 클릭 설정
             isCheck = new IsCheck(false);
             likeUserReference.child(currentUser.getUid()).setValue(isCheck);

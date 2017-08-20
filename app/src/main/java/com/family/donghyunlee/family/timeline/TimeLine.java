@@ -10,6 +10,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -38,8 +40,13 @@ import com.family.donghyunlee.family.data.TimeLineItem;
 import com.family.donghyunlee.family.data.TitleItem;
 import com.family.donghyunlee.family.data.User;
 import com.family.donghyunlee.family.photoalbum.PhotoAlbum;
+import com.family.donghyunlee.family.setting.Setting;
+import com.google.android.gms.appinvite.AppInviteInvitation;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.appinvite.FirebaseAppInvite;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -47,6 +54,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -65,12 +74,13 @@ import jp.wasabeef.glide.transformations.ColorFilterTransformation;
  * Created by DONGHYUNLEE on 2017-07-31.
  */
 
-public class TimeLine extends AppCompatActivity {
+public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
 
     private static final String TAG = TimeLine.class.getSimpleName();
     private static final Integer GET_BUCKITANSWER_TO_SERVER = 0;
     private static final int GET_PROFILE_TO_SERVER = 1;
     private static final int TIMELINE_TITLE_REQUESTCODE = 101;
+    private static final int REQUEST_INVITE = 3;
 
     private boolean isFristTime;
     private SharedPreferences pref;
@@ -95,7 +105,7 @@ public class TimeLine extends AppCompatActivity {
     private StorageReference storageRef;
     private String storageTitleFolder;
     private StorageReference titlepathRef;
-
+    private FragmentManager fragmentManager;
     private EditText inputTitle;
     //  private IOverScrollDecor mVertOverScrollEffect;
     @BindView(R.id.bar_photo)
@@ -161,11 +171,9 @@ public class TimeLine extends AppCompatActivity {
         // timeline child listener clean in rv adapter
         //recyclerAdapter.cleanupListener();
         // timeline title listener clean
-        Toast.makeText(this, "여기여기", Toast.LENGTH_SHORT).show();
         if (mValueEventListener != null) {
             titleReference.removeEventListener(mValueEventListener);
         }
-
     }
 
     @OnClick(R.id.bar_push)
@@ -174,19 +182,23 @@ public class TimeLine extends AppCompatActivity {
 
     @OnClick(R.id.bar_setting)
     void settingClick() {
-
+        Intent intent = new Intent(TimeLine.this, Setting.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in, R.anim.step_back);
     }
 
     @OnClick(R.id.bar_photo)
     void photoClick() {
         Intent intent = new Intent(TimeLine.this, PhotoAlbum.class);
         startActivity(intent);
+        overridePendingTransition(R.anim.slide_in, R.anim.step_back);
     }
 
     @OnClick(R.id.bar_calender)
     void calenderClick() {
         Intent intent = new Intent(TimeLine.this, Bucket.class);
         startActivity(intent);
+        overridePendingTransition(R.anim.slide_in, R.anim.step_back);
     }
 
     @OnClick(R.id.timeline_title_edit)
@@ -233,6 +245,48 @@ public class TimeLine extends AppCompatActivity {
         ButterKnife.bind(this);
         setInit();
         settingRecycler();
+
+        // Check for App Invite invitations and launch deep-link activity if possible.
+        // Requires that an Activity is registered in AndroidManifest.xml to handle
+        // deep-link URLs.
+        FirebaseDynamicLinks.getInstance().getDynamicLink(getIntent())
+                .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
+                    @Override
+                    public void onSuccess(PendingDynamicLinkData data) {
+                        if (data == null) {
+                            Log.d(TAG, "getInvitation: no data");
+                            return;
+                        }
+
+                        // Get the deep link
+                        Uri deepLink = data.getLink();
+
+                        // Extract invite
+                        FirebaseAppInvite invite = FirebaseAppInvite.getInvitation(data);
+                        if (invite != null) {
+                            String invitationId = invite.getInvitationId();
+                            Log.d(TAG, "invitationId:" + invitationId);
+                        }
+
+                        // Handle the deep link
+                        // [START_EXCLUDE]
+                        Log.d(TAG, "deepLink:" + deepLink);
+                        if (deepLink != null) {
+                            Intent intent = new Intent(Intent.ACTION_VIEW);
+                            intent.setPackage(getPackageName());
+                            intent.setData(deepLink);
+
+                            startActivity(intent);
+                        }
+                        // [END_EXCLUDE]
+                    }
+                })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "getDynamicLink:onFailure", e);
+                    }
+                });
     }
 
     //TODO
@@ -246,7 +300,7 @@ public class TimeLine extends AppCompatActivity {
             public void onSuccess(Uri uri) {
                 // Got the download URL for 'users/me/profile.png'
                 Glide.with(getApplicationContext()).load(uri)
-                        .bitmapTransform(new ColorFilterTransformation(getApplicationContext(), Color.argb(80, 255, 255, 255)))
+                        .bitmapTransform(new ColorFilterTransformation(getApplicationContext(), Color.argb(80, 0, 0, 0)))
                         .crossFade().into(timelineTitleImage);
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -299,9 +353,27 @@ public class TimeLine extends AppCompatActivity {
                 }
                 break;
             }
+            case REQUEST_INVITE:
+                if (resultCode == RESULT_OK) {
+                    // Get the invitation IDs of all sent messages
+                    String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
+                    for (String id : ids) {
+                        Log.d(TAG, "onActivityResult: sent invitation " + id);
+                    }
+                } else {
+                    // Sending failed or it was canceled, show failure message to the user
+                    // [START_EXCLUDE]
+                    showMessage(getString(R.string.send_failed));
+                    // [END_EXCLUDE]
+                }
+
             default:
                 break;
         }
+    }
+    private void showMessage(String msg) {
+        ViewGroup container = (ViewGroup) findViewById(R.id.snackbar_layout);
+        Snackbar.make(container, msg, Snackbar.LENGTH_SHORT).show();
     }
 
     private void fileUpload(Uri filePath) {
@@ -369,7 +441,7 @@ public class TimeLine extends AppCompatActivity {
             getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.light_green));
         }
 
-
+        fragmentManager = getSupportFragmentManager();
         timeline_items = new ArrayList<>();
         profile_items = new ArrayList<>();
         elseItems = new ArrayList<>();
@@ -402,7 +474,7 @@ public class TimeLine extends AppCompatActivity {
 
         linearLayoutManager = new LinearLayoutManager(this);
         // 리사이클러뷰 setting
-        recyclerAdapter = new TimelineRecyclerAdapter(TimeLine.this, this, timeline_items, profile_items, groupId);
+        recyclerAdapter = new TimelineRecyclerAdapter(TimeLine.this, this, timeline_items, profile_items, groupId, fragmentManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(recyclerAdapter);
@@ -410,6 +482,12 @@ public class TimeLine extends AppCompatActivity {
 //        mVertOverScrollEffect = new VerticalOverScrollBounceEffectDecorator(new RecyclerViewOverScrollDecorAdapter(recyclerView));
 
 
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d(TAG, "onConnectionFailed:" + connectionResult);
+        showMessage("onConnectionFailed");
     }
 
     public class AccessDatabaseTask extends AsyncTask<Integer, String, Long> {

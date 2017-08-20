@@ -19,7 +19,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="30dp"
+                android:layout_margin="20dp"
                 android:orientation="vertical">
 
                 <android.support.v7.widget.CardView
@@ -32,7 +32,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@color/best_grean"
+                        android:background="@color/main_color_ivory"
                         android:orientation="vertical">
 
                         <LinearLayout
@@ -62,7 +62,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center"
                                     android:text="가족들과 가장 가고 싶은 여름 여행지는?"
-                                    android:textColor="@color/colorWhite" />
+                                    android:textColor="@color/main_color_font" />
 
                                 <TextView
                                     android:id="@+id/toprogress_answer"
@@ -74,7 +74,7 @@
                                     android:background="@color/transparent_black"
                                     android:gravity="center"
                                     android:text="제주도"
-                                    android:textColor="@color/colorWhite" />
+                                    android:textColor="@color/main_color_font" />
 
                             </LinearLayout>
                         </LinearLayout>
@@ -102,7 +102,7 @@
                                         android:layout_marginLeft="10dp"
                                         android:layout_marginRight="10dp"
                                         android:layout_weight="1"
-                                        android:background="@color/colorGray"
+                                        android:background="@color/main_color"
                                         android:gravity="center"
                                         android:hint="일정이름 ">
 
@@ -112,7 +112,7 @@
                                             android:layout_height="match_parent"
                                             android:background="@null"
                                             android:ems="10"
-                                            android:textSize="16sp" />
+                                            android:textSize="@dimen/edit_textsize" />
                                     </android.support.design.widget.TextInputLayout>
 
                                     <View
@@ -134,7 +134,7 @@
                                         android:layout_marginLeft="10dp"
                                         android:layout_marginRight="10dp"
                                         android:layout_weight="1"
-                                        android:background="@color/colorGray"
+                                        android:background="@color/main_color"
                                         android:gravity="center"
                                         android:hint="장소">
 
@@ -143,7 +143,7 @@
                                             android:layout_width="match_parent"
                                             android:layout_height="match_parent"
                                             android:background="@null"
-                                            android:textSize="16sp"
+                                            android:textSize="@dimen/edit_textsize"
                                             android:ems="10" />
                                     </android.support.design.widget.TextInputLayout>
 
@@ -176,7 +176,7 @@
                                         android:layout_marginLeft="10dp"
                                         android:layout_marginRight="10dp"
                                         android:layout_weight="1"
-                                        android:background="@color/colorGray"
+                                        android:background="@color/main_color"
                                         android:gravity="center"
                                         android:text="2017년 8월 12일 토"
                                         android:textColor="@color/colorBlack"
@@ -188,7 +188,7 @@
                                         android:layout_height="match_parent"
                                         android:layout_marginLeft="10dp"
                                         android:layout_marginRight="10dp"
-                                        android:background="@color/colorGray"
+                                        android:background="@color/main_color"
                                         android:gravity="center"
                                         android:text="오전 3:00"
                                         android:textColor="@color/colorBlack"
@@ -216,7 +216,7 @@
                                         android:layout_marginLeft="10dp"
                                         android:layout_marginRight="10dp"
                                         android:layout_weight="1"
-                                        android:background="@color/colorGray"
+                                        android:background="@color/main_color"
                                         android:gravity="center"
                                         android:text=""
                                         android:textColor="@color/colorBlack"
@@ -228,7 +228,7 @@
                                         android:layout_height="match_parent"
                                         android:layout_marginLeft="10dp"
                                         android:layout_marginRight="10dp"
-                                        android:background="@color/colorGray"
+                                        android:background="@color/main_color"
                                         android:gravity="center"
                                         android:text=""
                                         android:textColor="@color/colorBlack"
@@ -247,7 +247,8 @@
                                         android:layout_height="wrap_content"
                                         android:layout_marginLeft="10dp"
                                         android:text="공유 버킷"
-                                        android:textColor="@color/colorWhite"
+                                        android:shadowColor="@color/main_color"
+                                        android:textColor="@color/main_color_font"
                                         />
                                     <Switch
                                         android:id="@+id/toprogress_withswitch"
@@ -256,7 +257,7 @@
                                         android:layout_marginRight="10dp"
                                         android:text="참석자 설정"
                                         android:enabled="false"
-                                        android:textColor="@color/colorWhite"
+                                        android:textColor="@color/main_color_font"
                                         android:layout_alignParentRight="true"/>
                                 </RelativeLayout>
 
@@ -275,7 +276,7 @@
                                     android:layout_marginLeft="10dp"
                                     android:layout_marginRight="10dp"
                                     android:layout_weight="1"
-                                    android:background="@color/colorGray"
+                                    android:background="@color/main_color"
                                     android:orientation="horizontal">
                                     <ScrollView
                                         android:layout_width="match_parent"
@@ -293,7 +294,7 @@
                                                 android:layout_width="match_parent"
                                                 android:layout_height="match_parent"
                                                 android:background="@null"
-                                                android:textSize="16sp"
+                                                android:textSize="@dimen/edit_textsize"
                                                 android:ems="10" />
                                         </android.support.design.widget.TextInputLayout>
                                     </ScrollView>
@@ -318,8 +319,8 @@
                                 android:onClick="onCancelClick"
                                 android:gravity="center"
                                 android:text="나중에"
-                                android:textColor="@color/colorWhite"
-                                android:textSize="@dimen/small_textsize" />
+                                android:textColor="@color/main_color_font"
+                              />
 
                             <TextView
                                 android:id="@+id/toprogress_done"
@@ -330,8 +331,8 @@
                                 android:gravity="center"
                                 android:onClick="onDoneClick"
                                 android:text="완료"
-                                android:textColor="@color/colorWhite"
-                                android:textSize="@dimen/small_textsize" />
+                                android:textColor="@color/colorWhGray"
+                                />
                         </RelativeLayout>
                     </LinearLayout>
                 </android.support.v7.widget.CardView>

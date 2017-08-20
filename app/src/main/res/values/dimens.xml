@@ -31,6 +31,8 @@
     <dimen name="sliding_overlay_blur_size">4dp</dimen>
 
 
+    <dimen name="edit_textsize">14sp</dimen>
+    <dimen name="bar_textsize">20sp</dimen>
     <dimen name="dp_zero">0dp</dimen>
     <dimen name="small_textsize">12sp</dimen>
     <dimen name="little_cardround">5dp</dimen>

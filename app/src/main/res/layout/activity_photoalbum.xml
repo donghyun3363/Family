@@ -12,7 +12,7 @@
                 android:id="@+id/toolbar_photo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/light_green"
+                android:background="@color/main_color"
                 app:layout_collapseMode="pin">
 
                 <LinearLayout
@@ -31,11 +31,13 @@
 
                     <TextView
                         android:layout_width="@dimen/dp_zero"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_gravity="center"
                         android:layout_weight="1"
-                        android:gravity="center"
+                        android:gravity="center_vertical"
                         android:text="추억의 공간"
+                        android:layout_marginLeft="10dp"
+                        android:textSize="@dimen/bar_textsize"
                         android:textColor="@color/colorWhite" />
 
                     <ImageButton

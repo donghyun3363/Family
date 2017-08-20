@@ -1,18 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/waiting_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/main_color">
 
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
+                android:onClick="backClick"
+                android:src="@drawable/ic_back_white" />
+
+            <TextView
+                android:layout_width="@dimen/dp_zero"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="초대 대기"
+                android:textColor="@color/colorWhite"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:textSize="@dimen/bar_textsize"/>
+
+        </LinearLayout>
+    </android.support.v7.widget.Toolbar>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:background="@drawable/main_color_bar_shape" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/main_color_lightgray"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_zero"
+            android:orientation="vertical"
+            android:gravity="center"
             android:layout_weight="1">
 
             <TextView
@@ -20,8 +58,17 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:text="초대 대기중 입니다..."
-                android:textColor="@color/light_green"
+                android:text="초대"
+                android:textColor="@color/main_color_light_a"
+                android:textSize="60sp"
+                android:textStyle="bold" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="대기중.."
+                android:textColor="@color/main_color_light_a"
                 android:textSize="60sp"
                 android:textStyle="bold" />
 
@@ -34,8 +81,9 @@
             android:layout_gravity="center"
             android:background="@android:color/transparent"
             android:onClick="onEnter"
+            android:textColor="@color/main_color_font"
             android:text="내가 방 개설하기"
-            android:textSize="16sp"
+            android:textSize="@dimen/bar_textsize"
             android:textStyle="bold" />
     </LinearLayout>
-</FrameLayout>
+</LinearLayout>

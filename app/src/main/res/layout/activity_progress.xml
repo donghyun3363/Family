@@ -18,15 +18,51 @@
                 android:id="@+id/progress_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
+                android:background="@color/main_color"
                 app:layout_scrollFlags="scroll|enterAlways"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/progress_back"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@android:color/transparent"
+                        android:onClick="backClick"
+                        android:src="@drawable/ic_back_white" />
+
+                    <TextView
+                        android:layout_width="@dimen/dp_zero"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="10dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:text="버킷 리스트"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="@dimen/bar_textsize" />
+
+                    <ImageButton
+                        android:id="@+id/progress"
+                        android:layout_width="27dp"
+                        android:layout_height="27dp"
+                        android:layout_gravity="center"
+                        android:layout_marginRight="10dp"
+                        android:background="@android:color/transparent"
+                        android:onClick="onProgressClick"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_progress" />
+                </LinearLayout>
             </android.support.v7.widget.Toolbar>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="47dp"
+                android:layout_height="50dp"
                 android:background="@color/colorWhite"
                 android:gravity="center"
                 android:orientation="vertical"
@@ -39,7 +75,8 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:background="@color/main_color_ivory">
 
                         <TextView
                             android:id="@+id/progress_temp"
@@ -49,9 +86,8 @@
                             android:layout_weight="1"
                             android:gravity="center_vertical"
                             android:text="공유 리스트"
-                            android:textColor="@color/colorPrimaryDark"
-                            android:textSize="@dimen/small_textsize"
-                            android:textStyle="bold" />
+                            android:textColor="@color/main_color_font"
+                            android:textSize="@dimen/small_textsize" />
 
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -59,44 +95,46 @@
                             android:gravity="center"
                             android:orientation="horizontal">
 
-                            <TextView   android:id="@+id/complete_"
+                            <TextView
+                                android:id="@+id/complete_"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="1"
-                                android:textColor="@color/colorPrimaryDark"
+                                android:textColor="@color/main_color_font"
                                 android:textSize="@dimen/small_textsize" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text=" 개 완료"
-                                android:textColor="@color/colorBlack"
+                                android:textColor="@color/main_color_font"
                                 android:textSize="@dimen/small_textsize" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text=" / "
-                                android:textColor="@color/colorBlack"
+                                android:textColor="@color/main_color_font"
                                 android:textSize="@dimen/small_textsize" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="총 "
-                                android:textColor="@color/colorBlack"
+                                android:textColor="@color/main_color_font"
                                 android:textSize="@dimen/small_textsize" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="10"
-                                android:textColor="@color/colorPrimaryDark" />
+                                android:textColor="@color/main_color_font" />
+
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="개"
-                                android:textColor="@color/colorBlack"
+                                android:textColor="@color/main_color_font"
                                 android:textSize="@dimen/small_textsize" />
 
                             <ImageButton
@@ -148,17 +186,9 @@
             android:layout_margin="16dp"
             android:onClick="onFabClick"
             android:src="@drawable/ic_right_navi"
-            app:backgroundTint="@color/light_green"
-            app:rippleColor="@color/light_green" />
-        <com.wang.avi.AVLoadingIndicatorView
-            android:id="@+id/progress_avi"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            style="@style/AVLoadingIndicatorView"
-            android:visibility="visible"
-            app:indicatorName=""
-            app:indicatorColor="@color/colorPrimaryDark"
-            />
+            app:backgroundTint="@color/main_color"
+            app:rippleColor="@color/main_color" />
+
+
     </android.support.design.widget.CoordinatorLayout>
 </RelativeLayout>

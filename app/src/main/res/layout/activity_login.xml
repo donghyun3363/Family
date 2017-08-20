@@ -9,7 +9,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorWhite">
+        android:background="@color/main_color">
 
 
         <LinearLayout
@@ -24,15 +24,17 @@
                 android:layout_gravity="center"
                 android:background="@android:color/transparent"
                 android:onClick="backClick"
-                android:src="@drawable/ic_back" />
+                android:src="@drawable/ic_back_white" />
 
             <TextView
                 android:layout_width="@dimen/dp_zero"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="center"
                 android:text="로그인"
-                android:textColor="@color/colorBlack" />
+                android:textColor="@color/colorWhite"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:textSize="@dimen/bar_textsize"/>
 
             <Button
                 android:id="@+id/login_done"
@@ -43,14 +45,14 @@
                 android:onClick="doneClick"
                 android:text="완료"
                 android:textColor="@color/colorWhGray"
-                android:textSize="@dimen/small_textsize" />
+               />
         </LinearLayout>
     </android.support.v7.widget.Toolbar>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="2px"
-        android:background="@color/colorBlack" />
+        android:background="@drawable/main_color_bar_shape" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -78,6 +80,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@color/main_color_ivory"
                 android:orientation="horizontal">
 
                 <TextView
@@ -87,7 +90,7 @@
                     android:layout_marginRight="10dp"
                     android:src="@drawable/ic_add"
                     android:text="이메일"
-                    android:textColor="@color/colorBlack" />
+                    android:textColor="@color/main_color_font" />
 
                 <LinearLayout
                     android:layout_width="2dp"
@@ -103,7 +106,7 @@
                     android:hint="name@example.com"
                     android:imeOptions="actionDone|actionNext"
                     android:inputType="textEmailAddress"
-                    android:textSize="16sp" />
+                    android:textSize="@dimen/edit_textsize" />
             </LinearLayout>
         </android.support.v7.widget.CardView>
 
@@ -118,6 +121,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@color/main_color_ivory"
                 android:orientation="horizontal">
 
                 <TextView
@@ -125,7 +129,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:text="비밀번호"
-                    android:textColor="@color/colorBlack" />
+                    android:textColor="@color/main_color_font" />
 
                 <LinearLayout
                     android:layout_width="2dp"
@@ -143,7 +147,7 @@
                     android:hint="비밀번호 6자리 이상"
                     android:imeOptions="actionDone|actionNext"
                     android:inputType="textPassword"
-                    android:textSize="16sp" />
+                    android:textSize="@dimen/edit_textsize" />
             </LinearLayout>
         </android.support.v7.widget.CardView>
     </LinearLayout>

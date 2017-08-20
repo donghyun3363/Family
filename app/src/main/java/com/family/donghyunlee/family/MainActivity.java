@@ -3,11 +3,10 @@ package com.family.donghyunlee.family;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
 import com.family.donghyunlee.family.data.User;
 import com.family.donghyunlee.family.timeline.TimeLine;
 import com.google.firebase.auth.FirebaseAuth;
@@ -18,8 +17,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import me.relex.circleindicator.CircleIndicator;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     private String key;
     private DatabaseReference bucketlistReference;
     SharedPreferences.Editor editor;
+    @BindView(R.id.vp_main)
+    ViewPager vp;
     @Override
     public void onStart() {
         super.onStart();
@@ -46,15 +49,22 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         setInit();
+        setViewPager();
+        //adminSetAnswer();
+    }
 
+    private void setViewPager() {
+        CircleIndicator indicator = (CircleIndicator) findViewById(R.id.main_indicator);
+        vp.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
+        vp.setCurrentItem(0);
+        indicator.setViewPager(vp);
     }
 
     private void setInit() {
         database = FirebaseDatabase.getInstance();
         mAuth = FirebaseAuth.getInstance();
-        ImageView iv_mainImg = (ImageView) findViewById(R.id.main_img);
-        Glide.with(this).load(R.drawable.img_family1).into(iv_mainImg);
-        //adminSetAnswer();
+
+
     }
 
 
@@ -88,17 +98,18 @@ public class MainActivity extends AppCompatActivity {
                     editor.putString("groupId", user.getGroupId());
                     editor.commit();
 
-                    if(user.getGroupId().equals("empty")){
+                    if (user.getGroupId().equals("empty")) {
                         Intent intent = new Intent(getApplicationContext(), Waiting.class);
                         startActivity(intent);
                         finish();
-                    } else{
+                    } else {
                         Intent intent = new Intent(getApplicationContext(), TimeLine.class);
                         intent.putExtra("ISFIRSTTIME?", false);
                         startActivity(intent);
                         finish();
                     }
                 }
+
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
                 }
