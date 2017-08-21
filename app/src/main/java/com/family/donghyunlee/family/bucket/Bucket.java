@@ -29,7 +29,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -50,8 +49,6 @@ public class Bucket extends AppCompatActivity{
     Toolbar toolbar;
     @BindView(R.id.rv_wishlist)
     RecyclerView recyclerView;
-    @BindView(R.id.bucket_avi)
-    AVLoadingIndicatorView avLoadingIndicatorView;
     @BindView(R.id.progress)
     ImageButton progress;
 
@@ -87,7 +84,7 @@ public class Bucket extends AppCompatActivity{
         ButterKnife.bind(this);
 
         if (Build.VERSION.SDK_INT >= 21) {   //상태바 색상 변경
-            getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.light_green));
+            getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.main_color_dark_c));
         }
 
         setSupportActionBar(toolbar);
@@ -170,7 +167,7 @@ public class Bucket extends AppCompatActivity{
             storageProfileFolder = getResources().getString(R.string.storage_profiles_folder);
             storageRef = storage.getReferenceFromUrl(getResources().getString(R.string.firebase_storage));
             storageItems = new ArrayList<>();
-            avLoadingIndicatorView.show();
+
         }
 
         @Override
@@ -228,7 +225,6 @@ public class Bucket extends AppCompatActivity{
             super.onPostExecute(s);
             Log.i(TAG, ">>>>>> " + s + " <<");
 
-            avLoadingIndicatorView.hide();
             return;
         }
         @Override

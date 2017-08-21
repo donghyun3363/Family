@@ -112,7 +112,7 @@ public class Progress extends AppCompatActivity {
     }
     private void setInit() {
         if (Build.VERSION.SDK_INT >= 21) {   //상태바 색상 변경
-            getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.light_green));
+            getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.main_color_dark_c));
         }
 
         changeFlag = 0;

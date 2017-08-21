@@ -57,6 +57,7 @@ public class Comment extends AppCompatActivity {
     @BindView(R.id.comment_done)
     Button commentDone;
 
+
     private CommentRecyclerAdapter recyclerAdapter;
     private LinearLayoutManager linearLayoutManager;
     private ArrayList<CommentItem> items;
@@ -109,14 +110,9 @@ public class Comment extends AppCompatActivity {
         commentCnt = (int)inetnt.getIntExtra("CommentCnt", 0);
         likeCnt = (int)inetnt.getIntExtra("LikeCnt", 0);
         TimelineCountItem timelineCountItem = new TimelineCountItem(likeCnt, commentCnt);
-        Log.i(TAG, ">>>>>>>>>444" + currentItem.getTimeline_key());
-        Log.i(TAG, ">>>>>>>>>incommentCnt" + commentCnt);
-        Log.i(TAG, ">>>>>>>>>incLikeCnt" + likeCnt);
         currentItem.setTimelineCountItem(timelineCountItem);
-        Log.i(TAG,">>>>>>>>> 551111 //  " + currentItem.getTimelineCountItem().getLikeCnt());
 
-        Log.i(TAG,">>>>>>>>> 5511///  " + currentItem.getTimelineCountItem().getCommentCnt());
-
+        Log.i(TAG, ">>>>>>>>>>>>>>>>>>>>>>2121212121 :"+currentItem.getTimeline_contentImage());
 
         database = FirebaseDatabase.getInstance();
         mAuth = FirebaseAuth.getInstance();
@@ -155,8 +151,6 @@ public class Comment extends AppCompatActivity {
         commentReference = database.getReference().child("groups").child(groupId).child("commentCard");
         commentKey = commentReference.push().getKey();
 
-        //public CommentItem(String commentKey, String commentNickName, String commentDate,
-        // String commentContent, String commentLikeCnt, String commentProfileImage) {
         if(isChecked == 0){ // 이미지가 없을 때
             item = new CommentItem(commentKey, "empty", currentUserItem.getUserNicname(), CurDateFormat.format(date),
                     commentEdittext.getText().toString(), commentCountItem,currentUserItem.getUserImage());

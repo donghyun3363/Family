@@ -3,6 +3,7 @@ package com.family.donghyunlee.family.timeline;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -103,7 +104,6 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
         mChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Toast.makeText(mContext, "추가 + 길이" + items.size(), Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
                 mTimelineIds.add(0, dataSnapshot.getKey());
                 TimeLineItem timeLineItem = dataSnapshot.getValue(TimeLineItem.class);
@@ -382,6 +382,8 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
             @Override
             public void onClick(View v) {
                 TimelineCardDialogFragment dialogFragment = new TimelineCardDialogFragment();
+                dialogFragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme);
+
                 dialogFragment.show(fragmentManager, "fragment_dialog_test");
             }
         });

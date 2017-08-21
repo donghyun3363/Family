@@ -108,14 +108,6 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
     private FragmentManager fragmentManager;
     private EditText inputTitle;
     //  private IOverScrollDecor mVertOverScrollEffect;
-    @BindView(R.id.bar_photo)
-    ImageButton barPhoto;
-    @BindView(R.id.bar_calender)
-    ImageButton barCalender;
-    @BindView(R.id.bar_push)
-    ImageButton barPush;
-    @BindView(R.id.bar_setting)
-    ImageButton barSetting;
     @BindView(R.id.timeline_title)
     TextView timelineTitle;
     @BindView(R.id.timeline_title_image)
@@ -149,8 +141,6 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
                     titleImageDownload(titleItem.getTitleImage());
                 }
 
-
-                Toast.makeText(TimeLine.this, " 타이틀 리스너 Test ", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -194,8 +184,8 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
         overridePendingTransition(R.anim.slide_in, R.anim.step_back);
     }
 
-    @OnClick(R.id.bar_calender)
-    void calenderClick() {
+    @OnClick(R.id.bar_bucket)
+    void bucketClick() {
         Intent intent = new Intent(TimeLine.this, Bucket.class);
         startActivity(intent);
         overridePendingTransition(R.anim.slide_in, R.anim.step_back);
@@ -228,6 +218,7 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
                     case R.id.menu_edit_reset:
                         TitleItem titleItem = new TitleItem("empty", "empty");
                         titleReference.setValue(titleItem);
+                        showMessage("타이틀 명과 사진이 리셋되었습니다.");
                         return true;
                 }
                 return false;
@@ -235,6 +226,30 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
         });
         popupMenu.show();
 
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.menu_edit_title:
+                AlertDialog.Builder dialog = createDialog();
+                LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                View layout = inflater.inflate(R.layout.dialog_edit_title, (ViewGroup) findViewById(R.id.popup_edit_root));
+                inputTitle = (EditText) layout.findViewById(R.id.dialog_title);
+                dialog.setView(layout);
+                dialog.show();
+                return true;
+            case R.id.menu_edit_titleimage:
+                Intent intent = new Intent(TimeLine.this, PhotoSel.class);
+                startActivityForResult(intent, TIMELINE_TITLE_REQUESTCODE);
+                return true;
+            case R.id.menu_edit_reset:
+                titleReference.child("titleImage").setValue("empty");
+                titleReference.child("title").setValue("empty");
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 
@@ -289,12 +304,10 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
                 });
     }
 
-    //TODO
     void titleImageDownload(String filename) {
 
         String filepath = storageTitleFolder + "/" + filename;
 
-        // TODO LOADING
         storageRef.child(filepath).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
@@ -302,6 +315,7 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
                 Glide.with(getApplicationContext()).load(uri)
                         .bitmapTransform(new ColorFilterTransformation(getApplicationContext(), Color.argb(80, 0, 0, 0)))
                         .crossFade().into(timelineTitleImage);
+                //TODO 로딩
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -312,30 +326,7 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
 
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
 
-        int id = item.getItemId();
-        switch (id) {
-            case R.id.menu_edit_title:
-                AlertDialog.Builder dialog = createDialog();
-                LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-                View layout = inflater.inflate(R.layout.dialog_edit_title, (ViewGroup) findViewById(R.id.popup_edit_root));
-                inputTitle = (EditText) layout.findViewById(R.id.dialog_title);
-                dialog.setView(layout);
-                dialog.show();
-                return true;
-            case R.id.menu_edit_titleimage:
-                Intent intent = new Intent(TimeLine.this, PhotoSel.class);
-                startActivityForResult(intent, TIMELINE_TITLE_REQUESTCODE);
-                return true;
-            case R.id.menu_edit_reset:
-                titleReference.child("titleImage").setValue("empty");
-                titleReference.child("title").setValue("empty");
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -392,7 +383,7 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     // 실시간 데이터베이스에 저장
                     titleReference.child("titleImage").setValue(filename);
-                    Toast.makeText(getApplicationContext(), "이미지가 업로드 되었습니다.", Toast.LENGTH_SHORT).show();
+                    showMessage( "이미지가 업로드 되었습니다.");
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -417,8 +408,7 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
                     public void onClick(DialogInterface dialog, int which) {
 
                         if (inputTitle.length() <= 0) {
-                            //TODO 다이얼로그 꺼지는 것 처리
-                            Toast.makeText(TimeLine.this, "입력이 되지 않았습니다.", Toast.LENGTH_SHORT).show();
+                            showMessage("업로드가 되지않았습니다. 입력 정보를 모두 입력해주세요.");
 
                         } else {
 

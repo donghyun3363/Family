@@ -165,7 +165,7 @@
                                     android:layout_height="match_parent"
                                     android:gravity="center"
                                     android:text="18:00"
-                                    android:textColor="@color/colmain_color_fontorBlack" />
+                                    android:textColor="@color/main_color_font" />
                             </LinearLayout>
 
 

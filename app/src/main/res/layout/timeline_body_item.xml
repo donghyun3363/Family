@@ -96,7 +96,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1px"
+                android:layout_height="2px"
                 android:background="@color/colorWhGray" />
 
             <LinearLayout
@@ -115,7 +115,7 @@
                         android:id="@+id/timeline_content"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="30dp"
+                        android:layout_marginBottom="20dp"
                         android:text="가족들과 가장 가고 싶은 여름 여행지는?"
                         android:textColor="@color/colorBlack" />
 
@@ -181,7 +181,7 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="1px"
+                    android:layout_height="2px"
                     android:background="@color/colorWhGray" />
 
                 <LinearLayout
@@ -216,7 +216,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="하태"
+                                android:text="라이크"
                                 android:textColor="@color/main_color_font"
                                 android:textSize="14sp" />
                         </LinearLayout>

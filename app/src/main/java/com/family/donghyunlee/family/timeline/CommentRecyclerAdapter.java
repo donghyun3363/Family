@@ -87,7 +87,6 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
         commentReference = database.getReference().child("groups").child(groupId).child("commentCard");
         Log.i(TAG, ">>>>>>>>>  ??" + commentReference);
         mCommentIds = new ArrayList<>();
-        Toast.makeText(mContext, "커멘드 리스너 전이야", Toast.LENGTH_SHORT).show();
         mChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -96,8 +95,6 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
                 CommentItem commentItem = dataSnapshot.getValue(CommentItem.class);
                 items.add(commentItem);
                 notifyDataSetChanged();
-                Toast.makeText(mContext, "난 커멘트 리스너야", Toast.LENGTH_SHORT).show();
-                //notifyItemInserted(items.size() - 1); ??
             }
 
             @Override
@@ -274,10 +271,11 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
         holder.timelineCommentCnt.setText(String.format("%d", (timelineItem.getTimelineCountItem().getCommentCnt())));
         holder.timelineLikeCnt.setText(String.format("%d", (timelineItem.getTimelineCountItem().getLikeCnt())));
         profile_pathRef = storageRef.child(storageProfileFolder + "/" + timelineItem.getTimeline_profileImage());
-        timeline_pathRef = storageRef.child(storageProfileFolder + "/" + timelineItem.getTimeline_contentImage());
+        timeline_pathRef = storageRef.child(storageTimelineFolder + "/" + timelineItem.getTimeline_contentImage());
 
         Glide.with(mContext).using(new FirebaseImageLoader()).load(profile_pathRef).centerCrop()
                 .crossFade().bitmapTransform(new CropCircleTransformation(mContext)).into(holder.timelineProfileImage);
+        Log.i(TAG, ">>>>>>>>>> 212121" + timelineItem.getTimeline_contentImage());
         if (!timelineItem.getTimeline_contentImage().equals("empty")) {
             holder.timelineContentImage.setVisibility(View.VISIBLE);
             Glide.with(mContext).using(new FirebaseImageLoader()).load(timeline_pathRef).centerCrop()

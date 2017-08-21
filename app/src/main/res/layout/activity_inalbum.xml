@@ -11,11 +11,10 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_zero"
         android:layout_weight="1"
-        android:background="@drawable/scrim"
         android:orientation="vertical">
         <ImageView
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_centerInParent="true"
             android:fitsSystemWindows="true"
             android:scaleType="centerCrop"
@@ -36,7 +35,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:transitionName="@string/transitionName" />
+            android:transitionName="@string/transitionName"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -61,7 +62,7 @@
                         android:layout_gravity="center"
                         android:background="@android:color/transparent"
                         android:onClick="backClick"
-                        android:src="@drawable/ic_back_greentea" />
+                        android:src="@drawable/ic_back_white" />
 
                     <TextView
                         android:layout_width="@dimen/dp_zero"
@@ -71,7 +72,7 @@
                         android:text="하나의 추억"
                         android:layout_marginLeft="10dp"
                         android:textSize="@dimen/bar_textsize"
-                        android:textColor="@color/main_color" />
+                        android:textColor="@color/colorWhite" />
 
                     <ImageButton
                         android:layout_width="30dp"
@@ -88,7 +89,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center_horizontal"
                 android:text="앨범 명"
-                android:textColor="@color/main_color_dark"
+                android:textColor="@color/colorWhite"
                 android:textSize="@dimen/bar_textsize"
                 android:textStyle="bold"
                 android:transitionName="@string/transitionName2" />
@@ -139,6 +140,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:background="@color/main_color_ivory"
                 android:onClick="onAlbumUploadClick">
 
                 <ImageView
@@ -163,6 +165,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:background="@color/main_color_ivory"
                 android:onClick="onInalbumUploadClick">
 
                 <ImageView
@@ -177,7 +180,7 @@
                     android:layout_gravity="center"
                     android:layout_margin="10dp"
                     android:gravity="center"
-                    android:text="사진 올리기"
+                    android:text="사진 추가"
                     android:textColor="@color/colorBlack" />
             </LinearLayout>
         </LinearLayout>

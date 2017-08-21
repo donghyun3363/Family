@@ -6,8 +6,10 @@ package com.family.donghyunlee.family.setting;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
@@ -29,7 +31,6 @@ public class Setting extends AppCompatActivity {
     @BindView(R.id.setting_logout)
     TextView settingLogOut;
 
-
     private FirebaseAuth mAuth;
 
 
@@ -43,7 +44,16 @@ public class Setting extends AppCompatActivity {
     }
 
     private void setInit() {
+        if (Build.VERSION.SDK_INT >= 21) {   //상태바 색상 변경
+            getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.main_color_dark_c));
+        }
+
         mAuth = FirebaseAuth.getInstance();
+    }
+    @OnClick(R.id.setting_back)
+    void backClick(){
+        finish();
+        overridePendingTransition(R.anim.step_in, R.anim.slide_out);
     }
 
     @OnClick(R.id.setting_logout)
