@@ -129,8 +129,12 @@ public class ProfileRecyclerAdapter extends RecyclerView.Adapter<ProfileRecycler
     private void onInviteClicked() {
 
         Activity origin = (Activity)mContext;
-
-
+//
+//    <string name="invitation_title">Send App Invite Quickstart Invitation</string>
+//    <string name="invitation_message">This app is terrific, give it a try and get $5 off!</string>
+//    <string name="invitation_deep_link">http://example.com/offer/five_dollar_offer</string>
+//    <string name="invitation_custom_image">https://developers.google.com/identity/images/g-logo.png</string>
+//    <string name="invitation_cta">Install!</string>
         Intent intent = new AppInviteInvitation.IntentBuilder(mContext.getString(R.string.invitation_title))
                 .setMessage(mContext.getString(R.string.invitation_message))
                 .setDeepLink(Uri.parse(mContext.getString(R.string.invitation_deep_link)))

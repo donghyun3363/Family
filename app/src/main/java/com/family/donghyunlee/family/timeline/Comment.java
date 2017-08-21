@@ -32,6 +32,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
@@ -76,7 +78,7 @@ public class Comment extends AppCompatActivity {
     private int likeCnt;
     private int commentCnt;
     private User currentUserItem;
-
+    int currentPositon;
     private Uri uri;
     private String filePath;
     private String commentKey;
@@ -105,10 +107,11 @@ public class Comment extends AppCompatActivity {
         }
 
 
-        Intent inetnt = getIntent();
-        currentItem =  (TimeLineItem)inetnt.getExtras().getParcelable("TimelineItem");
-        commentCnt = (int)inetnt.getIntExtra("CommentCnt", 0);
-        likeCnt = (int)inetnt.getIntExtra("LikeCnt", 0);
+        Intent intent = getIntent();
+        currentItem =  (TimeLineItem)intent.getExtras().getParcelable("TimelineItem");
+        commentCnt = (int)intent.getIntExtra("CommentCnt", 0);
+        likeCnt = (int)intent.getIntExtra("LikeCnt", 0);
+        currentPositon = (int)intent.getIntExtra("position", 0);
         TimelineCountItem timelineCountItem = new TimelineCountItem(likeCnt, commentCnt);
         currentItem.setTimelineCountItem(timelineCountItem);
 
@@ -127,6 +130,7 @@ public class Comment extends AppCompatActivity {
         userReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                //TODO USER를 가져오기전에 OnClick했을 때 문제가 생긴다.. 이게 수행될 때까지 다이얼로그 프로그래스바? 해주는게 맞냐?
                 currentUserItem = dataSnapshot.getValue(User.class);
             }
 
@@ -138,6 +142,13 @@ public class Comment extends AppCompatActivity {
     }
     @OnClick(R.id.back_comment)
     void backClick(){
+        // 마지막 타임라인 아이템을 저장 ( because of 커맨트 수 )
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString("recent_timeline_key", currentItem.getTimeline_key());
+        editor.putInt("recent_timeline_position", currentPositon);
+        editor.commit();
+
+        Intent sendIntent = new Intent(this, TimeLine.class);
         finish();
         overridePendingTransition(R.anim.step_in, R.anim.slide_out);    // 기존, 현재 순
     }
@@ -148,20 +159,53 @@ public class Comment extends AppCompatActivity {
         Date date = new Date(now);
         SimpleDateFormat CurDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분");
         CommentCountItem commentCountItem = new CommentCountItem(0);
-        commentReference = database.getReference().child("groups").child(groupId).child("commentCard");
+        commentReference = database.getReference().child("groups").child(groupId).child("commentCard").child(currentItem.getTimeline_key());
         commentKey = commentReference.push().getKey();
 
         if(isChecked == 0){ // 이미지가 없을 때
-            item = new CommentItem(commentKey, "empty", currentUserItem.getUserNicname(), CurDateFormat.format(date),
+            item = new CommentItem(currentItem.getTimeline_key(), commentKey, "empty", currentUserItem.getUserNicname(), CurDateFormat.format(date),
                     commentEdittext.getText().toString(), commentCountItem,currentUserItem.getUserImage());
         }
         else{               // 이미지가 있을 때
-            item = new CommentItem(commentKey, filePath, currentUserItem.getUserNicname(), CurDateFormat.format(date),
+            item = new CommentItem(currentItem.getTimeline_key(), commentKey, filePath, currentUserItem.getUserNicname(), CurDateFormat.format(date),
                     commentEdittext.getText().toString(), commentCountItem,currentUserItem.getUserImage());
         }
         commentReference.child(commentKey).setValue(item);
+        commentEdittext.setText("");
+        changeCommentCount();
+
+        recyclerAdapter.setAddCommentCnt(recyclerAdapter.getAddCommentCnt() + 1);
+        recyclerAdapter.notifyItemChanged(0);
         // 디비에 넣기!
     }
+    private void changeCommentCount(){
+        String key = currentItem.getTimeline_key();
+        commentReference = database.getReference().child("groups").child(groupId)
+                .child("timelineCard").child(key).child("timelineCountItem");
+        commentReference.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                TimelineCountItem timelineCountItem = mutableData.getValue(TimelineCountItem.class);
+                if(timelineCountItem == null){
+                    Log.i(TAG, ">>>>>>     her");
+                    ++commentCnt;
+                    return Transaction.success(mutableData);
+                } else{
+                    int cnt = timelineCountItem.getCommentCnt();
+                    timelineCountItem.setCommentCnt(++cnt);
+                }
+                mutableData.setValue(timelineCountItem);
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+            }
+        });
+
+    }
+
     @OnClick(R.id.comment_image_get)
     void onImageClick(){
         Intent intent = new Intent(Comment.this, PhotoSel.class);

@@ -61,9 +61,6 @@ public class LogIn extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-//        currentUser = mAuth.getCurrentUser();
-//        //Log.e(TAG, ">>>>>>          ID: " + currentUser.getUid());
-//        updateUI(currentUser);
     }
 
     @Override
@@ -138,7 +135,7 @@ public class LogIn extends AppCompatActivity {
 
     private void updateUI(FirebaseUser user) {
         if (user != null) {
-
+            currentUser = mAuth.getCurrentUser();
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {

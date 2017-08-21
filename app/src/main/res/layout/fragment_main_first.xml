@@ -13,7 +13,7 @@
 
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="300dp"
+        android:layout_height="400dp"
         android:orientation="vertical"
         android:layout_centerInParent="true">
 
@@ -30,7 +30,7 @@
             android:text="하나뿐인 가족들과 함께"
             android:textSize="17sp"
             android:textColor="@color/colorWhite"
-            android:textStyle="bold" />
+            />
         <TextView
             android:layout_width="200dp"
             android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
             android:text="새로운 공간을 Fam에서 만들어 나가세요"
             android:textSize="17sp"
             android:textColor="@color/colorWhite"
-            android:textStyle="bold" />
+            />
     </LinearLayout>
 
 </RelativeLayout>

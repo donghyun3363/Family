@@ -12,21 +12,36 @@ public class CommentItem {
     private String commentNickName;
     private String commentDate;
     private String commentContent;
-
     private String commentProfileImage;
     private String commentImage;
     private CommentCountItem commentCountItem;
+    private String timelineKey;
+    private boolean isCheck;
     public CommentItem(){
 
     }
-    public CommentItem(String commentKey, String commentImage, String commentNickName, String commentDate, String commentContent, CommentCountItem commentCountItem, String commentProfileImage) {
+    public CommentItem(String timelineKey, String commentKey, String commentImage, String commentNickName, String commentDate, String commentContent, CommentCountItem commentCountItem, String commentProfileImage) {
         this.commentKey = commentKey;
+        this.timelineKey = timelineKey;
         this.commentNickName = commentNickName;
         this.commentDate = commentDate;
         this.commentContent = commentContent;
         this.commentCountItem = commentCountItem;
         this.commentProfileImage = commentProfileImage;
         this.commentImage = commentImage;
+        isCheck = false;
+    }
+
+    public void setIsCheck(boolean isCheck) {
+        this.isCheck = isCheck;
+    }
+
+    public void setCommentCountItem(CommentCountItem commentCountItem) {
+        this.commentCountItem = commentCountItem;
+    }
+
+    public void setTimelineKey(String timelineKey) {
+        this.timelineKey = timelineKey;
     }
 
     public void setCommentKey(String commentKey) {
@@ -52,6 +67,10 @@ public class CommentItem {
 
     public void setCommentImage(String commentImage) {
         this.commentImage = commentImage;
+    }
+
+    public String getTimelineKey() {
+        return timelineKey;
     }
 
     public String getCommentKey() {
@@ -80,5 +99,9 @@ public class CommentItem {
 
     public String getCommentImage() {
         return commentImage;
+    }
+
+    public boolean getIsCheck() {
+        return isCheck;
     }
 }

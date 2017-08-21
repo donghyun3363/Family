@@ -70,6 +70,7 @@ public class Bucket extends AppCompatActivity{
     void onProgressClick(){
         Intent intent = new Intent(Bucket.this, Progress.class);
         startActivity(intent);
+        overridePendingTransition(R.anim.slide_in, R.anim.step_back);
     }
     @OnClick(R.id.fab_bucket)
     void onFabClick(){
@@ -77,6 +78,12 @@ public class Bucket extends AppCompatActivity{
 
 
     }
+    @OnClick(R.id.bucket_back)
+    void backClick(){
+        finish();
+        overridePendingTransition(R.anim.step_in, R.anim.slide_out);
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,9 +94,6 @@ public class Bucket extends AppCompatActivity{
             getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.main_color_dark_c));
         }
 
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("버킷 공간");
         items = new ArrayList<>();
         pref = getSharedPreferences("pref", MODE_PRIVATE);
         groupId = pref.getString("groupId", "");

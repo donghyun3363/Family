@@ -77,6 +77,11 @@ public class Progress extends AppCompatActivity {
         setInit();
 
     }
+    @OnClick(R.id.progress_back)
+    void backClick(){
+        finish();
+        overridePendingTransition(R.anim.step_in, R.anim.slide_out);
+    }
     @OnClick(R.id.fab_progress)
     void onFabClick(){
 
@@ -116,9 +121,6 @@ public class Progress extends AppCompatActivity {
         }
 
         changeFlag = 0;
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("등록된 버킷");
         pref = getSharedPreferences("pref", MODE_PRIVATE);
         groupId = pref.getString("groupId", "");
 
@@ -152,11 +154,11 @@ public class Progress extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
-                //onBackPressed();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
     public class AccessDatabaseTask extends AsyncTask<Integer, String, Long> {
 
         public Long result = null;

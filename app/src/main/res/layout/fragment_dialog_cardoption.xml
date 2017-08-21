@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -7,8 +7,7 @@
     <LinearLayout
         android:id="@+id/photosel_back"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="#80000000"
         android:onClick="backClick">
@@ -16,7 +15,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="230dp"
-        android:background="@color/colorWhGray"
+        android:background="#80000000"
+        android:layout_centerInParent="true"
         android:orientation="vertical">
 
         <TextView
@@ -43,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:background="@color/colorWhite"
                 android:onClick="camereClick"
-                android:text="사진 촬영"
+                android:text="삭제"
                 android:textColor="@color/colorBlack" />
         </android.support.v7.widget.CardView>
 
@@ -64,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:background="@color/colorWhite"
                 android:onClick="albumClick"
-                android:text="앨범에서 선택"
+                android:text="수정"
                 android:textColor="@color/colorBlack" />
         </android.support.v7.widget.CardView>
 
@@ -90,4 +90,4 @@
         </android.support.v7.widget.CardView>
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

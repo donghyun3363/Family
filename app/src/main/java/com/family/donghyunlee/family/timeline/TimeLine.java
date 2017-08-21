@@ -37,6 +37,7 @@ import com.family.donghyunlee.family.R;
 import com.family.donghyunlee.family.bucket.Bucket;
 import com.family.donghyunlee.family.data.MyBucketList;
 import com.family.donghyunlee.family.data.TimeLineItem;
+import com.family.donghyunlee.family.data.TimelineCountItem;
 import com.family.donghyunlee.family.data.TitleItem;
 import com.family.donghyunlee.family.data.User;
 import com.family.donghyunlee.family.photoalbum.PhotoAlbum;
@@ -81,6 +82,7 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
     private static final int GET_PROFILE_TO_SERVER = 1;
     private static final int TIMELINE_TITLE_REQUESTCODE = 101;
     private static final int REQUEST_INVITE = 3;
+    private static final int WANT_TO_COMMENT_COUNT = 102;
 
     private boolean isFristTime;
     private SharedPreferences pref;
@@ -90,7 +92,7 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
     private DatabaseReference groupReference;
     private DatabaseReference userReference;
     private DatabaseReference titleReference;
-    private DatabaseReference likeReference;
+    private DatabaseReference commentReference;
     private ArrayList<MyBucketList> elseItems;
     private MyBucketList myItem;
     private MyBucketList tempItem;
@@ -118,6 +120,31 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
     @BindView(R.id.rv_timeline)
     RecyclerView recyclerView;
     private Uri uri;
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        // commentcnt 갱신
+        String recent_timeline_key = pref.getString("recent_timeline_key", "");
+        final int recent_timeline_position = pref.getInt("recent_timeline_position", 0);
+        commentReference = database.getReference().child("groups").child(groupId).child("timelineCard")
+                .child(recent_timeline_key).child("timelineCountItem");
+
+        commentReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                TimelineCountItem timelineCountItem = dataSnapshot.getValue(TimelineCountItem.class);
+                recyclerAdapter.notifyItemChanged(recent_timeline_position + 1, timelineCountItem);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
 
     @Override
     protected void onStart() {
@@ -357,6 +384,7 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
                     showMessage(getString(R.string.send_failed));
                     // [END_EXCLUDE]
                 }
+
 
             default:
                 break;

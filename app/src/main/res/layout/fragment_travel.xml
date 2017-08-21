@@ -24,24 +24,13 @@
                 android:text="지도에서 확인"
                 android:textAppearance="@style/TextAppearance.AppCompat" />
 
-            <com.github.aakira.expandablelayout.ExpandableRelativeLayout
-                android:id="@+id/expandableLayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@id/expandText"
-                android:background="@color/transparent_black"
-                app:ael_duration="150"
-                app:ael_expanded="false"
-                app:ael_interpolator="accelerate"
-                app:ael_orientation="vertical">
-
                 <com.google.android.gms.maps.MapView
                     android:id="@+id/mapview"
                     android:name="com.google.android.gms.maps.MapFragment"
                     android:layout_width="match_parent"
                     android:layout_height="250dp"
-                    android:onClick="dragListenerFun" />
-            </com.github.aakira.expandablelayout.ExpandableRelativeLayout>
+                    android:onClick="dragList66enerFun" />
+
         </RelativeLayout>
 
         <LinearLayout

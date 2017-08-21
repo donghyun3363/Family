@@ -9,8 +9,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_zero"
-        android:layout_weight="1"
+        android:layout_height="200dp"
+        android:background="@color/main_color_darkgray"
         android:orientation="vertical">
         <ImageView
             android:layout_width="100dp"
@@ -26,18 +26,21 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="10dp"
             android:text="타이틀 명과 사진을 변경해보세요!"
             android:textColor="@color/main_color_dark_c"
             android:textSize="16sp"/>
+
         <ImageView
             android:id="@+id/img_album_photo"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
+            android:foreground="#88000000"
             android:transitionName="@string/transitionName"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -189,7 +192,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="320dp"
+        android:layout_height="@dimen/dp_zero"
+        android:layout_weight="1"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:layout_marginBottom="10dp"

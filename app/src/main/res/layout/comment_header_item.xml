@@ -30,16 +30,22 @@
                     android:layout_height="70dp"
                     android:orientation="horizontal">
 
-                    <ImageView
-                        android:id="@+id/comment_incard_profile"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:layout_centerInParent="true"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft="8dp"
+                    <LinearLayout
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="10dp"
                         android:background="@drawable/circle_solid_shape"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/ic_user" />
+                        android:gravity="center">
+
+                        <ImageView
+                            android:id="@+id/comment_incard_profile"
+                            android:layout_width="45dp"
+                            android:layout_height="45dp"
+                            android:background="@drawable/circle_solid_shape"
+                            android:scaleType="fitXY"
+                            android:src="@drawable/ic_user" />
+                    </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="@dimen/dp_zero"
@@ -67,8 +73,7 @@
                                     android:paddingLeft="4dp"
                                     android:paddingTop="8dp"
                                     android:text="동이"
-                                    android:textColor="@color/main_color_font"
-                                    />
+                                    android:textColor="@color/main_color_font" />
 
                             </LinearLayout>
 
@@ -177,6 +182,7 @@
 
                     </LinearLayout>
                 </LinearLayout>
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="2px"

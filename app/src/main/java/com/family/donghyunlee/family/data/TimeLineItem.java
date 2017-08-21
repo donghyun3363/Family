@@ -16,13 +16,12 @@ public class TimeLineItem implements Parcelable {
     private String timeline_key;
     private String timeline_contentImage;
     private TimelineCountItem timelineCountItem;
-    private int isSelect;
-
+    private boolean isCheck;
     TimeLineItem() {
 
     }
 
-    public TimeLineItem(TimelineCountItem timelineCountItem, String timeline_key, String timeline_nickName,
+    public TimeLineItem( TimelineCountItem timelineCountItem, String timeline_key, String timeline_nickName,
                         String timeline_profileImage, String timeline_date, String timeline_content, String timeline_userId, String timeline_contentImage) {
         this.timeline_key = timeline_key;
         this.timeline_nickName = timeline_nickName;
@@ -32,7 +31,7 @@ public class TimeLineItem implements Parcelable {
         this.timeline_userId = timeline_userId;
         this.timeline_contentImage = timeline_contentImage;
         this.timelineCountItem = timelineCountItem;
-        isSelect = 0;
+        isCheck = false;
     }
     public TimeLineItem(String timeline_key, String timeline_nickName,
                         String timeline_profileImage, String timeline_date, String timeline_content, String timeline_userId, String timeline_contentImage) {
@@ -43,11 +42,11 @@ public class TimeLineItem implements Parcelable {
         this.timeline_content = timeline_content;
         this.timeline_userId = timeline_userId;
         this.timeline_contentImage = timeline_contentImage;
-        isSelect = 0;
+        isCheck = false;
     }
 
-    public void setIsSelect(int isSelect) {
-        this.isSelect = isSelect;
+    public void setIsCheck(boolean check) {
+        isCheck = check;
     }
 
     public void setTimelineCountItem(TimelineCountItem timelineCountItem) {
@@ -82,6 +81,7 @@ public class TimeLineItem implements Parcelable {
         this.timeline_contentImage = timeline_contentImage;
     }
 
+
     public TimelineCountItem getTimelineCountItem() {
         return timelineCountItem;
     }
@@ -114,9 +114,8 @@ public class TimeLineItem implements Parcelable {
         return timeline_contentImage;
     }
 
-
-    public int getIsSelect() {
-        return isSelect;
+    public boolean getIsCheck() {
+        return isCheck;
     }
 
     @Override

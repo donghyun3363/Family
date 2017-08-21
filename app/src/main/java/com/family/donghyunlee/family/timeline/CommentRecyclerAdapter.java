@@ -1,6 +1,7 @@
 package com.family.donghyunlee.family.timeline;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +19,8 @@ import com.family.donghyunlee.family.data.CommentItem;
 import com.family.donghyunlee.family.data.IsCheck;
 import com.family.donghyunlee.family.data.TimeLineItem;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -70,10 +73,10 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
     private String groupId;
     private List<String> mCommentIds;
     String commentKey;
-    private int selectLike = 0;
-    private TimeLineItem timelineItem;
 
-    public CommentRecyclerAdapter(Context context, final ArrayList<CommentItem> items, String groupId, TimeLineItem timelineItem) {
+    private TimeLineItem timelineItem;
+    private int addCommentCnt;
+    public CommentRecyclerAdapter(Context context, final ArrayList<CommentItem> items, final String groupId, TimeLineItem timelineItem) {
 
         this.mContext = context;
         this.items = items;
@@ -83,8 +86,10 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
         database = FirebaseDatabase.getInstance();
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+        addCommentCnt = 0;
 
-        commentReference = database.getReference().child("groups").child(groupId).child("commentCard");
+
+        commentReference = database.getReference().child("groups").child(groupId).child("commentCard").child(timelineItem.getTimeline_key());
         Log.i(TAG, ">>>>>>>>>  ??" + commentReference);
         mCommentIds = new ArrayList<>();
         mChildEventListener = new ChildEventListener() {
@@ -92,9 +97,43 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
                 mCommentIds.add(0, dataSnapshot.getKey());
-                CommentItem commentItem = dataSnapshot.getValue(CommentItem.class);
-                items.add(commentItem);
-                notifyDataSetChanged();
+                final CommentItem commentItem = dataSnapshot.getValue(CommentItem.class);
+                String key = commentItem.getCommentKey();
+                likeUserReference = database.getReference().child("groups").child(groupId).child("likes")
+                        .child("commentCard").child(key).child("users").child(currentUser.getUid());
+                likeUserReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        IsCheck ischeck = dataSnapshot.getValue(IsCheck.class);
+                        if (ischeck == null){
+                            Log.i(TAG, ">>>>>>>>>> 1");
+                            commentItem.setIsCheck(false);
+                            items.add(commentItem);
+                            notifyDataSetChanged();
+                            return;
+                        } else if (ischeck.getIsCheck()) {
+
+                            Log.i(TAG, ">>>>>>>>>> 2");
+                            commentItem.setIsCheck(true);
+                            items.add(commentItem);
+                            notifyDataSetChanged();
+                            return;
+
+                        } else if(!ischeck.getIsCheck()){
+
+                            Log.i(TAG, ">>>>>>>>>> 3");
+                            commentItem.setIsCheck(false);
+                            items.add(commentItem);
+                            notifyDataSetChanged();
+                            return;
+                        }
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
             }
 
             @Override
@@ -268,14 +307,14 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
         holder.timelineNickname.setText(timelineItem.getTimeline_nickName());
         holder.timelineDate.setText(timelineItem.getTimeline_date());
         holder.timelineContent.setText(timelineItem.getTimeline_content());
-        holder.timelineCommentCnt.setText(String.format("%d", (timelineItem.getTimelineCountItem().getCommentCnt())));
+        holder.timelineCommentCnt.setText(String.format("%d", ((timelineItem.getTimelineCountItem().getCommentCnt())) + addCommentCnt));
         holder.timelineLikeCnt.setText(String.format("%d", (timelineItem.getTimelineCountItem().getLikeCnt())));
         profile_pathRef = storageRef.child(storageProfileFolder + "/" + timelineItem.getTimeline_profileImage());
         timeline_pathRef = storageRef.child(storageTimelineFolder + "/" + timelineItem.getTimeline_contentImage());
 
         Glide.with(mContext).using(new FirebaseImageLoader()).load(profile_pathRef).centerCrop()
                 .crossFade().bitmapTransform(new CropCircleTransformation(mContext)).into(holder.timelineProfileImage);
-        Log.i(TAG, ">>>>>>>>>> 212121" + timelineItem.getTimeline_contentImage());
+
         if (!timelineItem.getTimeline_contentImage().equals("empty")) {
             holder.timelineContentImage.setVisibility(View.VISIBLE);
             Glide.with(mContext).using(new FirebaseImageLoader()).load(timeline_pathRef).centerCrop()
@@ -286,19 +325,35 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
 
 
     }
+    public void setAddCommentCnt(int addCommentCnt){
+        this.addCommentCnt = addCommentCnt;
+    }
+    public int getAddCommentCnt(){
+        return addCommentCnt;
+    }
     // body itemSet bind
     private void bindBodyItem(final CommentViewHolder holder, final int position) {
 
         holder.commentNickName.setText(items.get(position).getCommentNickName());
         holder.commentDate.setText(items.get(position).getCommentDate());
         holder.commentContent.setText(items.get(position).getCommentContent());
-       // holder.commentLikeCnt.setText(items.get(position).getLikeCountItem().getLikeCnt());
+        holder.commentLikeCnt.setText(String.format("%d", (items.get(position).getCommentCountItem().getLikeCnt())));
+
         profile_pathRef = storageRef.child(storageProfileFolder + "/" + items.get(position).getCommentProfileImage());
 
         Glide.with(mContext).using(new FirebaseImageLoader()).load(profile_pathRef).centerCrop()
                 .crossFade().bitmapTransform(new CropCircleTransformation(mContext)).into(holder.commentProfileImage);
         Log.i(TAG, ">>>>>>>>>>>20        :"  + items.get(position).getCommentDate());
 
+        // 버튼 set.
+        if(items.get(position).getIsCheck() == false){
+            Log.i(TAG, ">>>>>>>>>       false");
+            holder.commentLike.setSelected(false);
+
+        } else{
+            Log.i(TAG, ">>>>>>>>>       true");
+            holder.commentLike.setSelected(true);
+        }
 
         if(!items.get(position).getCommentImage().equals("empty")){
             holder.commentImage.setVisibility(View.VISIBLE);
@@ -339,27 +394,40 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
             }
         });
     }
+
     private void changeLikeCount(final CommentViewHolder holder, final int position) {
         String key = items.get(position).getCommentKey();
         likeUserReference = database.getReference().child("groups").child(groupId).child("likes")
-                .child("commentCard").child(key).child("users").child(currentUser.getUid());
+                .child("commentCard").child(timelineItem.getTimeline_key()).child(key).child("users");
         likeReference = database.getReference().child("groups").child(groupId)
-                .child("commentCard").child(key).child("commentCountItem");
-        int cnt = Integer.parseInt(holder.commentLikeCnt.getText().toString());
-        if (selectLike == 0) {
-            // 트랜지션 like +1
-            holder.commentLike.setSelected(true);
-            holder.commentLikeCnt.setText(String.format("%d", ++cnt));
-            selectLike = 1;
-            Toast.makeText(mContext, "true", Toast.LENGTH_SHORT).show();
+                .child("commentCard").child(timelineItem.getTimeline_key()).child(key).child("commentCountItem");
+
+
+        IsCheck isCheck;
+
+
+        if (!items.get(position).getIsCheck()) { // 좋아요 클릭
+            items.get(position).setIsCheck(true);
+            // 개인 사용자 좋아요 클릭 설정
+            isCheck = new IsCheck(true);
+            likeUserReference.child(currentUser.getUid()).setValue(isCheck).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    int cnt = Integer.parseInt(holder.commentLikeCnt.getText().toString());
+                    items.get(position).setIsCheck(true);
+                    // 좋아요 카운트
+                    holder.commentLike.setSelected(true);
+                    holder.commentLikeCnt.setText(String.format("%d", ++cnt));
+                }
+            });
             likeReference.runTransaction(new Transaction.Handler() {
                 @Override
                 public Transaction.Result doTransaction(MutableData mutableData) {
                     CommentCountItem commentCountItem = mutableData.getValue(CommentCountItem.class);
-                    if(commentCountItem == null){
+                    if (commentCountItem == null) {
                         return Transaction.success(mutableData);
-                    } else{
-                        Log.d(TAG, ">>>>>>>...... "+  commentCountItem.getLikeCnt());
+                    } else {
+
                         int cnt = commentCountItem.getLikeCnt();
                         commentCountItem.setLikeCnt(++cnt);
                     }
@@ -376,20 +444,30 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
 
                 }
             });
-        } else {
-            selectLike = 0;
-            Toast.makeText(mContext, "false", Toast.LENGTH_SHORT).show();
-            // 트랜지션 like -1
-            holder.commentLike.setSelected(false);
-            holder.commentLikeCnt.setText(String.format("%d", --cnt));
+        } else { // 좋아요 클릭 해제
+
+            items.get(position).setIsCheck(false);
+            // 개인 사용자 좋아요 클릭 설정
+
+            isCheck = new IsCheck(false);
+            likeUserReference.child(currentUser.getUid()).setValue(isCheck).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    int cnt = Integer.parseInt(holder.commentLikeCnt.getText().toString());
+                    items.get(position).setIsCheck(false);
+                    holder.commentLike.setSelected(false);
+                    holder.commentLikeCnt.setText(String.format("%d", --cnt));
+                }
+            });
+
             likeReference.runTransaction(new Transaction.Handler() {
                 @Override
                 public Transaction.Result doTransaction(MutableData mutableData) {
                     CommentCountItem commentCountItem = mutableData.getValue(CommentCountItem.class);
-                    if(commentCountItem == null){
+                    if (commentCountItem == null) {
                         return Transaction.success(mutableData);
-                    } else{
-                        Log.d(TAG, ">>>>>>>...... "+  commentCountItem.getLikeCnt());
+                    } else {
+                        Log.d(TAG, ">>>>>>>...... " + commentCountItem.getLikeCnt());
                         int cnt = commentCountItem.getLikeCnt();
                         commentCountItem.setLikeCnt(--cnt);
                     }

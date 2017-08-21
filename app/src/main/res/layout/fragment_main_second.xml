@@ -13,7 +13,7 @@
 
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="300dp"
+        android:layout_height="400dp"
         android:orientation="vertical"
         android:layout_centerInParent="true">
 
@@ -30,7 +30,7 @@
             android:text="추억들의 사진을 모아"
             android:textSize="17sp"
             android:textColor="@color/colorWhite"
-            android:textStyle="bold" />
+         />
         <TextView
             android:layout_width="200dp"
             android:layout_height="wrap_content"
@@ -38,6 +38,6 @@
             android:text="추억의 공간을 만들어보세요."
             android:textSize="17sp"
             android:textColor="@color/colorWhite"
-            android:textStyle="bold" />
+          />
     </LinearLayout>
 </RelativeLayout>

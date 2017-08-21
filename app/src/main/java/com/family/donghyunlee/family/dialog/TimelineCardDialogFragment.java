@@ -24,7 +24,7 @@ public class TimelineCardDialogFragment extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_dialog_timelinecard, container);
+        View view = inflater.inflate(R.layout.fragment_dialog_cardoption, container);
 
         // 레이아웃 XML과 뷰 변수 연결
         // remove dialog title

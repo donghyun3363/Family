@@ -3,6 +3,7 @@ package com.family.donghyunlee.family.timeline;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,6 +26,8 @@ import com.family.donghyunlee.family.data.TimelineCountItem;
 import com.family.donghyunlee.family.data.User;
 import com.family.donghyunlee.family.dialog.TimelineCardDialogFragment;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -49,6 +52,7 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
 public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecyclerAdapter.TimelineViewHolder> {
 
     private static final String TAG = TimelineRecyclerAdapter.class.getSimpleName();
+    private static final int WANT_TO_COMMENT_COUNT = 102;
     private Context mContext;
     private ArrayList<TimeLineItem> items;
     private LayoutInflater mInflater;
@@ -84,10 +88,10 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
     //아이템 클릭시 실행 함수
     Activity activity;
     // like enable
-    private int selectLike = 0;
     FragmentManager fragmentManager;
+
     public TimelineRecyclerAdapter(Activity activity, Context context, final ArrayList<TimeLineItem> items,
-                                   ArrayList<User> profile_items, String groupId, FragmentManager fragmentManager) {
+                                   ArrayList<User> profile_items, final String groupId, FragmentManager fragmentManager) {
         this.activity = activity;
         this.mContext = context;
         this.items = items;
@@ -106,9 +110,43 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
                 mTimelineIds.add(0, dataSnapshot.getKey());
-                TimeLineItem timeLineItem = dataSnapshot.getValue(TimeLineItem.class);
-                items.add(0, timeLineItem);
-                notifyDataSetChanged();
+                final TimeLineItem timeLineItem = dataSnapshot.getValue(TimeLineItem.class);
+                String key = timeLineItem.getTimeline_key();
+                likeUserReference = database.getReference().child("groups").child(groupId).child("likes")
+                        .child("timelineCard").child(key).child("users").child(currentUser.getUid());
+                likeUserReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        IsCheck ischeck = dataSnapshot.getValue(IsCheck.class);
+                        if (ischeck == null){
+                            Log.i(TAG, ">>>>>>>>>> 1");
+                            timeLineItem.setIsCheck(false);
+                            items.add(0, timeLineItem);
+                            notifyDataSetChanged();
+                            return;
+                        } else if (ischeck.getIsCheck()) {
+
+                            Log.i(TAG, ">>>>>>>>>> 2");
+                            timeLineItem.setIsCheck(true);
+                            items.add(0, timeLineItem);
+                            notifyDataSetChanged();
+                            return;
+
+                        } else if(!ischeck.getIsCheck()){
+
+                            Log.i(TAG, ">>>>>>>>>> 3");
+                            timeLineItem.setIsCheck(false);
+                            items.add(0, timeLineItem);
+                            notifyDataSetChanged();
+                            return;
+                        }
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
                 //notifyItemInserted(items.size() - 1); ??
             }
 
@@ -135,7 +173,7 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
 
-                Toast.makeText(mContext, "제거 + " +items.size(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "제거 + " + items.size(), Toast.LENGTH_SHORT).show();
                 String timelineCardKey = dataSnapshot.getKey();
                 // [START_EXCLUDE]
                 int timelineIndex = mTimelineIds.indexOf(timelineCardKey);
@@ -144,9 +182,9 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
                     mTimelineIds.remove(timelineIndex);
                     items.remove(timelineIndex);
                     // Update the RecyclerView
-                   // Log.d(TAG, ">>>>>      items: "  +items.get(timelineIndex).getTimeline_date() + "/ index:" + timelineIndex );
+                    // Log.d(TAG, ">>>>>      items: "  +items.get(timelineIndex).getTimeline_date() + "/ index:" + timelineIndex );
 
-                    notifyItemRemoved(timelineIndex+1);
+                    notifyItemRemoved(timelineIndex + 1);
                 } else {
                     Log.w(TAG, "onChildRemoved:unknown_child:" + timelineCardKey);
                 }
@@ -189,7 +227,6 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
         TextView tlHeaderContainer;
         ImageButton tlHeaderAddimage;
         ImageButton timelineExpand;
-
 
 
         // viewType 에 따른 viewHolder 정의
@@ -236,10 +273,10 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
             switch (v.getId()) {
 
                 case R.id.tl_header_container:
-
+                    Activity origin = (Activity)mContext;
                     intent = new Intent(mContext, TimelineWrite.class);
                     intent.putExtra("FLAG", 0);
-                    mContext.startActivity(intent);
+                    origin.startActivityForResult(intent, WANT_TO_COMMENT_COUNT);
                     break;
 
                 case R.id.tl_header_addimage:
@@ -252,6 +289,8 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
             }
         }
     }
+
+
     // header 여부 체크 메소드
     private boolean isPositionHeader(int position) {
         return position == 0;
@@ -271,6 +310,7 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
         } else
             return TYPE_ITEM;
     }
+
     // header, body 의 view 정의
     @Override
     public TimelineViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -314,6 +354,7 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
 
 
     }
+
     // body itemSet bind
     private void bindBodyItem(final TimelineViewHolder holder, final int position) {
 
@@ -329,7 +370,15 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
         Glide.with(mContext).using(new FirebaseImageLoader()).load(profile_pathRef).centerCrop()
                 .crossFade().bitmapTransform(new CropCircleTransformation(mContext)).into(holder.timelineProfileImage);
 
-            isCheckLiker(holder, position);
+        // 버튼 set.
+       if(items.get(position).getIsCheck() == false){
+           Log.i(TAG, ">>>>>>>>>       false");
+           holder.timelineLike.setSelected(false);
+
+       } else{
+           Log.i(TAG, ">>>>>>>>>       true");
+           holder.timelineLike.setSelected(true);
+       }
 
         if (!items.get(position).getTimeline_contentImage().equals("empty")) {
             holder.timelineContentImage.setVisibility(View.VISIBLE);
@@ -360,7 +409,8 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
                 Intent intent = new Intent(mContext, Comment.class);
                 intent.putExtra("TimelineItem", items.get(position));
                 intent.putExtra("LikeCnt", items.get(position).getTimelineCountItem().getLikeCnt());
-                intent.putExtra("commentCnt", items.get(position).getTimelineCountItem().getCommentCnt());
+                intent.putExtra("CommentCnt", items.get(position).getTimelineCountItem().getCommentCnt());
+                intent.putExtra("position", position);
                 mContext.startActivity(intent);
                 activity.overridePendingTransition(R.anim.slide_in, R.anim.step_back);
 
@@ -373,6 +423,7 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
                 intent.putExtra("TimelineItem", items.get(position));
                 intent.putExtra("LikeCnt", items.get(position).getTimelineCountItem().getLikeCnt());
                 intent.putExtra("commentCnt", items.get(position).getTimelineCountItem().getCommentCnt());
+                intent.putExtra("position", position);
                 mContext.startActivity(intent);
                 activity.overridePendingTransition(R.anim.slide_in, R.anim.step_back);
             }
@@ -390,40 +441,11 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
 
     }
 
-    private void isCheckLiker(final TimelineViewHolder holder, final int position) {
-        String key = items.get(position).getTimeline_key();
-        likeUserReference = database.getReference().child("groups").child(groupId).child("likes")
-                .child("timelineCard").child(items.get(position).getTimeline_key()).child("users").child(currentUser.getUid());
-
-        likeUserReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                IsCheck ischeck = dataSnapshot.getValue(IsCheck.class);
-                if(ischeck == null)
-                    return;
-                if(ischeck.getIsCheck()){
-                    items.get(position).setIsSelect(1);
-                    //selectLike = 1;
-                    holder.timelineLike.setSelected(true);
-                } else{
-                    //selectLike = 0;
-                    items.get(position).setIsSelect(0);
-                    holder.timelineLike.setSelected(false);
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-
+    // isCheck => 사용자가 체크 했는지 확인하는 프래그
+    // isSelect => 현재 좋아요 클릭.
     private void changeLikeCount(final TimelineViewHolder holder, final int position) {
         String key = items.get(position).getTimeline_key();
-        int cnt = Integer.parseInt(holder.timelineLikeCnt.getText().toString());
+
         IsCheck isCheck;
         likeUserReference = database.getReference().child("groups").child(groupId).child("likes")
                 .child("timelineCard").child(key).child("users");
@@ -431,25 +453,29 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
         likeReference = database.getReference().child("groups").child(groupId)
                 .child("timelineCard").child(key).child("timelineCountItem");
 
-        if (items.get(position).getIsSelect() == 0) { // 좋아요 클릭
-            items.get(position).setIsSelect(1);
+        if (!items.get(position).getIsCheck()) { // 좋아요 클릭
+            items.get(position).setIsCheck(true);
             // 개인 사용자 좋아요 클릭 설정
+            Log.i(TAG, ">>>>>>>>>>>>>>>>>>>                 HERE" + items.get(position).getIsCheck());
             isCheck = new IsCheck(true);
-            likeUserReference.child(currentUser.getUid()).setValue(isCheck);
-
-            // 좋아요 카운트
-            holder.timelineLike.setSelected(true);
-            holder.timelineLikeCnt.setText(String.format("%d", ++cnt));
-
-            Toast.makeText(mContext, "true", Toast.LENGTH_SHORT).show();
+            likeUserReference.child(currentUser.getUid()).setValue(isCheck).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    int cnt = Integer.parseInt(holder.timelineLikeCnt.getText().toString());
+                    items.get(position).setIsCheck(true);
+                    // 좋아요 카운트
+                    holder.timelineLike.setSelected(true);
+                    holder.timelineLikeCnt.setText(String.format("%d", ++cnt));
+                }
+            });
             likeReference.runTransaction(new Transaction.Handler() {
                 @Override
                 public Transaction.Result doTransaction(MutableData mutableData) {
                     TimelineCountItem timelineCountItem = mutableData.getValue(TimelineCountItem.class);
-                    if(timelineCountItem == null){
+                    if (timelineCountItem == null) {
                         return Transaction.success(mutableData);
-                    } else{
-                        Log.d(TAG, ">>>>>>>...... "+  timelineCountItem.getLikeCnt());
+                    } else {
+                        Log.d(TAG, ">>>>>>>...... " + timelineCountItem.getLikeCnt());
                         int cnt = timelineCountItem.getLikeCnt();
                         timelineCountItem.setLikeCnt(++cnt);
                     }
@@ -467,23 +493,30 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
                 }
             });
         } else { // 좋아요 클릭 해제
-            items.get(position).setIsSelect(0);
+
+            items.get(position).setIsCheck(false);
             // 개인 사용자 좋아요 클릭 설정
+
+            Log.i(TAG, ">>>>>>>>>>>>>>>>>>>                 HERE2" + items.get(position).getIsCheck());
             isCheck = new IsCheck(false);
-            likeUserReference.child(currentUser.getUid()).setValue(isCheck);
+            likeUserReference.child(currentUser.getUid()).setValue(isCheck).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    int cnt = Integer.parseInt(holder.timelineLikeCnt.getText().toString());
+                    items.get(position).setIsCheck(false);
+                    holder.timelineLike.setSelected(false);
+                    holder.timelineLikeCnt.setText(String.format("%d", --cnt));
+                }
+            });
 
-            holder.timelineLike.setSelected(false);
-            holder.timelineLikeCnt.setText(String.format("%d", --cnt));
-
-            Toast.makeText(mContext, "false", Toast.LENGTH_SHORT).show();
             likeReference.runTransaction(new Transaction.Handler() {
                 @Override
                 public Transaction.Result doTransaction(MutableData mutableData) {
                     TimelineCountItem timelineCountItem = mutableData.getValue(TimelineCountItem.class);
-                    if(timelineCountItem == null){
+                    if (timelineCountItem == null) {
                         return Transaction.success(mutableData);
-                    } else{
-                        Log.d(TAG, ">>>>>>>...... "+  timelineCountItem.getLikeCnt());
+                    } else {
+                        Log.d(TAG, ">>>>>>>...... " + timelineCountItem.getLikeCnt());
                         int cnt = timelineCountItem.getLikeCnt();
                         timelineCountItem.setLikeCnt(--cnt);
                     }
