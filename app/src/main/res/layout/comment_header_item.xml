@@ -91,13 +91,13 @@
                     <ImageButton
                         android:id="@+id/comment_incard_expand"
                         android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_height="23dp"
                         android:layout_marginRight="8dp"
                         android:layout_marginTop="8dp"
                         android:background="@android:color/transparent"
                         android:onClick="onDeleteClick"
                         android:scaleType="fitXY"
-                        android:src="@drawable/ic_down_black" />
+                        android:src="@drawable/ic_more_black" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -135,8 +135,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
+                    android:layout_height="40dp"
                     android:orientation="horizontal">
 
                     <LinearLayout
@@ -162,9 +161,10 @@
                     </LinearLayout>
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="@dimen/dp_zero"
+                        android:layout_weight="1"
                         android:layout_height="match_parent"
-                        android:gravity="center">
+                        android:gravity="start|center">
 
                         <ImageView
                             android:layout_width="25dp"
@@ -181,6 +181,15 @@
                             android:textSize="12sp" />
 
                     </LinearLayout>
+
+                    <ImageButton android:id="@+id/comment_incard_comment_bottom"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:scaleType="fitXY"
+                        android:layout_marginRight="10dp"
+                        android:src="@drawable/ic_dropdown"
+                        android:background="@android:color/transparent"/>
                 </LinearLayout>
 
                 <View

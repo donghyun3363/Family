@@ -54,9 +54,8 @@
                         android:layout_gravity="center"
                         android:layout_marginRight="10dp"
                         android:background="@android:color/transparent"
-                        android:onClick="onProgressClick"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/ic_progress" />
+
+                        />
                 </LinearLayout>
             </android.support.v7.widget.Toolbar>
 

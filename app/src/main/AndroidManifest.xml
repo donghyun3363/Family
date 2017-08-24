@@ -55,6 +55,9 @@
         <activity android:name=".PhotoSel"
             android:theme="@style/Theme.AppCompat.Translucent" >
         </activity>
+        <activity android:name=".Profile"
+            android:theme="@style/Theme.AppCompat.Translucent" >
+        </activity>
 
         <activity android:name=".photoalbum.PhotoAlbum"
             android:theme="@style/AppTheme" >

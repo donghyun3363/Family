@@ -2,6 +2,8 @@ package com.family.donghyunlee.family.timeline;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +21,7 @@ import com.family.donghyunlee.family.data.CommentCountItem;
 import com.family.donghyunlee.family.data.CommentItem;
 import com.family.donghyunlee.family.data.IsCheck;
 import com.family.donghyunlee.family.data.TimeLineItem;
+import com.family.donghyunlee.family.dialog.CommentCardDialogFragment;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -39,8 +43,6 @@ import java.util.List;
 
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
-import static com.family.donghyunlee.family.R.string.storage_timeline_folder;
-
 /**
  * Created by DONGHYUNLEE on 2017-08-18.
  */
@@ -58,7 +60,9 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
     private StorageReference storageRef;
     private StorageReference profile_pathRef;
     private StorageReference timeline_pathRef;
+    private StorageReference comment_pathRef;
     private String storageProfileFolder;
+    private String storageCommentFolder;
     private String storageTimelineFolder;
     private DatabaseReference likeUserReference;
     private DatabaseReference likeReference;
@@ -76,58 +80,72 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
 
     private TimeLineItem timelineItem;
     private int addCommentCnt;
-    public CommentRecyclerAdapter(Context context, final ArrayList<CommentItem> items, final String groupId, TimeLineItem timelineItem) {
+    private boolean isAdd;
+    private RecyclerView recyclerView;
+    private FragmentManager fragmentManager;
+
+    public CommentRecyclerAdapter(Context context, final ArrayList<CommentItem> items, final String groupId,
+                                  final TimeLineItem timelineItem, final RecyclerView recyclerView, FragmentManager fragmentManager) {
 
         this.mContext = context;
         this.items = items;
         this.mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.groupId = groupId;
         this.timelineItem = timelineItem;
+        this.recyclerView = recyclerView;
+        this.fragmentManager = fragmentManager;
         database = FirebaseDatabase.getInstance();
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         addCommentCnt = 0;
+        this.isAdd = false;
+
+        storageProfileFolder = mContext.getResources().getString(R.string.storage_profiles_folder);
+        storageCommentFolder = mContext.getResources().getString(R.string.storage_comment_folder);
+        storageTimelineFolder = mContext.getResources().getString(R.string.storage_timeline_folder);
 
 
-        commentReference = database.getReference().child("groups").child(groupId).child("commentCard").child(timelineItem.getTimeline_key());
-        Log.i(TAG, ">>>>>>>>>  ??" + commentReference);
+        commentReference = database.getReference().child("groups").child(groupId)
+                .child("commentCard").child(timelineItem.getTimeline_key());
+
         mCommentIds = new ArrayList<>();
         mChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
-                mCommentIds.add(0, dataSnapshot.getKey());
+                mCommentIds.add(dataSnapshot.getKey());
                 final CommentItem commentItem = dataSnapshot.getValue(CommentItem.class);
-                String key = commentItem.getCommentKey();
+                String commentkey = commentItem.getCommentKey();
                 likeUserReference = database.getReference().child("groups").child(groupId).child("likes")
-                        .child("commentCard").child(key).child("users").child(currentUser.getUid());
+                        .child("commentCard").child(timelineItem.getTimeline_key()).child(commentkey)
+                    .child("users").child(currentUser.getUid());
                 likeUserReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         IsCheck ischeck = dataSnapshot.getValue(IsCheck.class);
-                        if (ischeck == null){
+                        if (ischeck == null) {
                             Log.i(TAG, ">>>>>>>>>> 1");
                             commentItem.setIsCheck(false);
                             items.add(commentItem);
-                            notifyDataSetChanged();
-                            return;
                         } else if (ischeck.getIsCheck()) {
 
                             Log.i(TAG, ">>>>>>>>>> 2");
                             commentItem.setIsCheck(true);
                             items.add(commentItem);
-                            notifyDataSetChanged();
-                            return;
-
-                        } else if(!ischeck.getIsCheck()){
+                        } else if (!ischeck.getIsCheck()) {
 
                             Log.i(TAG, ">>>>>>>>>> 3");
                             commentItem.setIsCheck(false);
                             items.add(commentItem);
-                            notifyDataSetChanged();
-                            return;
                         }
+                        if (isAdd) {
+                            recyclerView.scrollToPosition(items.size());
+                        }
+                        Log.i(TAG, ">>>>>>>>>>>>>>>>>>>>>>> size: " + items.size());
+                        notifyDataSetChanged();
+                        return;
                     }
+
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
 
@@ -138,39 +156,39 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                Toast.makeText(mContext, "변경", Toast.LENGTH_SHORT).show();
-                CommentItem newCommentItem = dataSnapshot.getValue(CommentItem.class);
-                String commentKey = dataSnapshot.getKey();
-
-                // [START_EXCLUDE]
-                int commentIndex = mCommentIds.indexOf(commentKey);
-                if (commentIndex > -1) {
-
-                    items.set(commentIndex, newCommentItem);
-
-                    notifyItemChanged(commentIndex);
-                } else {
-                    Log.w(TAG, "onChildChanged:unknown_child:" + commentKey);
-                }
+//                Toast.makeText(mContext, "변경", Toast.LENGTH_SHORT).show();
+//                CommentItem newCommentItem = dataSnapshot.getValue(CommentItem.class);
+//                String commentKey = dataSnapshot.getKey();
+//
+//                // [START_EXCLUDE]
+//                int commentIndex = mCommentIds.indexOf(commentKey);
+//                if (commentIndex > -1) {
+//
+//                    items.set(commentIndex, newCommentItem);
+//
+//                    notifyItemChanged(commentIndex);
+//                } else {
+//                    Log.w(TAG, "onChildChanged:unknown_child:" + commentKey);
+//                }
                 // [END_EXCLUDE]
 
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                Toast.makeText(mContext, "제거 + " + items.size(), Toast.LENGTH_SHORT).show();
                 String commentKey = dataSnapshot.getKey();
                 // [START_EXCLUDE]
+
+                Log.i(TAG, ">>>>>>>>>>>>>>>>>>>>>>>>>   HERE:" + commentKey);
                 int commentIndex = mCommentIds.indexOf(commentKey);
                 if (commentIndex > -1) {
                     // Remove data from the list
                     mCommentIds.remove(commentIndex);
+                    Toast.makeText(mContext, "제거: + " + items.get(commentIndex).getCommentKey(), Toast.LENGTH_SHORT).show();
+                    Log.i(TAG, ">>>>>>>>>>>>>>>>>>     HERE IN ADAPTER:     " +items.get(commentIndex).getCommentKey() + "// index: "+commentIndex);
                     items.remove(commentIndex);
-                    // Update the RecyclerView
-                    // Log.d(TAG, ">>>>>      items: "  +items.get(timelineIndex).getTimeline_date() + "/ index:" + timelineIndex );
-
-                    notifyItemRemoved(commentIndex + 1);
+                    notifyDataSetChanged();
+                    //notifyItemRemoved(commentIndex + 1);
                 } else {
                     Log.w(TAG, "onChildRemoved:unknown_child:" + commentKey);
                 }
@@ -201,6 +219,7 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
         TextView commentLikeCnt;
         ImageButton commentLike;
         ImageView commentImage;
+        LinearLayout commentContainer;
         // Header 의 view components
         TextView timelineNickname;
         TextView timelineDate;
@@ -210,14 +229,13 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
         TextView timelineLikeCnt;
         ImageView timelineContentImage;
         ImageButton timelineExpand;
-
+        ImageButton timelineBottom;
 
         // viewType 에 따른 viewHolder 정의
         public CommentViewHolder(View itemView, int viewType) {
             super(itemView);
             storage = FirebaseStorage.getInstance();
-            storageProfileFolder = mContext.getResources().getString(R.string.storage_profiles_folder);
-            storageTimelineFolder = mContext.getResources().getString(storage_timeline_folder);
+
             storageRef = storage.getReferenceFromUrl(mContext.getResources().getString(R.string.firebase_storage));
             mViewType = viewType;
 
@@ -229,8 +247,9 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
                 timelineCommentCnt = (TextView) itemView.findViewById(R.id.comment_incard_comment_cnt);
                 timelineLikeCnt = (TextView) itemView.findViewById(R.id.comment_incard_like_cnt);
                 timelineContentImage = (ImageView) itemView.findViewById(R.id.comment_incard_contentimage);
-
+                timelineBottom = (ImageButton) itemView.findViewById(R.id.comment_incard_comment_bottom);
                 timelineExpand = (ImageButton) itemView.findViewById(R.id.comment_incard_expand);
+                timelineBottom.setOnClickListener(this);
                 timelineExpand.setOnClickListener(this);
 
             } else {
@@ -242,6 +261,9 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
                 commentLikeCnt = (TextView) itemView.findViewById(R.id.comment_like_cnt);
                 commentLike = (ImageButton) itemView.findViewById(R.id.comment_like);
                 commentLike.setOnClickListener(this);
+                commentContainer = (LinearLayout) itemView.findViewById(R.id.comment_container);
+
+
             }
 
         }
@@ -251,19 +273,19 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
             switch (v.getId()) {
 
                 case R.id.comment_incard_expand:
-
                     Toast.makeText(mContext, "확장", Toast.LENGTH_SHORT).show();
                     break;
 
                 case R.id.comment_like:
-
-
                     Toast.makeText(mContext, "좋아요", Toast.LENGTH_SHORT).show();
-
                     break;
+                case R.id.comment_incard_comment_bottom:
+                    recyclerView.scrollToPosition(items.size());
             }
         }
+
     }
+
     // header 여부 체크 메소드
     private boolean isPositionHeader(int position) {
         return position == 0;
@@ -302,6 +324,7 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
             bindBodyItem(holder, position - 1);
         }
     }
+
     // head itemSet bind
     private void bindHeaderItem(CommentViewHolder holder) {
         holder.timelineNickname.setText(timelineItem.getTimeline_nickName());
@@ -311,6 +334,7 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
         holder.timelineLikeCnt.setText(String.format("%d", (timelineItem.getTimelineCountItem().getLikeCnt())));
         profile_pathRef = storageRef.child(storageProfileFolder + "/" + timelineItem.getTimeline_profileImage());
         timeline_pathRef = storageRef.child(storageTimelineFolder + "/" + timelineItem.getTimeline_contentImage());
+
 
         Glide.with(mContext).using(new FirebaseImageLoader()).load(profile_pathRef).centerCrop()
                 .crossFade().bitmapTransform(new CropCircleTransformation(mContext)).into(holder.timelineProfileImage);
@@ -325,12 +349,19 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
 
 
     }
-    public void setAddCommentCnt(int addCommentCnt){
+
+    public void setIsAdd(boolean isAdd) {
+        this.isAdd = isAdd;
+    }
+
+    public void setAddCommentCnt(int addCommentCnt) {
         this.addCommentCnt = addCommentCnt;
     }
-    public int getAddCommentCnt(){
+
+    public int getAddCommentCnt() {
         return addCommentCnt;
     }
+
     // body itemSet bind
     private void bindBodyItem(final CommentViewHolder holder, final int position) {
 
@@ -338,26 +369,26 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
         holder.commentDate.setText(items.get(position).getCommentDate());
         holder.commentContent.setText(items.get(position).getCommentContent());
         holder.commentLikeCnt.setText(String.format("%d", (items.get(position).getCommentCountItem().getLikeCnt())));
-
         profile_pathRef = storageRef.child(storageProfileFolder + "/" + items.get(position).getCommentProfileImage());
+        comment_pathRef = storageRef.child(storageCommentFolder + "/" + items.get(position).getCommentImage());
 
         Glide.with(mContext).using(new FirebaseImageLoader()).load(profile_pathRef).centerCrop()
                 .crossFade().bitmapTransform(new CropCircleTransformation(mContext)).into(holder.commentProfileImage);
-        Log.i(TAG, ">>>>>>>>>>>20        :"  + items.get(position).getCommentDate());
 
         // 버튼 set.
-        if(items.get(position).getIsCheck() == false){
+        if (items.get(position).getIsCheck() == false) {
             Log.i(TAG, ">>>>>>>>>       false");
             holder.commentLike.setSelected(false);
 
-        } else{
+        } else {
             Log.i(TAG, ">>>>>>>>>       true");
             holder.commentLike.setSelected(true);
         }
 
-        if(!items.get(position).getCommentImage().equals("empty")){
+        if (!items.get(position).getCommentImage().equals("empty")) {
             holder.commentImage.setVisibility(View.VISIBLE);
-            Glide.with(mContext).load(items.get(position).getCommentImage()).centerCrop().crossFade().into(holder.commentImage);
+            Glide.with(mContext).using(new FirebaseImageLoader()).load(comment_pathRef).centerCrop()
+                    .crossFade().into(holder.commentImage);
         }
 
         isCheckLiker(holder, position);
@@ -368,21 +399,40 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
                 changeLikeCount(holder, position);
             }
         });
+
+        holder.commentContainer.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Log.i(TAG ,">>>>>>>>>>>>>>>>>>>>>>>>>>>>  HERE POSITION" + position);
+
+                Log.i(TAG ,">>>>>>>>>>>>>>>>>>>>>>>>>>>>  HERE getCommentKey" +  items.get(position).getCommentKey());
+                CommentCardDialogFragment dialogFragment = CommentCardDialogFragment.newInstance
+                        (items.get(position).getTimelineKey()
+                                , items.get(position).getCommentKey()
+                                , items.get(position).getCommentImage());
+
+                fragmentManager.beginTransaction().commit();
+                dialogFragment.setStyle(DialogFragment.STYLE_NORMAL, 0);
+                dialogFragment.show(fragmentManager, "commentCardDialog");
+                return false;
+            }
+        });
+
     }
 
     private void isCheckLiker(final CommentViewHolder holder, final int position) {
         String key = items.get(position).getCommentKey();
         likeUserReference = database.getReference().child("groups").child(groupId).child("likes")
-                .child("commentCard").child(items.get(position).getCommentKey()).child("users").child(currentUser.getUid());
+                .child("commentCard").child(key).child("users").child(currentUser.getUid());
         likeUserReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 IsCheck ischeck = dataSnapshot.getValue(IsCheck.class);
-                if(ischeck == null)
+                if (ischeck == null)
                     return;
-                if(ischeck.getIsCheck()){
+                if (ischeck.getIsCheck()) {
                     holder.commentLike.setSelected(true);
-                } else{
+                } else {
                     holder.commentLike.setSelected(false);
                 }
 
@@ -485,6 +535,7 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
             });
         }
     }
+
     @Override
     public int getItemCount() {
         return items.size() + 1; // (body item count) + (header item count)

@@ -122,6 +122,7 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
                             Log.i(TAG, ">>>>>>>>>> 1");
                             timeLineItem.setIsCheck(false);
                             items.add(0, timeLineItem);
+                            // TODO 수정 할 것! 해당 위치만 변경
                             notifyDataSetChanged();
                             return;
                         } else if (ischeck.getIsCheck()) {
@@ -152,7 +153,7 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                Toast.makeText(mContext, "변경", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(mContext, "변경", Toast.LENGTH_SHORT).show();
                 TimeLineItem newTimeLineItem = dataSnapshot.getValue(TimeLineItem.class);
                 String timelineCardKey = dataSnapshot.getKey();
 
@@ -183,8 +184,8 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
                     items.remove(timelineIndex);
                     // Update the RecyclerView
                     // Log.d(TAG, ">>>>>      items: "  +items.get(timelineIndex).getTimeline_date() + "/ index:" + timelineIndex );
-
-                    notifyItemRemoved(timelineIndex + 1);
+                    notifyDataSetChanged();
+                   // notifyItemRemoved(timelineIndex + 1);
                 } else {
                     Log.w(TAG, "onChildRemoved:unknown_child:" + timelineCardKey);
                 }
@@ -219,6 +220,7 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
         LinearLayout timelineLikeContainer;
         LinearLayout timelineCommentContainer;
         LinearLayout timelineContentContainer;
+        ImageView timeline_smallconmment;
         // footer의 view
         ImageView timelineFooterIcon;
 
@@ -262,6 +264,7 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
                 timelineCommentContainer = (LinearLayout) itemView.findViewById(R.id.timeline_comment_container);
                 timelineContentContainer = (LinearLayout) itemView.findViewById(R.id.timeline_content_container);
                 timelineExpand = (ImageButton) itemView.findViewById(R.id.timeline_expand);
+                timeline_smallconmment = (ImageView) itemView.findViewById(R.id.timeline_smallconmment);
             }
 
         }
@@ -364,6 +367,7 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
         holder.timelineContent.setText(items.get(position).getTimeline_content());
         holder.timelineCommentCnt.setText(String.format("%d", (items.get(position).getTimelineCountItem().getCommentCnt())));
         holder.timelineLikeCnt.setText(String.format("%d", (items.get(position).getTimelineCountItem().getLikeCnt())));
+
         profile_pathRef = storageRef.child(storageProfileFolder + "/" + items.get(position).getTimeline_profileImage());
         timeline_pathRef = storageRef.child(storageTimelineFolder + "/" + items.get(position).getTimeline_contentImage());
         // image data bind
@@ -428,14 +432,26 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
                 activity.overridePendingTransition(R.anim.slide_in, R.anim.step_back);
             }
         });
+        holder.timeline_smallconmment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, Comment.class);
+                intent.putExtra("TimelineItem", items.get(position));
+                intent.putExtra("LikeCnt", items.get(position).getTimelineCountItem().getLikeCnt());
+                intent.putExtra("commentCnt", items.get(position).getTimelineCountItem().getCommentCnt());
+                intent.putExtra("position", position);
+                mContext.startActivity(intent);
+                activity.overridePendingTransition(R.anim.slide_in, R.anim.step_back);            }
+        });
 
         holder.timelineExpand.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TimelineCardDialogFragment dialogFragment = new TimelineCardDialogFragment();
-                dialogFragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme);
-
-                dialogFragment.show(fragmentManager, "fragment_dialog_test");
+                TimelineCardDialogFragment dialogFragment = TimelineCardDialogFragment.newInstance(items.get(position).getTimeline_key(),
+                        items.get(position).getTimeline_contentImage());
+                fragmentManager.beginTransaction().commit();
+                dialogFragment.setStyle(DialogFragment.STYLE_NORMAL, 0);
+                dialogFragment.show(fragmentManager, "timelineCardDialog");
             }
         });
 

@@ -19,7 +19,8 @@
             android:background="@color/main_color_ivory"
             android:orientation="vertical">
 
-            <LinearLayout
+            <LinearLayout android:id="@+id/comment_container"
+                android:clickable="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">

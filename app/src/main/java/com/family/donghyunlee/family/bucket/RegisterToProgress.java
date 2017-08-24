@@ -3,8 +3,10 @@ package com.family.donghyunlee.family.bucket;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -186,6 +188,10 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
     }
 
     private void setInit() {
+        if (Build.VERSION.SDK_INT >= 21) {   //상태바 색상 변경
+            getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.main_color_dark_c));
+        }
+
         Intent intent = getIntent();
         imgProfile =(String) intent.getSerializableExtra("IMGPROFILE");
         question = (String) intent.getSerializableExtra("QUESTION");

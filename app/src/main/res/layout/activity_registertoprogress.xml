@@ -56,26 +56,48 @@
                                 android:gravity="center"
                                 android:orientation="vertical">
 
-                                <TextView
-                                    android:id="@+id/toprogress_question"
+                                <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center"
-                                    android:text="가족들과 가장 가고 싶은 여름 여행지는?"
-                                    android:textColor="@color/main_color_font" />
+                                    android:gravity="center">
 
-                                <TextView
-                                    android:id="@+id/toprogress_answer"
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Q: " />
+
+                                    <TextView
+                                        android:id="@+id/toprogress_question"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="가족들과 가장 가고 싶은 여름 여행지는?"
+                                        android:textColor="@color/main_color_font" />
+                                </LinearLayout>
+
+                                <LinearLayout
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
+                                    android:layout_height="40dp"
                                     android:layout_gravity="center"
                                     android:layout_marginRight="10dp"
                                     android:layout_marginTop="10dp"
-                                    android:background="@color/transparent_black"
+                                    android:background="#66000000"
                                     android:gravity="center"
-                                    android:text="제주도"
-                                    android:textColor="@color/main_color_font" />
+                                    android:orientation="horizontal">
 
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="A: " />
+
+                                    <TextView
+                                        android:id="@+id/toprogress_answer"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:text="제주도"
+                                        android:textColor="@color/main_color_font" />
+                                </LinearLayout>
                             </LinearLayout>
                         </LinearLayout>
 
@@ -84,222 +106,220 @@
                             android:layout_height="2px"
                             android:background="#40000000" />
 
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/dp_zero"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="50dp"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal">
+
+                                <android.support.design.widget.TextInputLayout
+                                    android:layout_width="@dimen/dp_zero"
+                                    android:layout_height="40dp"
+                                    android:layout_marginLeft="10dp"
+                                    android:layout_marginRight="10dp"
+                                    android:layout_weight="1"
+                                    android:background="@color/main_color"
+                                    android:gravity="center"
+                                    android:hint="일정이름 ">
+
+                                    <EditText
+                                        android:id="@+id/toprogress_title"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:background="@null"
+                                        android:ems="10"
+                                        android:textSize="@dimen/edit_textsize" />
+                                </android.support.design.widget.TextInputLayout>
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="50dp"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <android.support.design.widget.TextInputLayout
+                                    android:layout_width="@dimen/dp_zero"
+                                    android:layout_height="40dp"
+                                    android:layout_marginLeft="10dp"
+                                    android:layout_marginRight="10dp"
+                                    android:layout_weight="1"
+                                    android:background="@color/main_color"
+                                    android:gravity="center"
+                                    android:hint="장소">
+
+                                    <EditText
+                                        android:id="@+id/toprogress_location"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:background="@null"
+                                        android:ems="10"
+                                        android:textSize="@dimen/edit_textsize" />
+                                </android.support.design.widget.TextInputLayout>
+
+                                <ImageButton
+                                    android:id="@+id/toprogress_map"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginRight="10dp"
+                                    android:background="@android:color/transparent"
+                                    android:onClick="onMapClick"
+                                    android:src="@drawable/ic_add_map" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginTop="10dp"
+                                android:text="시작"
+                                android:textColor="@color/colorWhite" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="28dp"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/toprogress_startdate"
+                                    android:layout_width="@dimen/dp_zero"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="10dp"
+                                    android:layout_marginRight="10dp"
+                                    android:layout_weight="1"
+                                    android:background="@color/main_color"
+                                    android:gravity="center"
+                                    android:onClick="onStartDateClick"
+                                    android:text="2017년 8월 12일 토"
+                                    android:textColor="@color/colorBlack" />
+
+                                <TextView
+                                    android:id="@+id/toprogress_starttime"
+                                    android:layout_width="100dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="10dp"
+                                    android:layout_marginRight="10dp"
+                                    android:background="@color/main_color"
+                                    android:gravity="center"
+                                    android:onClick="onStartTimeClick"
+                                    android:text="오전 3:00"
+                                    android:textColor="@color/colorBlack" />
+
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginTop="10dp"
+                                android:text="종료 (선택)"
+                                android:textColor="@color/colorWhite" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="28dp"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/toprogress_enddate"
+                                    android:layout_width="@dimen/dp_zero"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="10dp"
+                                    android:layout_marginRight="10dp"
+                                    android:layout_weight="1"
+                                    android:background="@color/main_color"
+                                    android:gravity="center"
+                                    android:onClick="onEndDateClick"
+                                    android:text=""
+                                    android:textColor="@color/colorBlack" />
+
+                                <TextView
+                                    android:id="@+id/toprogress_endtime"
+                                    android:layout_width="100dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="10dp"
+                                    android:layout_marginRight="10dp"
+                                    android:background="@color/main_color"
+                                    android:gravity="center"
+                                    android:onClick="c"
+                                    android:text=""
+                                    android:textColor="@color/colorBlack" />
+
+                            </LinearLayout>
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="28dp"
+                                android:layout_marginTop="10dp">
+
+                                <Switch
+                                    android:id="@+id/toprogress_shareswitch"
+                                    android:layout_width="120dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="10dp"
+                                    android:shadowColor="@color/main_color"
+                                    android:text="공유 버킷"
+                                    android:textColor="@color/main_color_font" />
+
+                                <Switch
+                                    android:id="@+id/toprogress_withswitch"
+                                    android:layout_width="120dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_marginRight="10dp"
+                                    android:enabled="false"
+                                    android:text="참석자 설정"
+                                    android:textColor="@color/main_color_font" />
+                            </RelativeLayout>
+
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:text="메모"
+                                android:textColor="@color/colorWhite" />
+
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="@dimen/dp_zero"
+                                android:layout_marginBottom="10dp"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="10dp"
                                 android:layout_weight="1"
-                                android:orientation="vertical">
+                                android:background="@color/main_color"
+                                android:orientation="horizontal">
 
-                                <LinearLayout
+                                <ScrollView
                                     android:layout_width="match_parent"
-                                    android:layout_height="50dp"
-                                    android:layout_marginTop="10dp"
-                                    android:orientation="horizontal">
+                                    android:layout_height="match_parent"
+                                    android:fillViewport="true">
 
                                     <android.support.design.widget.TextInputLayout
-                                        android:layout_width="@dimen/dp_zero"
-                                        android:layout_height="40dp"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
                                         android:layout_marginLeft="10dp"
                                         android:layout_marginRight="10dp"
-                                        android:layout_weight="1"
-                                        android:background="@color/main_color"
-                                        android:gravity="center"
-                                        android:hint="일정이름 ">
+                                        android:hint="할말을 입력해주세요">
 
                                         <EditText
-                                            android:id="@+id/toprogress_title"
+                                            android:id="@+id/toprogress_memo"
                                             android:layout_width="match_parent"
                                             android:layout_height="match_parent"
                                             android:background="@null"
                                             android:ems="10"
                                             android:textSize="@dimen/edit_textsize" />
                                     </android.support.design.widget.TextInputLayout>
-
-                                    <View
-                                        android:layout_width="32dp"
-                                        android:layout_height="32dp"
-                                        android:layout_marginRight="10dp"
-                                        android:background="@android:color/transparent" />
-                                </LinearLayout>
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="50dp"
-                                    android:gravity="center"
-                                    android:orientation="horizontal">
-
-                                    <android.support.design.widget.TextInputLayout
-                                        android:layout_width="@dimen/dp_zero"
-                                        android:layout_height="40dp"
-                                        android:layout_marginLeft="10dp"
-                                        android:layout_marginRight="10dp"
-                                        android:layout_weight="1"
-                                        android:background="@color/main_color"
-                                        android:gravity="center"
-                                        android:hint="장소">
-
-                                        <EditText
-                                            android:id="@+id/toprogress_location"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="match_parent"
-                                            android:background="@null"
-                                            android:textSize="@dimen/edit_textsize"
-                                            android:ems="10" />
-                                    </android.support.design.widget.TextInputLayout>
-
-                                    <ImageButton android:id="@+id/toprogress_map"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginRight="10dp"
-                                        android:background="@android:color/transparent"
-                                        android:src="@drawable/ic_add_map"
-                                        android:onClick="onMapClick"/>
-                                </LinearLayout>
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginLeft="10dp"
-                                    android:layout_marginTop="10dp"
-                                    android:text="시작"
-                                    android:textColor="@color/colorWhite" />
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="28dp"
-                                    android:orientation="horizontal">
-
-                                    <TextView
-                                        android:id="@+id/toprogress_startdate"
-                                        android:layout_width="@dimen/dp_zero"
-                                        android:layout_height="match_parent"
-                                        android:layout_marginLeft="10dp"
-                                        android:layout_marginRight="10dp"
-                                        android:layout_weight="1"
-                                        android:background="@color/main_color"
-                                        android:gravity="center"
-                                        android:text="2017년 8월 12일 토"
-                                        android:textColor="@color/colorBlack"
-                                        android:onClick="onStartDateClick"/>
-
-                                    <TextView
-                                        android:id="@+id/toprogress_starttime"
-                                        android:layout_width="100dp"
-                                        android:layout_height="match_parent"
-                                        android:layout_marginLeft="10dp"
-                                        android:layout_marginRight="10dp"
-                                        android:background="@color/main_color"
-                                        android:gravity="center"
-                                        android:text="오전 3:00"
-                                        android:textColor="@color/colorBlack"
-                                        android:onClick="onStartTimeClick"/>
-
-                                </LinearLayout>
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginLeft="10dp"
-                                    android:layout_marginTop="10dp"
-                                    android:text="종료 (선택)"
-                                    android:textColor="@color/colorWhite" />
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="28dp"
-                                    android:orientation="horizontal">
-
-                                    <TextView
-                                        android:id="@+id/toprogress_enddate"
-                                        android:layout_width="@dimen/dp_zero"
-                                        android:layout_height="match_parent"
-                                        android:layout_marginLeft="10dp"
-                                        android:layout_marginRight="10dp"
-                                        android:layout_weight="1"
-                                        android:background="@color/main_color"
-                                        android:gravity="center"
-                                        android:text=""
-                                        android:textColor="@color/colorBlack"
-                                        android:onClick="onEndDateClick"/>
-
-                                    <TextView
-                                        android:id="@+id/toprogress_endtime"
-                                        android:layout_width="100dp"
-                                        android:layout_height="match_parent"
-                                        android:layout_marginLeft="10dp"
-                                        android:layout_marginRight="10dp"
-                                        android:background="@color/main_color"
-                                        android:gravity="center"
-                                        android:text=""
-                                        android:textColor="@color/colorBlack"
-                                        android:onClick="c"/>
-
-                                </LinearLayout>
-
-                                <RelativeLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="28dp"
-                                    android:layout_marginTop="10dp"
-                                    >
-                                    <Switch
-                                        android:id="@+id/toprogress_shareswitch"
-                                        android:layout_width="120dp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginLeft="10dp"
-                                        android:text="공유 버킷"
-                                        android:shadowColor="@color/main_color"
-                                        android:textColor="@color/main_color_font"
-                                        />
-                                    <Switch
-                                        android:id="@+id/toprogress_withswitch"
-                                        android:layout_width="120dp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginRight="10dp"
-                                        android:text="참석자 설정"
-                                        android:enabled="false"
-                                        android:textColor="@color/main_color_font"
-                                        android:layout_alignParentRight="true"/>
-                                </RelativeLayout>
-
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginLeft="10dp"
-                                    android:text="메모"
-                                    android:textColor="@color/colorWhite" />
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="@dimen/dp_zero"
-                                    android:layout_marginBottom="10dp"
-                                    android:layout_marginLeft="10dp"
-                                    android:layout_marginRight="10dp"
-                                    android:layout_weight="1"
-                                    android:background="@color/main_color"
-                                    android:orientation="horizontal">
-                                    <ScrollView
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:fillViewport="true">
-                                        <android.support.design.widget.TextInputLayout
-                                            android:layout_width="match_parent"
-                                            android:layout_height="match_parent"
-                                            android:layout_marginLeft="10dp"
-                                            android:layout_marginRight="10dp"
-                                            android:hint="할말을 입력해주세요">
-
-                                            <EditText
-                                                android:id="@+id/toprogress_memo"
-                                                android:layout_width="match_parent"
-                                                android:layout_height="match_parent"
-                                                android:background="@null"
-                                                android:textSize="@dimen/edit_textsize"
-                                                android:ems="10" />
-                                        </android.support.design.widget.TextInputLayout>
-                                    </ScrollView>
-                                </LinearLayout>
+                                </ScrollView>
                             </LinearLayout>
+                        </LinearLayout>
 
                         <View
                             android:layout_width="match_parent"
@@ -316,11 +336,12 @@
                                 android:layout_width="40dp"
                                 android:layout_height="match_parent"
                                 android:layout_marginLeft="5dp"
-                                android:onClick="onCancelClick"
                                 android:gravity="center"
+                                android:onClick="onCancelClick"
                                 android:text="나중에"
                                 android:textColor="@color/main_color_font"
-                              />
+                                android:layout_alignParentTop="true"
+                                android:layout_alignParentStart="true" />
 
                             <TextView
                                 android:id="@+id/toprogress_done"
@@ -331,8 +352,7 @@
                                 android:gravity="center"
                                 android:onClick="onDoneClick"
                                 android:text="완료"
-                                android:textColor="@color/colorWhGray"
-                                />
+                                android:textColor="@color/colorWhGray" />
                         </RelativeLayout>
                     </LinearLayout>
                 </android.support.v7.widget.CardView>

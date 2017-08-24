@@ -23,6 +23,7 @@
     <string name="storage_memoryimages_folder">images/memoryimages</string>
     <string name="storage_albumimages_folder">images/albumimages</string>
     <string name="storage_timeline_folder">images/timelineimages</string>
+    <string name="storage_comment_folder">images/commentimages</string>
     <string name="storage_timeline_title_folder">images/timelinetitleimages</string>
 
 
