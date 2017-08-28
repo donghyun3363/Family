@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import jp.wasabeef.glide.transformations.ColorFilterTransformation;
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 /**
  * Created by DONGHYUNLEE on 2017-08-21.
@@ -23,6 +24,8 @@ public class MainSecondFragment extends Fragment {
 
     @BindView(R.id.main_second_image)
     ImageView secondImage;
+    @BindView(R.id.main_second_logo)
+    ImageView logo;
 
     public MainSecondFragment(){
     }
@@ -35,6 +38,8 @@ public class MainSecondFragment extends Fragment {
         ButterKnife.bind(this, v);
         Glide.with(getContext()).load(R.drawable.main_image2).bitmapTransform(new ColorFilterTransformation(getContext(), Color.argb(80, 0, 0, 0)))
                 .crossFade().into(secondImage);
+        Glide.with(getContext()).load(R.drawable.ic_album).centerCrop()
+                .crossFade().bitmapTransform(new CropCircleTransformation(getContext())).into(logo);
         return v;
     }
 }

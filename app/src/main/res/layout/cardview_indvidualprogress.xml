@@ -57,16 +57,6 @@
                             android:text="동이"
                             android:textColor="@color/main_color_font" />
 
-                        <ImageButton
-                            android:id="@+id/individual_delete"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_gravity="center"
-                            android:background="@android:color/transparent"
-                            android:onClick="onDeleteClick"
-                            android:scaleType="fitXY"
-                            android:src="@drawable/ic_delete_black" />
-
                     </LinearLayout>
 
                     <TextView
@@ -144,7 +134,7 @@
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="30dp">
+                            android:layout_marginLeft="10dp">
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
@@ -157,6 +147,7 @@
                                     android:layout_height="match_parent"
                                     android:gravity="center_vertical"
                                     android:text="2017.08.13"
+                                    android:textSize="@dimen/small_textsize"
                                     android:textColor="@color/main_color_font" />
 
                                 <TextView
@@ -165,6 +156,7 @@
                                     android:layout_height="match_parent"
                                     android:gravity="center"
                                     android:text="18:00"
+                                    android:textSize="@dimen/small_textsize"
                                     android:textColor="@color/main_color_font" />
                             </LinearLayout>
 
@@ -189,6 +181,7 @@
                                     android:layout_marginLeft="10dp"
                                     android:gravity="center_vertical"
                                     android:text="2017.08.13"
+                                    android:textSize="@dimen/small_textsize"
                                     android:textColor="@color/main_color_font" />
 
                                 <TextView
@@ -197,6 +190,7 @@
                                     android:layout_height="match_parent"
                                     android:gravity="center"
                                     android:text="18:00"
+                                    android:textSize="@dimen/small_textsize"
                                     android:textColor="@color/colorBlack" />
                             </LinearLayout>
                         </LinearLayout>
@@ -230,9 +224,10 @@
                             android:id="@+id/individual_location"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_marginLeft="30dp"
+                            android:layout_marginLeft="10dp"
                             android:gravity="center_vertical"
                             android:text="우리 집"
+                            android:textSize="@dimen/small_textsize"
                             android:textColor="@color/main_color_font" />
                     </LinearLayout>
 
@@ -269,7 +264,8 @@
                             android:id="@+id/individual_memo"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_marginLeft="30dp"
+                            android:layout_marginLeft="10dp"
+                            android:textSize="@dimen/small_textsize"
                             android:text="떡볶이 메뉴 예정 / 재료 사오기"
                             android:textColor="@color/main_color_font" />
 

@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -35,19 +36,21 @@ import com.bumptech.glide.Glide;
 import com.family.donghyunlee.family.PhotoSel;
 import com.family.donghyunlee.family.R;
 import com.family.donghyunlee.family.bucket.Bucket;
+import com.family.donghyunlee.family.bucketpage.BucketListFragment;
 import com.family.donghyunlee.family.data.MyBucketList;
 import com.family.donghyunlee.family.data.TimeLineItem;
 import com.family.donghyunlee.family.data.TimelineCountItem;
 import com.family.donghyunlee.family.data.TitleItem;
 import com.family.donghyunlee.family.data.User;
+import com.family.donghyunlee.family.data.WishListRecyclerItem;
 import com.family.donghyunlee.family.photoalbum.PhotoAlbum;
+import com.family.donghyunlee.family.push.Push;
 import com.family.donghyunlee.family.setting.Setting;
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.appinvite.FirebaseAppInvite;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -55,8 +58,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
-import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -69,13 +71,14 @@ import java.util.Iterator;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import jp.wasabeef.glide.transformations.ColorFilterTransformation;
 
 /**
  * Created by DONGHYUNLEE on 2017-07-31.
  */
 
-public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
+public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, BucketListFragment.OnMyListener{
 
     private static final String TAG = TimeLine.class.getSimpleName();
     private static final Integer GET_BUCKITANSWER_TO_SERVER = 0;
@@ -90,8 +93,14 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
 
     private FirebaseDatabase database;
     private DatabaseReference groupReference;
+    private DatabaseReference userBucketReference;
+    private DatabaseReference exceptuserBucketReference;
     private DatabaseReference userReference;
     private DatabaseReference titleReference;
+    private DatabaseReference pushReference;
+    private DatabaseReference bucketReference;
+    private DatabaseReference wishlistReference;
+    private DatabaseReference inviteReference;
     private DatabaseReference commentReference;
     private ArrayList<MyBucketList> elseItems;
     private MyBucketList myItem;
@@ -109,6 +118,9 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
     private StorageReference titlepathRef;
     private FragmentManager fragmentManager;
     private EditText inputTitle;
+    private DatabaseReference isBucketReference;
+    private String inviteGroupId;
+    private User curUser;
     //  private IOverScrollDecor mVertOverScrollEffect;
     @BindView(R.id.timeline_title)
     TextView timelineTitle;
@@ -154,6 +166,10 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 TitleItem titleItem = dataSnapshot.getValue(TitleItem.class);
+                if(titleItem == null){
+                    titleItem = new TitleItem("empty", "empty");
+                    titleReference.setValue(titleItem);
+                }
                 if (titleItem.getTitle().equals("empty") && titleItem.getTitleImage().equals("empty")) {
                     timelineTitle.setText("We are Fam!");
                     timelineTitleImage.setImageResource(0);
@@ -195,6 +211,9 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
 
     @OnClick(R.id.bar_push)
     void pushClick() {
+        Intent intent = new Intent(TimeLine.this, Push.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in, R.anim.step_back);
     }
 
     @OnClick(R.id.bar_setting)
@@ -287,48 +306,19 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
         ButterKnife.bind(this);
         setInit();
         settingRecycler();
-
+        setFCM();
         // Check for App Invite invitations and launch deep-link activity if possible.
         // Requires that an Activity is registered in AndroidManifest.xml to handle
         // deep-link URLs.
-        FirebaseDynamicLinks.getInstance().getDynamicLink(getIntent())
-                .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
-                    @Override
-                    public void onSuccess(PendingDynamicLinkData data) {
-                        if (data == null) {
-                            Log.d(TAG, "getInvitation: no data");
-                            return;
-                        }
 
-                        // Get the deep link
-                        Uri deepLink = data.getLink();
+    }
 
-                        // Extract invite
-                        FirebaseAppInvite invite = FirebaseAppInvite.getInvitation(data);
-                        if (invite != null) {
-                            String invitationId = invite.getInvitationId();
-                            Log.d(TAG, "invitationId:" + invitationId);
-                        }
+    private void setFCM() {
 
-                        // Handle the deep link
-                        // [START_EXCLUDE]
-                        Log.d(TAG, "deepLink:" + deepLink);
-                        if (deepLink != null) {
-                            Intent intent = new Intent(Intent.ACTION_VIEW);
-                            intent.setPackage(getPackageName());
-                            intent.setData(deepLink);
+        FirebaseInstanceId.getInstance().getToken();
+        String token = FirebaseInstanceId.getInstance().getToken();
+        Log.d("FCM_Token", token);
 
-                            startActivity(intent);
-                        }
-                        // [END_EXCLUDE]
-                    }
-                })
-                .addOnFailureListener(this, new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "getDynamicLink:onFailure", e);
-                    }
-                });
     }
 
     void titleImageDownload(String filename) {
@@ -373,10 +363,13 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
             }
             case REQUEST_INVITE:
                 if (resultCode == RESULT_OK) {
+                    inviteReference = database.getReference().child("invite");
                     // Get the invitation IDs of all sent messages
                     String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
                     for (String id : ids) {
                         Log.d(TAG, "onActivityResult: sent invitation " + id);
+                        inviteReference.setValue(id);
+                        inviteReference.child(id).setValue(groupId);
                     }
                 } else {
                     // Sending failed or it was canceled, show failure message to the user
@@ -385,10 +378,35 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
                     // [END_EXCLUDE]
                 }
 
-
-            default:
                 break;
         }
+    }
+
+    /**
+     * Take care of popping the fragment back stack or finishing the activity
+     * as appropriate.
+     */
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        new SweetAlertDialog(getApplicationContext(), SweetAlertDialog.WARNING_TYPE)
+                .setTitleText("정말 취소하겠습니까?")
+                .setContentText("취소 후 다시 초대를 받아야합니다.")
+                .setCancelText("취소")
+                .setConfirmText("확인")
+                .showCancelButton(true)
+                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sDialog) {
+                        sDialog.cancel();
+                    }
+                })
+                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(final SweetAlertDialog sweetAlertDialog) {
+                        finish();
+                    }
+                });
     }
     private void showMessage(String msg) {
         ViewGroup container = (ViewGroup) findViewById(R.id.snackbar_layout);
@@ -458,12 +476,10 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
         if (Build.VERSION.SDK_INT >= 21) {   //상태바 색상 변경
             getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.light_green));
         }
-
         fragmentManager = getSupportFragmentManager();
         timeline_items = new ArrayList<>();
         profile_items = new ArrayList<>();
         elseItems = new ArrayList<>();
-
         database = FirebaseDatabase.getInstance();
         mAuth = FirebaseAuth.getInstance();
         pref = getSharedPreferences("pref", MODE_PRIVATE);
@@ -471,20 +487,101 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
         userReference = database.getReference().child("users");
         groupReference = database.getReference().child("groups").child(groupId).child("members");
         titleReference = database.getReference().child("groups").child(groupId).child("title");
+
         currentUser = mAuth.getCurrentUser();
-
-
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReferenceFromUrl(getResources().getString(R.string.firebase_storage));
         storageTitleFolder = getResources().getString(R.string.storage_timeline_title_folder);
+        // 초대받은 초대 id 삭제
+
+
+        // 버킷 리스트 입력 처음 인 사용자.
+        isBucketReference = database.getReference("users").child(currentUser.getUid());
+        isBucketReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                curUser = dataSnapshot.getValue(User.class);
+                if (!curUser.getIsBucket()) {
+                    startFragment(BucketListFragment.newInstance());
+
+                } else {
+                    new AccessDatabaseTask().execute(GET_BUCKITANSWER_TO_SERVER);
+                }
+
+                return;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         // 버킷리스트가 처음인지 체크.
         Intent intent = getIntent();
         isFristTime = (boolean) intent.getSerializableExtra("ISFIRSTTIME?");
+        Log.i(TAG, ">>>>>>>>>>>>>>>>>>>>>>   isFirstTime" + isFristTime);
+        userBucketReference = database.getReference().child("userBucketList");
+        pushReference = database.getReference().child("groups").child(groupId).child("push");
+        bucketReference = database.getReference().child("groups").child(groupId).child("buckets");
         if (isFristTime) {
-            // 버킷리스트 공유하고 자기는 공유받고. getBucketAnswer 접근.
+            //push settting
+            pushReference.setValue(currentUser.getUid());
+            //bucket setting
+            userBucketReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
+                    while (child.hasNext()) {
+                        String userId = child.next().getKey();
+                        if (currentUser.getUid().equals(userId)) {
+                            myItem = dataSnapshot.child(userId).child("myBucketList").getValue(MyBucketList.class);
+                            bucketReference.child(currentUser.getUid()).child("myBucketList").setValue(myItem);
+
+                            wishlistReference = database.getReference().child("groups").child(groupId)
+                                    .child("wishList");
+                            for (int i = 0; i < myItem.getAnswer().size(); i++) {
+                                String wishListKey = wishlistReference.push().getKey();
+                                WishListRecyclerItem item = new WishListRecyclerItem(wishListKey, myItem.getUserId(),
+                                        curUser.getUserImage(), curUser.getUserNicname(), myItem.getDate(),
+                                        myItem.getAnswer().get(i),  myItem.getQuestion().get(i), 0);
+
+                                wishlistReference.child(wishListKey).setValue(item);
+                            }
+
+
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+
+            });
+        }
+
+        new AccessDatabaseTask().execute(GET_PROFILE_TO_SERVER);
+    }
+    void startFragment(final BucketListFragment fragment) {
+        Log.i(TAG, ">>>>>>> HERE");
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.timeline_container, fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commitAllowingStateLoss();
+        Log.i(TAG, ">>>>>>> HERE");
+
+        //  fragmentTransaction.commitAllowingStateLoss();
+    }
+
+    @Override
+    public void onReceivedData(Boolean data) {
+        if(data == true) {
+            Log.i(TAG, ">>>>>>>>>>>>>          onReceivedData" + data);
+
             new AccessDatabaseTask().execute(GET_BUCKITANSWER_TO_SERVER);
         }
-        new AccessDatabaseTask().execute(GET_PROFILE_TO_SERVER);
     }
 
     private void settingRecycler() {
@@ -527,50 +624,41 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
 
             timelineCardReference = database.getReference().child("groups").child(groupId).child("timelineCard");
             profileReference = database.getReference().child("groups").child(groupId).child("members");
+
         }
 
         @Override
         protected Long doInBackground(Integer... params) {
             // members user id를 가져와서 user에 대한 qeustion과 answer을 가져온다.
             if (params[0].intValue() == GET_BUCKITANSWER_TO_SERVER) {
-                userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                userBucketReference = database.getReference().child("userBucketList");
+                userBucketReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
                         while (child.hasNext()) {
-                            User user = child.next().getValue(User.class);
-                            if (currentUser.getUid().equals(user.getId()) == true) {
-                                myItem = dataSnapshot.child(user.getId()).child("myBucketAnswer").getValue(MyBucketList.class);
-                            }
-                            if (currentUser.getUid().equals(user.getId()) == false) {
-                                tempItem = dataSnapshot.child(user.getId()).child("myBucketAnswer").getValue(MyBucketList.class);
-                                elseItems.add(tempItem);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-                groupReference.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
-                        while (child.hasNext()) {
-                            User user = child.next().getValue(User.class);
-                            if (currentUser.getUid().equals(user.getId()) == true) {
-                                for (int i = 0; i < elseItems.size(); i++) {
-                                    groupReference.child(user.getId()).child("elseBucketAnswer")
-                                            .child(elseItems.get(i).getUserId()).setValue(elseItems.get(i));
-                                    Log.i(TAG, ">>>>>      tempItem: " + elseItems.get(0).getUserId());
-                                }
-                                Log.i(TAG, ">>>>>      tempItem: " + elseItems.get(0).getUserId());
+                           // String userId = child.next().getValue(String.class);
+                            String userId = child.next().getKey();
+                            Log.i(TAG, ">>>>>>>>>>>>>>>> USERID : " + userId);
+                            if (currentUser.getUid().equals(userId)) {
+                                myItem = dataSnapshot.child(userId).child("myBucketList").getValue(MyBucketList.class);
+                                Log.i(TAG, ">>>>>>>>>>>>>>>>>>>>>>>>    111" + myItem.getUserId());
                             } else {
-                                groupReference.child(user.getId()).child("elseBucketAnswer")
-                                        .child(myItem.getUserId()).setValue(myItem);
+                                tempItem = dataSnapshot.child(userId).child("myBucketList").getValue(MyBucketList.class);
+
+                                if(tempItem == null){
+                                    Log.i(TAG, ">>>>>>>>>>>>>>>>>>>>>>>>   33333");
+                                    continue;
+                                }
+                                Log.i(TAG, ">>>>>>>>>>>>>>>>>>>>>>>>    222" + tempItem.getUserId());
+                                elseItems.add(tempItem);
+                                Log.i(TAG, ">>>>>>>>>>>>>>>>>>>>>>>>    544444" + elseItems.size());
                             }
+                        }
+                        for (int i = 0; i < elseItems.size(); i++) {
+                            exceptuserBucketReference = database.getReference().child("userBucketList").child(currentUser.getUid()).child("elseBucketList");
+                            exceptuserBucketReference.child(elseItems.get(i).getUserId()).setValue(elseItems.get(i));
+                            Log.i(TAG, ">>>>>      tempItem: " + elseItems.get(0).getUserId());
                         }
                     }
 
@@ -579,8 +667,11 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
 
                     }
                 });
+
+
                 return result;
             } else if (params[0].intValue() == GET_PROFILE_TO_SERVER) {
+                Log.i(TAG, ">>>>>>>>>>>>>>>>>>>>>>>> IN TIMELINE:");
                 profileReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {

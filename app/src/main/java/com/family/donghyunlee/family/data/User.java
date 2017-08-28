@@ -16,14 +16,15 @@ public class User {
     private String userType;
     private String userImage;
     private String groupId;
-    private int isBucket;
+    private Boolean isBucket;
+    String userState;
     User() {
 
     }
 
     // Overload
     public User(String id, String userEmail, String userPassword,
-                String userNicname, String userPhone, String userType, String userImage, String groupId) {
+                String userNicname, String userPhone, String userType, String userImage, String groupId, Boolean isBucket) {
         this.id = id;
         this.userEmail = userEmail;
         this.userPassword = userPassword;
@@ -32,7 +33,8 @@ public class User {
         this.userType = userType;
         this.userImage = userImage;
         this.groupId = groupId;
-        isBucket = 0;
+        this.isBucket = isBucket;
+        this.userState = "";
 
     }
 
@@ -69,9 +71,10 @@ public class User {
         return id;
     }
 
-    public int getIsBucket() {
+    public Boolean getIsBucket() {
         return isBucket;
     }
+
 
     // Setter
 
@@ -108,7 +111,11 @@ public class User {
         this.userImage = userImage;
     }
 
-    public void setIsBucket(int isBucket) {
+    public void setIsBucket(boolean isBucket) {
         this.isBucket = isBucket;
+    }
+
+    public void setUserState(String userState) {
+        this.userState = userState;
     }
 }

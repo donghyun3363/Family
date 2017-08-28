@@ -2,12 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#99000000"
     android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorAccent"
         android:gravity="center"
         android:orientation="vertical"
         android:padding="20dp">
@@ -21,36 +21,68 @@
             android:textSize="@dimen/abc_text_size_headline_material" />
 
         <ImageView
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="40dp"
             android:src="@mipmap/ic_launcher" />
 
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_zero"
+        android:layout_weight="1"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:gravity="center"
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/deep_link_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/deep_link_default"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+            android:text="회원이 아닐 경우 시작하기 누른 후"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="@color/colorWhite"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="회원가입이 진행이 됩니다."
+            android:layout_marginTop="20dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="@color/colorWhite"/>
 
-        <Button
-            android:id="@+id/button_ok"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:text="@android:string/ok" />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <Button
+            android:id="@+id/invite_cancel"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:background="?attr/selectableItemBackground"
+            android:onClick="onCancelClick"
+            android:text="취소"
+            android:textColor="@color/colorWhite" />
+
+        <LinearLayout
+            android:layout_width="@dimen/dp_zero"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+        <Button
+            android:id="@+id/invite_ok"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:onClick="onOkClick"
+            android:textColor="@color/colorWhite"
+            android:background="?attr/selectableItemBackground"
+            android:text="시작하기" />
+
+    </LinearLayout>
 
 </LinearLayout>

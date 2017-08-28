@@ -12,6 +12,7 @@
         android:layout_height="200dp"
         android:background="@color/main_color_darkgray"
         android:orientation="vertical">
+
         <ImageView
             android:layout_width="100dp"
             android:layout_height="100dp"
@@ -24,22 +25,22 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
             android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true"
             android:layout_marginBottom="10dp"
             android:text="타이틀 명과 사진을 변경해보세요!"
             android:textColor="@color/main_color_dark_c"
-            android:textSize="16sp"/>
+            android:textSize="16sp" />
 
         <ImageView
             android:id="@+id/img_album_photo"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:foreground="#88000000"
-            android:transitionName="@string/transitionName"
+            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
+            android:foreground="#88000000"
+            android:scaleType="centerCrop"
+            android:transitionName="@string/transitionName" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -63,26 +64,32 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:background="@android:color/transparent"
+                        android:background="?attr/selectableItemBackground"
                         android:onClick="backClick"
-                        android:src="@drawable/ic_back_white" />
+                        android:src="@drawable/ic_back_main" />
 
                     <TextView
                         android:layout_width="@dimen/dp_zero"
                         android:layout_height="match_parent"
+                        android:layout_marginLeft="10dp"
                         android:layout_weight="1"
                         android:gravity="center_vertical"
                         android:text="하나의 추억"
-                        android:layout_marginLeft="10dp"
-                        android:textSize="@dimen/bar_textsize"
-                        android:textColor="@color/colorWhite" />
-
+                        android:textColor="@color/main_color"
+                        android:textSize="@dimen/bar_textsize" />
                     <ImageButton
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:background="@android:color/transparent"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/ic_more_verti" />
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:background="@android:color/transparent"/>
+                    <ImageButton
+                        android:id="@+id/inalbum_edit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:onClick="onEditClick"
+                        android:src="@drawable/ic_main_edit" />
                 </LinearLayout>
             </android.support.v7.widget.Toolbar>
 
@@ -101,128 +108,66 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="65dp">
+        android:layout_height="match_parent">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/solid_shape"
+            android:orientation="vertical"
+            android:padding="10dp">
 
-            <ImageView
-                android:layout_width="@dimen/dp_zero"
+            <com.zanlabs.widget.infiniteviewpager.InfiniteViewPager
+                android:id="@+id/inalbum_viewpager"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:layerType="software"
-                android:src="@drawable/dotted_button" />
+                android:visibility="visible" />
 
-            <ImageView
-                android:layout_width="@dimen/dp_zero"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_margin="10dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:layerType="software"
-                android:src="@drawable/dotted_button" />
-        </LinearLayout>
+            <com.zanlabs.widget.infiniteviewpager.indicator.CirclePageIndicator
+                android:id="@+id/inalbum_indicator"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_alignParentBottom="true"
+                app:fillColor="@color/colorWhite"
+                app:pageColor="@color/colorBlack"
+                app:strokeWidth="1dp"
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:orientation="horizontal">
+                />
 
-            <LinearLayout
-                android:id="@+id/album_upload"
-                android:layout_width="@dimen/dp_zero"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:background="@color/main_color_ivory"
-                android:onClick="onAlbumUploadClick">
+            <TextView
+                android:id="@+id/inalbum_temptext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:visibility="visible"
+                android:textColor="@color/colorBlack" />
+        </RelativeLayout>
 
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:background="@android:color/transparent"
-                    android:src="@drawable/ic_addcircle" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_margin="10dp"
-                    android:gravity="center"
-                    android:text="앨범 사진 변경"
-                    android:textColor="@color/colorBlack" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/inalbum_upload"
-                android:layout_width="@dimen/dp_zero"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:background="@color/main_color_ivory"
-                android:onClick="onInalbumUploadClick">
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:background="@android:color/transparent"
-                    android:src="@drawable/ic_addcircle" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_margin="10dp"
-                    android:gravity="center"
-                    android:text="사진 추가"
-                    android:textColor="@color/colorBlack" />
-            </LinearLayout>
-        </LinearLayout>
-    </RelativeLayout>
-
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_zero"
-        android:layout_weight="1"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginBottom="10dp"
-        android:padding="10dp"
-        android:orientation="vertical"
-        android:background="@drawable/solid_shape">
-        <com.zanlabs.widget.infiniteviewpager.InfiniteViewPager
-            android:id="@+id/inalbum_viewpager"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="visible" />
-        <com.zanlabs.widget.infiniteviewpager.indicator.CirclePageIndicator
-            android:id="@+id/inalbum_indicator"
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_alignParentBottom="true"
-            app:fillColor="@color/colorWhite"
-            app:pageColor="@color/colorWhGray"
-            app:strokeWidth="1dp"
-
-            />
-
-        <TextView
-            android:id="@+id/inalbum_temptext"
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_inalbum"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:textColor="@color/colorBlack" />
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:onClick="onFabClick"
+            android:src="@drawable/ic_add"
+            android:background="?attr/selectableItemBackground"
+            app:backgroundTint="@color/main_color"
+            app:rippleColor="@color/main_color" />
+        <FrameLayout
+            android:id="@+id/snackbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_margin="16dp"/>
     </RelativeLayout>
-
 </LinearLayout>

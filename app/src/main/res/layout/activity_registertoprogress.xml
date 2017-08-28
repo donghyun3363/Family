@@ -77,11 +77,10 @@
 
                                 <LinearLayout
                                     android:layout_width="match_parent"
-                                    android:layout_height="40dp"
+                                    android:layout_height="wrap_content"
                                     android:layout_gravity="center"
                                     android:layout_marginRight="10dp"
                                     android:layout_marginTop="10dp"
-                                    android:background="#66000000"
                                     android:gravity="center"
                                     android:orientation="horizontal">
 
@@ -169,18 +168,19 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginRight="10dp"
-                                    android:background="@android:color/transparent"
+                                    android:background="?attr/selectableItemBackground"
                                     android:onClick="onMapClick"
                                     android:src="@drawable/ic_add_map" />
                             </LinearLayout>
 
                             <TextView
+                                android:id="@+id/textView"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginTop="10dp"
                                 android:text="시작"
-                                android:textColor="@color/colorWhite" />
+                                android:textColor="@color/main_color_font" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -220,7 +220,7 @@
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginTop="10dp"
                                 android:text="종료 (선택)"
-                                android:textColor="@color/colorWhite" />
+                                android:textColor="@color/main_color_font" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -265,18 +265,9 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginLeft="10dp"
                                     android:shadowColor="@color/main_color"
-                                    android:text="공유 버킷"
+                                    android:text="같이 하기"
                                     android:textColor="@color/main_color_font" />
 
-                                <Switch
-                                    android:id="@+id/toprogress_withswitch"
-                                    android:layout_width="120dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_alignParentRight="true"
-                                    android:layout_marginRight="10dp"
-                                    android:enabled="false"
-                                    android:text="참석자 설정"
-                                    android:textColor="@color/main_color_font" />
                             </RelativeLayout>
 
 
@@ -285,7 +276,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="10dp"
                                 android:text="메모"
-                                android:textColor="@color/colorWhite" />
+                                android:textColor="@color/main_color_font" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -335,13 +326,14 @@
                                 android:id="@+id/toprogress_cancel"
                                 android:layout_width="40dp"
                                 android:layout_height="match_parent"
+                                android:layout_alignParentStart="true"
+                                android:layout_alignParentTop="true"
                                 android:layout_marginLeft="5dp"
                                 android:gravity="center"
                                 android:onClick="onCancelClick"
                                 android:text="나중에"
-                                android:textColor="@color/main_color_font"
-                                android:layout_alignParentTop="true"
-                                android:layout_alignParentStart="true" />
+                                android:background="?attr/selectableItemBackground"
+                                android:textColor="@color/main_color_font" />
 
                             <TextView
                                 android:id="@+id/toprogress_done"
@@ -351,8 +343,9 @@
                                 android:layout_marginRight="5dp"
                                 android:gravity="center"
                                 android:onClick="onDoneClick"
-                                android:text="완료"
-                                android:textColor="@color/colorWhGray" />
+                                android:text="등록"
+                                android:background="?attr/selectableItemBackground"
+                                android:textColor="@color/main_color_font" />
                         </RelativeLayout>
                     </LinearLayout>
                 </android.support.v7.widget.CardView>

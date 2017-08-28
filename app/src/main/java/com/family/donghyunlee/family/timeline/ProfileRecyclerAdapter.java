@@ -13,12 +13,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.family.donghyunlee.family.Profile;
 import com.family.donghyunlee.family.R;
 import com.family.donghyunlee.family.data.User;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -41,21 +45,25 @@ public class ProfileRecyclerAdapter extends RecyclerView.Adapter<ProfileRecycler
     private Context mContext;
     private ArrayList<User> items = new ArrayList<>();
     private LayoutInflater mInflater;
-
+    private DatabaseReference profileReference;
+    private FirebaseDatabase database;
     private FirebaseStorage storage;
     private StorageReference storageRef;
     private StorageReference pathRef;
     private String storageProfileFolder;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
-
-    public ProfileRecyclerAdapter(Context context, final ArrayList<User> items, String groupId) {
+    private Activity activity;
+    ChildEventListener mChildEventListener;
+    public ProfileRecyclerAdapter(Context context, final ArrayList<User> items, String groupId, Activity activity) {
 
         this.mContext = context;
         this.items = items;
         this.mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.activity = activity;
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+
     }
 
     public class ProfileViewHolder extends RecyclerView.ViewHolder {
@@ -129,23 +137,22 @@ public class ProfileRecyclerAdapter extends RecyclerView.Adapter<ProfileRecycler
     private void onInviteClicked() {
 
         Activity origin = (Activity)mContext;
-//
-//    <string name="invitation_title">Send App Invite Quickstart Invitation</string>
-//    <string name="invitation_message">This app is terrific, give it a try and get $5 off!</string>
-//    <string name="invitation_deep_link">http://example.com/offer/five_dollar_offer</string>
-//    <string name="invitation_custom_image">https://developers.google.com/identity/images/g-logo.png</string>
-//    <string name="invitation_cta">Install!</string>
+
         Intent intent = new AppInviteInvitation.IntentBuilder(mContext.getString(R.string.invitation_title))
                 .setMessage(mContext.getString(R.string.invitation_message))
                 .setDeepLink(Uri.parse(mContext.getString(R.string.invitation_deep_link)))
-                .setCustomImage(Uri.parse(mContext.getString(R.string.invitation_custom_image)))
-                .setCallToActionText(mContext.getString(R.string.invitation_cta))
+                .setEmailHtmlContent("<html><body>" +
+                        "<h1>Fam</h1>" +
+                        "<h2>회원가입 후에 가족의 공간을 즐겁게 만들어가세요! 시작해볼까요?</h2>" +
+                        "<a href=\"%%APPINVITE_LINK_PLACEHOLDER%%\">지금 시작하기!</a>" +
+                        "<body></html>")
+                .setEmailSubject("FAM")
                 .build();
         origin.startActivityForResult(intent, REQUEST_INVITE);
     }
 
 
-    private void bindBodyItem(ProfileViewHolder holder, int position) {
+    private void bindBodyItem(ProfileViewHolder holder, final int position) {
         // userName 이 세글자 이상 넘어가게 되면,
         String userName = items.get(position).getUserNicname();
         if (userName.length() > 3) {
@@ -158,6 +165,16 @@ public class ProfileRecyclerAdapter extends RecyclerView.Adapter<ProfileRecycler
         // image data bind
         Glide.with(mContext).using(new FirebaseImageLoader()).load(pathRef).centerCrop()
                 .crossFade().bitmapTransform(new CropCircleTransformation(mContext)).into(holder.profileImage);
+
+        holder.profileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, Profile.class);
+                intent.putExtra("userId", items.get(position).getId());
+                mContext.startActivity(intent);
+                activity.overridePendingTransition(R.anim.y_slide_in, R.anim.y_step_back);
+            }
+        });
 
     }
 

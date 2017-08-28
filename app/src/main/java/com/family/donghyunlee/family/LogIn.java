@@ -2,6 +2,8 @@ package com.family.donghyunlee.family;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -33,6 +35,7 @@ import java.util.Iterator;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 /**
  * Created by DONGHYUNLEE on 2017-07-26.
@@ -56,8 +59,9 @@ public class LogIn extends AppCompatActivity {
     private SharedPreferences.Editor editor;
     private String email;
     private String password;
-
-
+    private String inviteGroupId;
+    private User curUser;
+    private SweetAlertDialog pDialog;
     @Override
     public void onStart() {
         super.onStart();
@@ -68,7 +72,9 @@ public class LogIn extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-
+        if (Build.VERSION.SDK_INT >= 21) {   //상태바 색상 변경
+            getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.main_color_dark_c));
+        }
         setInit();
 
     }
@@ -98,6 +104,11 @@ public class LogIn extends AppCompatActivity {
         // 이메일, 패스퉈드 유효성 검사
         if (validateForm() == false)
             return;
+        pDialog = new SweetAlertDialog(LogIn.this, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Loading");
+        pDialog.setCancelable(true);
+        pDialog.show();
         Log.i(TAG, ">>>>>                    ?????");
         email = loginEmail.getText().toString();
         password = loginPassword.getText().toString();
@@ -111,11 +122,16 @@ public class LogIn extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
 
                             if (user.isEmailVerified()) {
-                                Toast.makeText(LogIn.this, "로그인에 성공", Toast.LENGTH_SHORT).show();
                                 Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                                 updateUI(user);
                             } else {
-                                Toast.makeText(LogIn.this, "인증 처리가 되지 않았습니다.", Toast.LENGTH_LONG).show();
+                                pDialog.hide();
+                                new SweetAlertDialog(LogIn.this, SweetAlertDialog.ERROR_TYPE)
+                                        .setTitleText("로그인을 할 수 없습니다.")
+                                        .setContentText("가입" +
+                                                " 이메일 인증 후 로그인을 해주세요!")
+                                        .setConfirmText("확인")
+                                        .show();
                                 Log.d(TAG, "onAuthStateChanged: 이메일 처리 안됨:" + user.getUid());
                             }
                         } else {
@@ -133,7 +149,48 @@ public class LogIn extends AppCompatActivity {
         updateUI(null);
     }
 
-    private void updateUI(FirebaseUser user) {
+    private void updateUI(final FirebaseUser user) {
+        inviteGroupId = pref.getString("groupId", "");
+        Log.i(TAG, ">>>>>>>>>>>>>>>>>>>>    inviteGroupId" + inviteGroupId);
+        if(!TextUtils.isEmpty(inviteGroupId)){
+            if (user == null) {
+                new SweetAlertDialog(LogIn.this, SweetAlertDialog.ERROR_TYPE)
+                        .setTitleText("로그인 실패")
+                        .setContentText("초대 받은 회원도 회원 가입 후 로그인 해주세요!")
+                        .setConfirmText("확인")
+                        .show();
+                return;
+            }
+            Log.i(TAG, ">>>>>>>>>>>>>>>>>>>> HERE invite: " + inviteGroupId);
+            databaseReference = database.getReference().child("users").child(user.getUid());
+            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    curUser = dataSnapshot.getValue(User.class);
+                    databaseReference.child("groupId").setValue(inviteGroupId);
+                    curUser.setGroupId(inviteGroupId);
+                    databaseReference = database.getReference().child("groups").child(inviteGroupId).child("members");
+                    databaseReference.child(curUser.getId()).setValue(curUser);
+
+                    editor.putString("userId", user.getUid());
+                    editor.putString("groupId", inviteGroupId);
+                    editor.commit();
+                    pDialog.hide();
+                    Intent intent = new Intent(LogIn.this, TimeLine.class);
+                    intent.putExtra("ISFIRSTTIME?", true);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    finish();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+
         if (user != null) {
             currentUser = mAuth.getCurrentUser();
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -142,15 +199,14 @@ public class LogIn extends AppCompatActivity {
                     Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
 
                     while(child.hasNext()) {
-                        User user = child.next().getValue(User.class);
-                        if(user.getId().equals(mAuth.getCurrentUser().getUid())){
-                            SharedPreferences pref = getSharedPreferences("pref", MODE_PRIVATE);
+                        User curUser = child.next().getValue(User.class);
+                        if(curUser.getId().equals(mAuth.getCurrentUser().getUid())){
                             SharedPreferences.Editor editor = pref.edit();
-                            editor.putString("userId", user.getId());
-                            editor.putString("groupId", user.getGroupId());
+                            editor.putString("userId", curUser.getId());
+                            editor.putString("groupId", curUser.getGroupId());
                             editor.commit();
-
-                            if(user.getGroupId().equals("empty")){
+                            pDialog.hide();
+                            if(curUser.getGroupId().equals("empty")){
                                 Intent intent = new Intent(getApplicationContext(), Waiting.class);
                                 // 기존 스택에 있던 task를 초기화하고 새로 생성한 액티비티가 root가 된다.
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -160,7 +216,7 @@ public class LogIn extends AppCompatActivity {
                             } else{
                                 // shared preference에 디비 정보 저장
                                 editor.putString("userId", currentUser.getUid());
-                                editor.putString("groupId", user.getGroupId());
+                                editor.putString("groupId", curUser.getGroupId());
                                 editor.commit();
                                 Intent intent = new Intent(getApplicationContext(), TimeLine.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);

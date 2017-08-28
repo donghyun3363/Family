@@ -1,29 +1,25 @@
 package com.family.donghyunlee.family.bucket;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.family.donghyunlee.family.R;
 import com.family.donghyunlee.family.data.WishListRecyclerItem;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.pedant.SweetAlert.SweetAlertDialog;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 /**
@@ -31,47 +27,46 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
  */
 public class WishListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = WishListRecyclerAdapter.class.getSimpleName();
-    private static final int REQUSETCODE_INADAPTER = 1;
     private Context context;
-    private List<WishListRecyclerItem> items;
+    private ArrayList<WishListRecyclerItem> items;
     private int item_layout;
     private String groupId;
-    private ArrayList<StorageReference> storageitem;
-    private Context getContext;
-    public WishListRecyclerAdapter(Context context, List<WishListRecyclerItem> items, int item_layout, String groupId) {
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
+    private StorageReference pathRef;
+    private String storageProfileFolder;
+
+    public WishListRecyclerAdapter(Context context, ArrayList<WishListRecyclerItem> items, int item_layout, String groupId) {
         this.context = context;
         this.items = items;
         this.item_layout = item_layout;
         this.groupId = groupId;
+
+        storage = FirebaseStorage.getInstance();
+        storageProfileFolder = context.getResources().getString(R.string.storage_profiles_folder);
+        storageRef = storage.getReferenceFromUrl(context.getResources().getString(R.string.firebase_storage));
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_wishlist, null);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_bucketcontent, null);
         return new ViewHolder(v);
     }
 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.wishlist_profile)
-        ImageView wishlistProfile;
-        @BindView(R.id.wishlist_date)
-        TextView wishlistDate;
-        @BindView(R.id.wishlist_nickname)
-        TextView wishlistNickname;
-        @BindView(R.id.wishlist_question)
-        TextView wishlistQuestion;
-        @BindView(R.id.wishlist_answer)
-        TextView wishlistAnswer;
-
-        @BindView(R.id.wishlist_delete)
-        ImageButton wishlistDelete;
-        @BindView(R.id.wishlist_register)
-        ImageButton wishlistRegister;
-
-
+        @BindView(R.id.bucketcontent_profileimage)
+        ImageView contentProfileImage;
+        @BindView(R.id.bucketcontent_date)
+        TextView contentData;
+        @BindView(R.id.bucketcontent_nickname)
+        TextView contentNickname;
+        @BindView(R.id.bucketcontent_answer)
+        TextView contentAnswer;
+        @BindView(R.id.color_container)
+        LinearLayout colorContainer;
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -81,53 +76,26 @@ public class WishListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) { // view position
         WishListRecyclerItem item = items.get(position);
-
-        Glide.with(context).using(new FirebaseImageLoader()).load(storageitem.get(position)).centerCrop()
-                .crossFade().bitmapTransform(new CropCircleTransformation(context)).into(((ViewHolder)holder).wishlistProfile);
-        ((ViewHolder)holder).wishlistDate.setText(item.getDate());
-        ((ViewHolder)holder).wishlistNickname.setText(item.getNickName());
-        ((ViewHolder)holder).wishlistQuestion.setText(item.getQuestion());
-        ((ViewHolder)holder).wishlistAnswer.setText(item.getAnswer());
-
-        ((ViewHolder)holder).wishlistDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-        ((ViewHolder)holder).wishlistRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Activity origin = (Activity)context;
-
-                Intent intent = new Intent(context, RegisterToProgress.class);
-                intent.putExtra("IMGPROFILE", items.get(position).getImgProfilePath());
-                intent.putExtra("QUESTION", items.get(position).getQuestion());
-                intent.putExtra("ANSWER", items.get(position).getAnswer());
-                intent.putExtra("POSITION", position);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                origin.startActivityForResult(intent, REQUSETCODE_INADAPTER);
-            }
-        });
-        ((ViewHolder)holder).wishlistDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
-                        .setTitleText("정말 삭제하시겠습니까?")
-                        .setContentText("삭제되면 복구되지 않습니다.")
-                        .setConfirmText("삭제되었습니다.")
-                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                            @Override
-                            public void onClick(SweetAlertDialog sDialog) {
-                                sDialog.dismissWithAnimation();
-                            }
-                        })
-                        .show();
-
-                Toast.makeText(context, "삭제", Toast.LENGTH_SHORT).show();
-            }
-        });
+        pathRef = storageRef.child(storageProfileFolder + "/" + item.getImgProfilePath());
+        Glide.with(context).using(new FirebaseImageLoader()).load(pathRef).centerCrop()
+                .crossFade().bitmapTransform(new CropCircleTransformation(context)).into(((ViewHolder)holder).contentProfileImage);
+        ((ViewHolder)holder).contentData.setText(item.getDate());
+        ((ViewHolder)holder).contentNickname.setText(item.getNickName());
+        ((ViewHolder)holder).contentAnswer.setText(item.getAnswer());
+        switch (item.getColor()){
+            case 0:
+                ((ViewHolder)holder).colorContainer.setBackgroundResource(R.color.main_color_light_b);
+                break;
+            case 1:
+                ((ViewHolder)holder).colorContainer.setBackgroundResource(R.color.main_circle_blue);
+                break;
+            case 2:
+                ((ViewHolder)holder).colorContainer.setBackgroundResource(R.color.main_circle_orange);
+                break;
+            default:
+                ((ViewHolder)holder).colorContainer.setBackgroundResource(R.color.main_color_light_b);
+                break;
+        }
     }
 
 
@@ -141,8 +109,7 @@ public class WishListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
         return item;
     }
 
-    public void setStorageitem(ArrayList<StorageReference> storageitem){
-        this.storageitem = storageitem;
-
+    public ArrayList<WishListRecyclerItem> getItems(){
+        return items;
     }
 }

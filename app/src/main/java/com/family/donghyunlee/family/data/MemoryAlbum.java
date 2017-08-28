@@ -12,22 +12,28 @@ public class MemoryAlbum {
     private String mainImgPath;
     private String profileImgPath;
     private String userId;
+    private String location;
 
     MemoryAlbum() {
     }
 
-    public MemoryAlbum(String id,  String userId, String albumTitle, String albumDate, String mainImgPath, String profileImgPath) {
+    public MemoryAlbum(String id,  String userId, String albumTitle, String albumDate,
+                       String mainImgPath, String profileImgPath, String location) {
         this.id = id;
         this.userId = userId;
         this.albumTitle = albumTitle;
         this.albumDate = albumDate;
         this.mainImgPath = mainImgPath;
         this.profileImgPath = profileImgPath;
+        this.location = location;
     }
 
     // GETTER
 
 
+    public String getLocation() {
+        return location;
+    }
     public String getUserId() {
         return userId;
     }
@@ -53,6 +59,10 @@ public class MemoryAlbum {
     }
     // SETTER
 
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
 
     public void setUserId(String userId) {
         this.userId = userId;

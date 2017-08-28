@@ -7,12 +7,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.family.donghyunlee.family.data.TimeLineItem;
 import com.family.donghyunlee.family.data.User;
+import com.family.donghyunlee.family.timeline.ProfileChange;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -50,9 +51,6 @@ public class Profile extends AppCompatActivity {
 
     private FirebaseDatabase database;
     private DatabaseReference groupReference;
-    private DatabaseReference userReference;
-    private DatabaseReference titleReference;
-
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
@@ -62,6 +60,7 @@ public class Profile extends AppCompatActivity {
 
     private String storageProfileFolder;
     private User curUser;
+    private String userId;
     private SharedPreferences pref;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -77,12 +76,11 @@ public class Profile extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= 21) {   //상태바 색상 변경
             getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.main_color_dark_b));
         }
+        // userId 받아야함.
         Intent intent = getIntent();
-        currentItem = (TimeLineItem) intent.getExtras().getParcelable("TimelineItem");
-        commentCnt = (int) intent.getIntExtra("CommentCnt", 0);
-        likeCnt = (int) intent.getIntExtra("LikeCnt", 0);
-        currentPositon = (int) intent.getIntExtra("position", 0);
+        userId = (String) intent.getStringExtra("userId");
 
+        Log.i("TAG", ">>>>>>>>>>>>>>>>>>>>>> USERID: " + userId);
         database = FirebaseDatabase.getInstance();
         mAuth = FirebaseAuth.getInstance();
         pref = getSharedPreferences("pref", MODE_PRIVATE);
@@ -102,7 +100,14 @@ public class Profile extends AppCompatActivity {
                 Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
                 while(child.hasNext()){
                     curUser = child.next().getValue(User.class);
-                    if(curUser.getId().equals(currentUser.getUid())){
+                    if(curUser.getId().equals(userId)){
+                        profile_pathRef = storageRef.child(storageProfileFolder + "/" + curUser.getUserImage());
+                        Glide.with(getApplicationContext()).using(new FirebaseImageLoader()).load(profile_pathRef).centerCrop()
+                                .crossFade().bitmapTransform(new CropCircleTransformation(getApplicationContext()))
+                                .into(profileImage);
+                        profileName.setText(curUser.getUserNicname());
+                        profileType.setText(curUser.getUserType());
+                        profilePhone.setText(curUser.getUserPhone());
                         return;
                     }
 
@@ -114,18 +119,15 @@ public class Profile extends AppCompatActivity {
 
             }
         });
-        profile_pathRef = storageRef.child(storageProfileFolder + "/" + curUser.getUserImage());
-        Glide.with(getApplicationContext()).using(new FirebaseImageLoader()).load(profile_pathRef).centerCrop()
-                .crossFade().bitmapTransform(new CropCircleTransformation(getApplicationContext()))
-                .into(profileImage);
-        profileName.setText(curUser.getUserNicname());
-        profileType.setText(curUser.getUserType());
-        profilePhone.setText(curUser.getUserPhone());
+
 
     }
     @OnClick(R.id.profile_setting)
     void onSettingClick(){
-
+        Intent intent = new Intent(this, ProfileChange.class);
+        intent.putExtra("userId", curUser.getId());
+        startActivity(intent);
+        overridePendingTransition(R.anim.y_slide_in, R.anim.y_step_back);
     }
 
     @OnClick(R.id.profile_bucket)

@@ -1,5 +1,6 @@
 package com.family.donghyunlee.family;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
@@ -49,6 +50,9 @@ public class SignUp extends AppCompatActivity {
     // Initializing Setup
     private void setInit() {
         settingListener();
+        if (Build.VERSION.SDK_INT >= 21) {   //상태바 색상 변경
+            getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.main_color_dark_c));
+        }
     }
 
     // ButterKnife OnClick

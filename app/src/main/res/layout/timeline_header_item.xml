@@ -42,6 +42,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:ems="10"
+                android:background="?attr/selectableItemBackground"
                 android:gravity="center_vertical"
                 android:hint="가족간에 추억을 나눠보세요!"
                 android:inputType="textPersonName"
@@ -79,7 +80,7 @@
                     android:layout_height="20dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginRight="10dp"
-                    android:background="@android:color/transparent"
+                    android:background="?attr/selectableItemBackground"
                     app:srcCompat="@drawable/ic_image_new" />
 
 

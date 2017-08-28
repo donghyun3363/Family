@@ -3,9 +3,12 @@ package com.family.donghyunlee.family.photoalbum;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
@@ -14,17 +17,27 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.family.donghyunlee.family.R;
+import com.family.donghyunlee.family.data.MapItem;
 import com.family.donghyunlee.family.data.MemoryAlbum;
 import com.family.donghyunlee.family.data.User;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -34,6 +47,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,7 +57,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
+import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
@@ -57,6 +73,7 @@ public class MemoryFragment extends Fragment {
 
 
     private static final String TAG = MemoryFragment.class.getSimpleName();
+    private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
     @BindView(R.id.fab_photo)
     FloatingActionButton fabPhoto;
     @BindView(R.id.rv_memory)
@@ -66,9 +83,9 @@ public class MemoryFragment extends Fragment {
     private String groupId;
     private EditText inputTitle;
     private EditText inputLocation;
-
-
-
+    private LinearLayout locationContainer;
+    private Switch locationSwitch;
+    private ViewGroup snackContainer;
     private MemoryAlbumRecyclerAdapter recyclerAdapter;
     private StaggeredGridLayoutManager staggeredLayoutManager;
     private LinearLayoutManager linearLayoutManger;
@@ -85,8 +102,14 @@ public class MemoryFragment extends Fragment {
     private FirebaseDatabase database;
     private DatabaseReference userReference;
     private DatabaseReference groupReference;
+    private DatabaseReference mapReference;
     private DatabaseReference albumChangingReference;
     ValueEventListener valueEventListener;
+    private String full_locaton;
+    private Geocoder mGeocoder;
+    private double lat;
+    private double lon;
+
     public static MemoryFragment newInstance() {
         Bundle args = new Bundle();
 
@@ -120,15 +143,13 @@ public class MemoryFragment extends Fragment {
                     Log.e("!!!!!!!!!!", "albumIdBeforeSel: " + albumIdBeforeSel);
                     albumChangingReference = database.getReference("groups").child(groupId).child("memoryPhoto")
                             .child(albumIdBeforeSel);
-
-
                     valueEventListener = new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             MemoryAlbum memoryAlbum = dataSnapshot.getValue(MemoryAlbum.class);
-                            Log.e("!!", "positiong: "+ position);
+                            Log.e("!!", "positiong: " + position);
                             //items.set(position-1 ,memoryAlbum);
-                            items.set(position ,memoryAlbum);
+                            items.set(position, memoryAlbum);
                             recyclerAdapter.notifyDataSetChanged();
                         }
 
@@ -144,8 +165,44 @@ public class MemoryFragment extends Fragment {
                 }
                 break;
             }
+            case PLACE_AUTOCOMPLETE_REQUEST_CODE:
+                if (resultCode == RESULT_OK) {
+
+                    Place place = PlaceAutocomplete.getPlace(getContext(), data);
+                    full_locaton = place.getAddress().toString() + " " + place.getName().toString();
+                    inputLocation.setText(full_locaton);
+                    Log.i(TAG, "Place: " + full_locaton);
+                    if (!getLanLonwithaddr(full_locaton)) {
+                        full_locaton = null;
+                    }
+                } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                    Status status = PlaceAutocomplete.getStatus(getContext(), data);
+                    // TODO: Handle the error.
+                    Log.i(TAG, status.getStatusMessage());
+
+                } else if (resultCode == RESULT_CANCELED) {
+                    // The user canceled the operation.
+                }
         }
     }
+
+    boolean getLanLonwithaddr(String address) {
+        mGeocoder = new Geocoder(getContext());
+        try {
+            List<Address> data = mGeocoder.getFromLocationName(address, 1);
+            Log.e(TAG, "Geocoder lat:" + data.get(0).getLatitude() + "lon" + data.get(0).getLongitude());
+            lat = data.get(0).getLatitude();
+            lon = data.get(0).getLongitude();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (IndexOutOfBoundsException e) {
+            Toast.makeText(getActivity(), "해당되는 주소가 없습니다. 주소를 다시 입력해주세요. ", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return false;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -155,7 +212,7 @@ public class MemoryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_memory, container, false);
         ButterKnife.bind(this, v);
-
+        snackContainer = (ViewGroup) v.findViewById(R.id.snackbar_layout);
         setInit();
         // 서버에서 앨범을 얻음
 
@@ -175,6 +232,7 @@ public class MemoryFragment extends Fragment {
         currentUser = mAuth.getCurrentUser();
         userReference = database.getReference("users");
         groupReference = database.getReference("groups");
+
     }
 
     private void itemTouchListener() {
@@ -203,8 +261,7 @@ public class MemoryFragment extends Fragment {
                     intent.putExtra("ALBUM_POSITION", position);
                     startActivityForResult(intent, REQUESTCODEFROMINALBUM, options.toBundle());
                     fabPhoto.hide();
-                }
-                else {
+                } else {
                     intent.putExtra("TITLE", recyclerAdapter.getCurItem(position).getAlbumTitle());
 
                     startActivityForResult(intent, REQUESTCODEFROMINALBUM);
@@ -221,7 +278,7 @@ public class MemoryFragment extends Fragment {
     private void actionLayoutShape() {
 
         // Staggered 레이아웃매니저 setting
-        staggeredLayoutManager = new StaggeredGridLayoutManager(2,1);
+        staggeredLayoutManager = new StaggeredGridLayoutManager(2, 1);
         staggeredLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
         staggeredLayoutManager.setOrientation(StaggeredGridLayoutManager.VERTICAL);
 
@@ -238,18 +295,16 @@ public class MemoryFragment extends Fragment {
     }
 
     @OnClick(R.id.change_card)
-    void settingLayoutButton(){
-        if(willChange_flag == LIST_LAYOUT|| willChange_flag == 3){
-            willChange_flag = GRID_LAYOUT ;
-        }
-        else{
+    void settingLayoutButton() {
+        if (willChange_flag == LIST_LAYOUT || willChange_flag == 3) {
+            willChange_flag = GRID_LAYOUT;
+        } else {
             willChange_flag = LIST_LAYOUT;
         }
-        if(willChange_flag == GRID_LAYOUT) {
+        if (willChange_flag == GRID_LAYOUT) {
             recyclerView.setLayoutManager(staggeredLayoutManager);
             changeCard.setImageResource(R.drawable.ic_viewstream);
-        }
-        else{
+        } else {
             recyclerView.setLayoutManager(linearLayoutManger);
             changeCard.setImageResource(R.drawable.ic_dashbutton);
         }
@@ -261,10 +316,43 @@ public class MemoryFragment extends Fragment {
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(LAYOUT_INFLATER_SERVICE);
         View layout = inflater.inflate(R.layout.dialog_make_meomory_album, (ViewGroup) getActivity().findViewById(R.id.popup_memory_root));
         inputTitle = (EditText) layout.findViewById(R.id.popup_memory_input);
+        inputLocation = (EditText) layout.findViewById(R.id.popup_text_location);
+        locationContainer = (LinearLayout) layout.findViewById(R.id.popup_search_location);
+        locationSwitch = (Switch) layout.findViewById(R.id.location_switch);
+
+        locationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    inputLocation.setEnabled(true);
+                    locationContainer.setVisibility(View.VISIBLE);
+                } else {
+                    inputLocation.setEnabled(false);
+                    locationContainer.setVisibility(View.GONE);
+                }
+            }
+        });
+        locationContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
+                            .build(getActivity());
+                    startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+                } catch (GooglePlayServicesRepairableException e) {
+                    // TODO: Handle the error.
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    // TODO: Handle the error.
+                }
+            }
+        });
+
+
         dialog.setView(layout);
         dialog.show();
 
     }
+
 
     private AlertDialog.Builder createDialog() {
         AlertDialog.Builder insertDialog = new AlertDialog.Builder(getContext());
@@ -274,16 +362,27 @@ public class MemoryFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // user 그룹 아이디와 프로필 사진 가져오기
-                        if (inputTitle.length() <= 0 ) {
-//                            inputText.requestFocus();
-//                            inputText.setError("앨범명을 입력해주세요!");
-                            //TODO 다이얼로그 꺼지는 것 처리
-                            Toast.makeText(getActivity(), "정보를 모두 입력해주세요!", Toast.LENGTH_SHORT).show();
+                        if (locationSwitch.isChecked()) {
+                            if (TextUtils.isEmpty(inputLocation.getText())) {
 
-                        } else {
-
-                            addAlbum();
+                                new SweetAlertDialog(getContext(), SweetAlertDialog.WARNING_TYPE)
+                                        .setTitleText("앨범 생성 실패")
+                                        .setContentText("위치를 입력하지 않았습니다.")
+                                        .setConfirmText("확인")
+                                        .show();
+                                return;
+                            }
                         }
+                        if (inputTitle.length() <= 0) {
+                            new SweetAlertDialog(getContext(), SweetAlertDialog.WARNING_TYPE)
+                                    .setTitleText("앨범 생성 실패")
+                                    .setContentText("앨범 명을 입력하지 않았습니다.")
+                                    .setConfirmText("확인")
+                                    .show();
+                            return;
+                        }
+                        addAlbum();
+                        // 초기화/
                     }
                 })
                 .setNegativeButton(R.string.dialog_negati, new DialogInterface.OnClickListener() {
@@ -295,9 +394,10 @@ public class MemoryFragment extends Fragment {
         return insertDialog;
     }
 
-    public void addAlbum(){
+    public void addAlbum() {
         userReference = database.getReference("users");
         groupReference = database.getReference("groups");
+        mapReference = database.getReference("groups").child(groupId).child("memoryPhotoMap");
         userReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -320,12 +420,22 @@ public class MemoryFragment extends Fragment {
                 groupReference = groupReference.child(groupId)
                         .child("memoryPhoto");
                 key = groupReference.push().getKey();
-                MemoryAlbum albumData = new MemoryAlbum(key, currentUser.getUid(), inputTitle.getText().toString(), CurDateFormat.format(date), "empty", profileimg);
+                MemoryAlbum albumData;
+                if (full_locaton == null) {
+                    full_locaton = "empty";
+                } else{
+                    MapItem mapItem = new MapItem(inputTitle.getText().toString(), full_locaton, "empty", key, CurDateFormat.format(date)
+                            , lat, lon);
+                    mapReference.child(key).setValue(mapItem);
+                }
+                albumData = new MemoryAlbum(key, currentUser.getUid(),
+                        inputTitle.getText().toString(), CurDateFormat.format(date), "empty", profileimg, full_locaton);
                 groupReference.child(key).setValue(albumData);
                 items.add(0, albumData);
                 recyclerAdapter.notifyDataSetChanged();
 
-                Toast.makeText(getActivity(), "새 앨범이 추가되었습니다.", Toast.LENGTH_SHORT).show();
+                showMessage("앨범이 생성되었습니다.");
+                full_locaton = null;
             }
 
             @Override
@@ -334,8 +444,14 @@ public class MemoryFragment extends Fragment {
             }
         });
     }
+
+    private void showMessage(String msg) {
+
+        Snackbar.make(snackContainer, msg, Snackbar.LENGTH_SHORT).show();
+    }
+
     // 실시간 데이터베이스에서 inAlbum의 image를 가져온다.
-    public void getAlbum(){
+    public void getAlbum() {
         groupReference = database.getReference("groups")
                 .child(groupId).child("memoryPhoto");
         groupReference.addListenerForSingleValueEvent(new ValueEventListener() {

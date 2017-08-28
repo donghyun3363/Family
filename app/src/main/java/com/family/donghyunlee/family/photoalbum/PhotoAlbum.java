@@ -7,7 +7,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.ImageButton;
 
 import com.family.donghyunlee.family.R;
@@ -26,6 +25,8 @@ public class PhotoAlbum extends AppCompatActivity {
 
     @BindView(R.id.photoalbum_back)
     ImageButton photoAlbumBack;
+    @BindView(R.id.photoalbum_map)
+    ImageButton photoAlbumMap;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,7 +37,10 @@ public class PhotoAlbum extends AppCompatActivity {
         setInit();
 
     }
-
+    @OnClick(R.id.photoalbum_map)
+    void onMapClick(){
+        startMapFragment(AllMapFragment.newInstance());
+    }
     @OnClick(R.id.photoalbum_back)
     void backClick() {
         finish();
@@ -51,10 +55,17 @@ public class PhotoAlbum extends AppCompatActivity {
         startFragment(MemoryFragment.newInstance());
     }
     private void startFragment(final MemoryFragment fragment) {
-        Log.e("CHECK","?");
+
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.memoryphoto_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+    private void startMapFragment(final AllMapFragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.add(R.id.map_container, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }

@@ -58,7 +58,9 @@
         <activity android:name=".Profile"
             android:theme="@style/Theme.AppCompat.Translucent" >
         </activity>
-
+        <activity android:name=".timeline.ProfileChange"
+            android:theme="@style/Theme.AppCompat.Translucent" >
+        </activity>
         <activity android:name=".photoalbum.PhotoAlbum"
             android:theme="@style/AppTheme" >
 
@@ -71,7 +73,7 @@
         </activity>
         <activity android:name=".timeline.TimeLine"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize|stateHidden">
+            android:windowSoftInputMode="stateHidden|adjustResize">
         </activity>
 
         <activity android:name=".photoalbum.InAlbum"
@@ -101,9 +103,15 @@
             android:windowSoftInputMode="adjustResize|stateVisible">
         </activity>
 
+        <activity android:name=".push.Push"
+            android:theme="@style/MyMaterialTheme" >
+        </activity>
+
+
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
 
-        <activity android:name=".DeepLinkActivity">
+        <activity android:name=".DeepLinkActivity"
+            android:theme="@style/Theme.AppCompat.Translucent">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
 
@@ -114,6 +122,20 @@
                 <data android:host="example.com" android:scheme="https"/>
             </intent-filter>
         </activity>
+        <service
+            android:name=".FirebaseMessagingService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <service android:name=".FirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
 
     </application>
 </manifest>

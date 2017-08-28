@@ -121,6 +121,7 @@ public class CommentCardDialogFragment extends DialogFragment {
     @OnClick(R.id.option_delete)
     void onDeleteClick(){
         final SweetAlertDialog pDialog = new SweetAlertDialog(getContext(), SweetAlertDialog.PROGRESS_TYPE);
+
         new SweetAlertDialog(getContext(), SweetAlertDialog.WARNING_TYPE)
                 .setTitleText("정말 삭제하시겠습니까?")
                 .setContentText("삭제 후 다시 복구 할 수 없습니다!")

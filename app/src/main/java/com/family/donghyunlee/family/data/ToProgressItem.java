@@ -16,19 +16,15 @@ public class ToProgressItem {
     private String date;
     private String nickName;
     private boolean shareCheck;
-    private boolean withCheck;
     private String profilePath;
 
     public ToProgressItem() {
 
     }
-//    ToProgressItem(curUser.getId(), curUser.getUserImage(), curUser.getUserNicname(),toprogressTitle.getText().toString(), toprogressLocation.getText().toString()
-//                    , toprogressStartDate.getText().toString(), toprogressEndDate.getText().toString(), toprogressStartTime.getText().toString()
-//                    , toprogressEndTime.getText().toString(), toprogressMemo.getText().toString(), toprogressShareSwitch.isChecked(), toprogressWithSwitch.isChecked());
-//}
+
     public ToProgressItem(String userId, String profilePath, String nickName, String date, String title,
                           String location, String startDate, String endDate, String startTime,
-                          String endTime, String memo, boolean shareCheck, boolean withCheck) {
+                          String endTime, String memo, boolean shareCheck) {
         this.userId = userId;
         this.title = title;
         this.location = location;
@@ -38,7 +34,6 @@ public class ToProgressItem {
         this.endTime = endTime;
         this.memo = memo;
         this.shareCheck = shareCheck;
-        this.withCheck = withCheck;
         this.profilePath = profilePath;
         this.date = date;
         this.nickName = nickName;
@@ -92,9 +87,6 @@ public class ToProgressItem {
         return shareCheck;
     }
 
-    public boolean isWithCheck() {
-        return withCheck;
-    }
 
     public void setUserId(String userId) {
         this.userId = userId;
@@ -129,10 +121,6 @@ public class ToProgressItem {
 
     public void setShareCheck(boolean shareCheck) {
         this.shareCheck = shareCheck;
-    }
-
-    public void setWithCheck(boolean withCheck) {
-        this.withCheck = withCheck;
     }
 
 

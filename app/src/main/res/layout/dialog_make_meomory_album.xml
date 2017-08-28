@@ -10,24 +10,23 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <android.support.v7.widget.CardView
-            xmlns:android="http://schemas.android.com/apk/res/android"
+        <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/popup_cardview_name"
             android:layout_width="300dp"
             android:layout_height="50dp"
-            android:id="@+id/popup_cardview_name"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
             android:layout_gravity="center"
             android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             card_view:cardCornerRadius="@dimen/little_cardround"
             card_view:cardElevation="5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@color/main_color_light_a"
                 android:gravity="center"
-                android:background="@color/tea_grean"
                 android:orientation="horizontal">
 
                 <TextView
@@ -36,7 +35,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:text="앨범명"
-                    android:textColor="@color/colorBlack" />
+                    android:textColor="@color/main_color_font" />
 
                 <LinearLayout
                     android:layout_width="2dp"
@@ -44,37 +43,50 @@
                     android:layout_margin="10dp"
                     android:background="@color/colorWhGray" />
 
-                <EditText
-                    android:id="@+id/popup_memory_input"
-                    android:layout_height="wrap_content"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/bucketcard_answer_hint"
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
-                    android:textColor="@color/colorBlack"
-                    android:background="@null"
-                    android:inputType="text"
-                    android:imeOptions="actionDone"
-                    />
+                    android:hint="ex) 가족과 함께 외식">
+
+                    <EditText
+                        android:id="@+id/popup_memory_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:imeOptions="actionDone"
+                        android:inputType="text"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="@dimen/edit_textsize" />
+                </android.support.design.widget.TextInputLayout>
             </LinearLayout>
         </android.support.v7.widget.CardView>
-
-        <android.support.v7.widget.CardView
-            xmlns:android="http://schemas.android.com/apk/res/android"
+        <Switch
+            android:id="@+id/location_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:textSize="@dimen/small_textsize"
+            android:text="위치 설정하기 " />
+        <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:card_view="http://schemas.android.com/apk/res-auto"
             android:layout_width="300dp"
             android:layout_height="50dp"
             android:layout_below="@id/popup_cardview_name"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
             android:layout_gravity="center"
             android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             card_view:cardCornerRadius="@dimen/little_cardround"
             card_view:cardElevation="5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@color/main_color_light_a"
                 android:gravity="center"
-                android:background="@color/tea_grean"
                 android:orientation="horizontal">
 
                 <TextView
@@ -83,49 +95,59 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="23dp"
                     android:text="위치"
-                    android:textColor="@color/colorBlack" />
+                    android:textColor="@color/main_color_font" />
 
                 <LinearLayout
                     android:layout_width="2dp"
                     android:layout_height="match_parent"
                     android:layout_margin="10dp"
                     android:background="@color/colorWhGray" />
-
                 <EditText
-                    android:id="@+id/popup_travel_location"
-                    android:layout_height="wrap_content"
                     android:layout_width="match_parent"
+                    android:id="@+id/popup_text_location"
+                    android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
-                    android:textColor="@color/colorBlack"
                     android:background="@null"
-                    android:inputType="text"
+                    android:enabled="false"
                     android:imeOptions="actionDone"
-                    />
+                    android:inputType="text"
+                    android:hint="유효한 위치 입력 필수 (검색 추천)"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="@dimen/edit_textsize" />
             </LinearLayout>
         </android.support.v7.widget.CardView>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:orientation="horizontal"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:gravity="end">
-            <LinearLayout android:id="@+id/search_location"
+            android:gravity="end"
+            android:orientation="horizontal">
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:onClick="searchClick">
+                android:textSize="@dimen/small_textsize"/>
+            <LinearLayout
+                android:layout_gravity="end"
+                android:id="@+id/popup_search_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onSearchClick"
+                android:clickable="true"
+                android:orientation="horizontal">
+
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_add_location"/>
+                    android:src="@drawable/ic_add_location" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:textColor="@color/colorBlack"
+                    android:gravity="center"
                     android:text="위치 정보 검색"
-                android:gravity="center"/>
+                    android:textColor="@color/colorBlack" />
             </LinearLayout>
         </LinearLayout>
 

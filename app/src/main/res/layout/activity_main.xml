@@ -42,6 +42,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:layout_margin="10dp"
+                    android:background="?attr/selectableItemBackground"
                     card_view:cardCornerRadius="@dimen/little_cardround"
                     card_view:cardElevation="5dp">
 

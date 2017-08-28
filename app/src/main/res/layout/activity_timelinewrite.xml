@@ -22,7 +22,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:background="@android:color/transparent"
+                android:background="?attr/selectableItemBackground"
                 android:onClick="onBackClick"
                 android:src="@drawable/ic_back_white" />
 
@@ -41,7 +41,7 @@
                 android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:background="@android:color/transparent"
+                android:background="?attr/selectableItemBackground"
                 android:onClick="onDoneClick"
                 android:text="완료"
                 android:textColor="@color/main_color_lightgray"
@@ -127,7 +127,7 @@
             android:layout_height="27dp"
             android:layout_margin="10dp"
             android:layout_gravity="center_vertical"
-            android:background="@android:color/transparent"
+            android:background="?attr/selectableItemBackground"
             android:onClick="onImgClick"
             android:src="@drawable/ic_image_new" />
     </LinearLayout>

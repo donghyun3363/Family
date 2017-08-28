@@ -16,9 +16,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.family.donghyunlee.family.Profile;
 import com.family.donghyunlee.family.R;
 import com.family.donghyunlee.family.data.IsCheck;
 import com.family.donghyunlee.family.data.TimeLineItem;
@@ -173,9 +173,7 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                Toast.makeText(mContext, "제거 + " + items.size(), Toast.LENGTH_SHORT).show();
-                String timelineCardKey = dataSnapshot.getKey();
+                 String timelineCardKey = dataSnapshot.getKey();
                 // [START_EXCLUDE]
                 int timelineIndex = mTimelineIds.indexOf(timelineCardKey);
                 if (timelineIndex > -1) {
@@ -349,7 +347,7 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
 
     // head itemSet bind
     private void bindHeaderItem(TimelineViewHolder holder) {
-        adapter = new ProfileRecyclerAdapter(mContext, profile_items, groupId);
+        adapter = new ProfileRecyclerAdapter(mContext, profile_items, groupId, activity);
         layoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
         holder.rv_profile.setLayoutManager(layoutManager);
         holder.rv_profile.setAdapter(adapter);
@@ -452,6 +450,15 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
                 fragmentManager.beginTransaction().commit();
                 dialogFragment.setStyle(DialogFragment.STYLE_NORMAL, 0);
                 dialogFragment.show(fragmentManager, "timelineCardDialog");
+            }
+        });
+        holder.timelineProfileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, Profile.class);
+                intent.putExtra("userId", items.get(position).getTimeline_userId());
+                mContext.startActivity(intent);
+                activity.overridePendingTransition(R.anim.y_slide_in, R.anim.y_step_back);
             }
         });
 
@@ -558,6 +565,7 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
 
     public void setProfileItem(ArrayList<User> profile_items) {
         this.profile_items = profile_items;
+        adapter.notifyDataSetChanged();
     }
 
     public void cleanupListener() {

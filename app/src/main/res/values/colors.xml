@@ -58,4 +58,8 @@
     <!-- For settings framework -->
     <color name="lighter_gray">#ddd</color>
     <color name="darker_gray">#aaa</color>
+
+
+    <color name="main_circle_blue">#1976D2</color>
+    <color name="main_circle_orange">#FF8F00</color>
 </resources>

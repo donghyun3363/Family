@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Switch;
@@ -58,8 +57,7 @@ public class IndividualRecyclerAdapter  extends RecyclerView.Adapter<RecyclerVie
         ImageView individualProfile;
         @BindView(R.id.individual_nickname)
         TextView individualNickname;
-        @BindView(R.id.individual_delete)
-        ImageButton individualDelete;
+
         @BindView(R.id.individual_date)
         TextView individualDate;
         @BindView(R.id.individual_title)
@@ -126,12 +124,7 @@ public class IndividualRecyclerAdapter  extends RecyclerView.Adapter<RecyclerVie
                 }
             }
         });
-        ((ViewHolder)holder).individualDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(context, "체크 클릭", Toast.LENGTH_SHORT).show();
-            }
-        });
+
         ((ViewHolder)holder).individualCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

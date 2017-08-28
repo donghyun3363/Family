@@ -4,7 +4,7 @@
     <string name="sign_up">회원가입</string>
 
 
-    <string name="auth_failed">인증에 실패했습니다.</string>
+    <string name="auth_failed">인증에 정상적인 처리가 되지 않았습니다.</string>
     <string name="text_error">빈칸을 입력해주세요.</string>
     <string name="email_error">잘못 된 이메일 형식입니다.</string>
     <string name="short_error">비밀번호 6자리 이상을 입력해주세요.</string>
@@ -27,7 +27,7 @@
     <string name="storage_timeline_title_folder">images/timelinetitleimages</string>
 
 
-    <string name="file_extension">.png</string>
+    <string name="file_extension">.jpeg</string>
 
     <string name="uploading">업로드중입니다.</string>
     <string name="uploading_failed">업로드를 실패하였습니다.</string>
@@ -59,19 +59,20 @@
 
     <string name="album_temptext">공유할 사진들을 올려보세요!</string>
 
-    <string name="bucketlist_key">-KrB1owkl633RLuJ48v3</string>
+    <string name="bucketlist_key">-KsSwSV35IEyK9yaWRpR</string>
 
 
-    <string name="invitation_title">Send App Invite Quickstart Invitation</string>
-    <string name="invitation_message">This app is terrific, give it a try and get $5 off!</string>
+    <string name="invitation_title">초대 메시지 보내기</string>
+    <string name="invitation_message">Fam App 서비스입니다. 초대자의 가족 그룹이 가입초대 전송을 하였습니다. </string>
     <string name="invitation_deep_link">http://example.com/offer/five_dollar_offer</string>
-    <string name="invitation_custom_image">https://developers.google.com/identity/images/g-logo.png</string>
-    <string name="invitation_cta">Install!</string>
+    <!--deep link는 아마 구글 플레이 스토어 주소??? 초대 메시지 install에 이게 왔음.... 안깔려있으면 이 동적링크로 실행
+    깔려 있으면 액티비티 실행 되고 -->
+    <string name="invitation_cta">시작하기!</string>
 
     <string name="deep_link_fmt" formatted="false">Deep Link: %s</string>
 
     <string name="send_failed">Sending invitations failed</string>
-    <string name="invite_dialog_title">You got an invitation!</string>
+    <string name="invite_dialog_title">Fam에 초대가 되었습니다!</string>
     <string name="invite">Send invitations!</string>
     <string name="welcome">Invites</string>
     <string name="referrer_hint">Deep link not provided</string>

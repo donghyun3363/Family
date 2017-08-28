@@ -1,5 +1,6 @@
 package com.family.donghyunlee.family.bucketpage;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,6 +18,8 @@ import com.family.donghyunlee.family.R;
 import com.family.donghyunlee.family.data.BucketListRecyclerItem;
 import com.family.donghyunlee.family.data.MakeBucketList;
 import com.family.donghyunlee.family.data.MyBucketList;
+import com.family.donghyunlee.family.data.User;
+import com.family.donghyunlee.family.data.WishListRecyclerItem;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -55,10 +58,32 @@ public class BucketListFragment extends Fragment {
     private SharedPreferences pref;
     private String groupId;
     private String bucketList_key;
-
+    private DatabaseReference bucketlistReference;
     public static BucketListFragment newInstance() {
         BucketListFragment bucketAnswerFragment = new BucketListFragment();
+
+        Log.i(TAG,">>>>>>>>>>>>>        in BucketList Fragment Instance");
         return bucketAnswerFragment;
+    }
+
+    public interface OnMyListener{
+        void onReceivedData(Boolean data);
+
+    }
+    private OnMyListener mOnMyListener;
+
+    /**
+     * Called when a fragment is first attached to its context.
+     * {@link #onCreate(Bundle)} will be called after this.
+     *
+     * @param context
+     */
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(getActivity()!=null && getActivity() instanceof OnMyListener){
+            mOnMyListener = (OnMyListener) getActivity();
+        }
     }
 
     @Nullable
@@ -67,6 +92,7 @@ public class BucketListFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_bucketlist, container, false);
         ButterKnife.bind(this, v);
         //adminSetAnswer();
+        Log.i(TAG,">>>>>>>>>>>>>        in BucketList Fragment");
         setInit();
 
         return v;
@@ -77,8 +103,9 @@ public class BucketListFragment extends Fragment {
         items = new ArrayList();
         pref = getActivity().getSharedPreferences("pref", MODE_PRIVATE);
         groupId = pref.getString("groupId", "");
-
         database = FirebaseDatabase.getInstance();
+        //TODO KEY 개발자 설정
+        bucketList_key = "-KsT0Z05y9DvE0SN7LY0";
 
         new AccessDatabaseTask().execute(GETBUCKETLISTINFO);
 
@@ -92,6 +119,9 @@ public class BucketListFragment extends Fragment {
     @OnClick(R.id.bucketanswer_done)
     void onDoneClick() {
         Log.i(TAG,">>>>> Click done");
+        if(mOnMyListener != null){
+            mOnMyListener.onReceivedData(true);
+        }
         new AccessDatabaseTask().execute(SENDBUCKETLIST);
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         fragmentManager.beginTransaction().remove(BucketListFragment.this).commit();
@@ -110,8 +140,9 @@ public class BucketListFragment extends Fragment {
     public class AccessDatabaseTask extends AsyncTask<Integer, Integer, Long> {
 
         public Long result = null;
-        private DatabaseReference bucketlistReference;
         private DatabaseReference userReference;
+        private DatabaseReference userBucketReference;
+        private DatabaseReference wishlistReference;
         private FirebaseAuth mAuth;
         private FirebaseUser currentUser;
         private String[] answerData;
@@ -125,16 +156,16 @@ public class BucketListFragment extends Fragment {
         List<String> getAnswerHint;
         List<String> sendAnswer;
         List<String> sendQuestion;
+
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             mAuth = FirebaseAuth.getInstance();
-            bucketList_key = getResources().getString(R.string.bucketlist_key);
+
             bucketlistReference = database.getReference().child("bucketList").child(bucketList_key);
             currentUser = mAuth.getCurrentUser();
-            userReference = database.getReference().child("users").child(currentUser.getUid()).child("myBucketAnswer");
-            key = userReference.push().getKey();
-            userReference.setValue(key);
+
             getAnswer = new ArrayList<String>();
             getAnswerHint = new ArrayList<String>();
             sendQuestion = new ArrayList<>();
@@ -180,10 +211,46 @@ public class BucketListFragment extends Fragment {
                     sendAnswer.add(answerData[i]);
                     sendQuestion.add(questionData[i]);
                 }
-                MyBucketList myBucketList = new MyBucketList(currentUser.getUid(), CurDateFormat.format(date), sendAnswer, sendQuestion);
-                userReference.setValue(myBucketList);
+                // 밖에 넣기
+                userBucketReference = database.getReference().child("userBucketList").child(currentUser.getUid()).child("myBucketList");
+                final MyBucketList myBucketList = new MyBucketList(currentUser.getUid(), CurDateFormat.format(date), sendAnswer, sendQuestion, 0);
+                userBucketReference.setValue(myBucketList);
                 userReference = database.getReference().child("users").child(currentUser.getUid()).child("isBucket");
-                userReference.setValue(1); // 1이 있는 것을 말함.
+                userReference.setValue(true); // 1이 있는 것을 말함.
+
+                userReference = database.getReference().child("users").child(currentUser.getUid());
+                userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        User user = dataSnapshot.getValue(User.class);
+                        String key;
+                        if(!user.getGroupId().equals("empty")){
+                            userBucketReference = database.getReference().child("groups").child(groupId).child("buckets")
+                                    .child(currentUser.getUid()).child("myBucketList");
+                            userBucketReference.setValue(myBucketList);
+
+
+                            wishlistReference = database.getReference().child("groups").child(groupId)
+                                    .child("wishList");
+                            for (int i = 0; i < answerData.length; i++) {
+                                //int imgProfilePath, String nickName, String date, String question, String answer
+                                key = wishlistReference.push().getKey();
+                                WishListRecyclerItem item = new WishListRecyclerItem(key, user.getId(),
+                                        user.getUserImage(), user.getUserNicname(), myBucketList.getDate(),
+                                        sendQuestion.get(i), sendAnswer.get(i), 0);
+
+                                wishlistReference.child(key).setValue(item);
+                            }
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
                 return result;
             }
 

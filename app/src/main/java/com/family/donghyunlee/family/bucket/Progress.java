@@ -190,8 +190,7 @@ public class Progress extends AppCompatActivity {
 
             currentUser = mAuth.getCurrentUser();
             shareReference = database.getReference().child("groups").child(groupId).child("shareBucket");
-            individualReference = database.getReference().child("groups").child(groupId).child("members").child(currentUser.getUid())
-                    .child("individualBucket");
+            individualReference = database.getReference().child("groups").child(groupId).child("individualBucket");
             groupReference = database.getReference().child("groups").child(groupId).child("members");
             shareStorageItems = new ArrayList<>();
             individualStorageItems = new ArrayList<>();
@@ -216,7 +215,7 @@ public class Progress extends AppCompatActivity {
                             shareItem = new ToProgressItem(toProgressItem.getUserId(), toProgressItem.getProfilePath(), toProgressItem.getNickName()
                                     , toProgressItem.getDate(), toProgressItem.getTitle(), toProgressItem.getTitle(), toProgressItem.getStartDate(),
                                     toProgressItem.getEndDate(), toProgressItem.getStartTime(), toProgressItem.getEndTime(), toProgressItem.getMemo(),
-                                    toProgressItem.isShareCheck(), toProgressItem.isWithCheck());
+                                    toProgressItem.isShareCheck());
                             pathRef = storageRef.child(storageProfileFolder + "/" + toProgressItem.getProfilePath());
                             shareStorageItems.add(pathRef);
                             shar_items.add(shareItem);
@@ -240,20 +239,21 @@ public class Progress extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
-                        while(child.hasNext()){
+                        while(child.hasNext()) {
                             toProgressItem = child.next().getValue(ToProgressItem.class);
-
-                            i(TAG, ">>>>>>22222     " + toProgressItem.getUserId());
-                            individualItem = new ToProgressItem(toProgressItem.getUserId(), toProgressItem.getProfilePath(), toProgressItem.getNickName()
-                                    , toProgressItem.getDate(), toProgressItem.getTitle(), toProgressItem.getTitle(), toProgressItem.getStartDate(),
-                                    toProgressItem.getEndDate(), toProgressItem.getStartTime(), toProgressItem.getEndTime(), toProgressItem.getMemo(),
-                                    toProgressItem.isShareCheck(), toProgressItem.isWithCheck());
-                            pathRef = storageRef.child(storageProfileFolder + "/" + toProgressItem.getProfilePath());
-                            individualStorageItems.add(pathRef);
-                            indi_items.add(individualItem);
+                            if (toProgressItem.getUserId().equals(currentUser.getUid())) {
+                                i(TAG, ">>>>>>22222     " + toProgressItem.getUserId());
+                                individualItem = new ToProgressItem(toProgressItem.getUserId(), toProgressItem.getProfilePath(), toProgressItem.getNickName()
+                                        , toProgressItem.getDate(), toProgressItem.getTitle(), toProgressItem.getTitle(), toProgressItem.getStartDate(),
+                                        toProgressItem.getEndDate(), toProgressItem.getStartTime(), toProgressItem.getEndTime(), toProgressItem.getMemo(),
+                                        toProgressItem.isShareCheck());
+                                pathRef = storageRef.child(storageProfileFolder + "/" + toProgressItem.getProfilePath());
+                                individualStorageItems.add(pathRef);
+                                indi_items.add(individualItem);
+                            }
+                            Indi_recyclerAdapter.setStorageitem(individualStorageItems);
+                            Indi_recyclerAdapter.notifyDataSetChanged();
                         }
-                        Indi_recyclerAdapter.setStorageitem(individualStorageItems);
-                        Indi_recyclerAdapter.notifyDataSetChanged();
                         return;
                     }
 

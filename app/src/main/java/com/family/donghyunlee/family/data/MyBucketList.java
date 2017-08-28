@@ -17,15 +17,17 @@ import java.util.List;
     private List<String> question;
     private String userId;
 
+
     public MyBucketList(){
 
     }
-    public MyBucketList(String userId, String date, List<String> answer, List<String> question) {
+    public MyBucketList(String userId, String date, List<String> answer, List<String> question, int color) {
         this.userId = userId;
         this.date = date;
         this.answer = answer;
         this.question = question;
     }
+
 
     public String getDate() {
         return date;
@@ -58,4 +60,5 @@ import java.util.List;
     public void setDate(String date) {
         this.date = date;
     }
+
 }

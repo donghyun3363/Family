@@ -2,11 +2,14 @@ package com.family.donghyunlee.family;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.family.donghyunlee.family.data.MakeBucketList;
 import com.family.donghyunlee.family.data.User;
 import com.family.donghyunlee.family.timeline.TimeLine;
 import com.google.firebase.auth.FirebaseAuth;
@@ -16,6 +19,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,8 +44,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
+//        currentUser = mAuth.getCurrentUser();
+//        updateUI(currentUser);
     }
 
     @Override
@@ -53,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
         //adminSetAnswer();
     }
 
+
+
     private void setViewPager() {
         CircleIndicator indicator = (CircleIndicator) findViewById(R.id.main_indicator);
         vp.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
@@ -63,8 +71,9 @@ public class MainActivity extends AppCompatActivity {
     private void setInit() {
         database = FirebaseDatabase.getInstance();
         mAuth = FirebaseAuth.getInstance();
-
-
+        if (Build.VERSION.SDK_INT >= 21) {   //상태바 색상 변경
+            getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.main_color_dark_c));
+        }
     }
 
 
@@ -119,22 +128,22 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
-    // 설문조사 생성지
-//    void adminSetAnswer(){
-//
-//        String[] listAnswer = getResources().getStringArray(R.array.list_answer);
-//        String[] listAnswerHint = getResources().getStringArray(R.array.list_answerhint);
-//        List<String> answer = new ArrayList<>();
-//        List<String> answerHint = new ArrayList<>();
-//
-//        for(int i = 0 ; i < listAnswer.length ; i++){
-//            answer.add(listAnswer[i]);
-//            answerHint.add(listAnswerHint[i]);
-//        }
-//        MakeBucketList makBuketList = new MakeBucketList(answer, answerHint);
-//        bucketlistReference = database.getReference().child("bucketList");
-//        key = bucketlistReference.push().getKey();
-//        bucketlistReference.child(key).setValue(makBuketList);
-//
-//    }
+     //설문조사 생성지
+    void adminSetAnswer(){
+
+        String[] listAnswer = getResources().getStringArray(R.array.list_answer);
+        String[] listAnswerHint = getResources().getStringArray(R.array.list_answerhint);
+        List<String> answer = new ArrayList<>();
+        List<String> answerHint = new ArrayList<>();
+
+        for(int i = 0 ; i < listAnswer.length ; i++){
+            answer.add(listAnswer[i]);
+            answerHint.add(listAnswerHint[i]);
+        }
+        MakeBucketList makBuketList = new MakeBucketList(answer, answerHint);
+        bucketlistReference = database.getReference().child("bucketList");
+        key = bucketlistReference.push().getKey();
+        bucketlistReference.child(key).setValue(makBuketList);
+
+    }
 }

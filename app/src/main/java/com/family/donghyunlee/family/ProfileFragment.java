@@ -1,12 +1,14 @@
 package com.family.donghyunlee.family;
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -46,6 +48,7 @@ import java.util.Date;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 import static android.app.Activity.RESULT_OK;
@@ -72,9 +75,9 @@ public class ProfileFragment extends Fragment {
     private static final int REQUESTCODE_PHOTOSEL_PROFILEFRAGMENT = 99;
     private String email;
     private String password;
-    private Bitmap photo;
     private Uri uri;
     private String filename;
+    private ViewGroup snackContainer;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference = database.getReference("users");
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -113,6 +116,7 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
         ButterKnife.bind(this, v);
+        snackContainer = (ViewGroup) v.findViewById(R.id.snackbar_layout);
         setInit();
         return v;
     }
@@ -121,7 +125,7 @@ public class ProfileFragment extends Fragment {
         setListener();
         email = getArguments().getString("email");
         password = getArguments().getString("password");
-        Glide.with(getContext()).load(R.drawable.ic_profileblack).centerCrop()
+        Glide.with(getContext()).load(R.drawable.ic_user).centerCrop()
                 .crossFade().bitmapTransform(new CropCircleTransformation(getContext())).into(profileImage);
 
     }
@@ -161,26 +165,45 @@ public class ProfileFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            uploadFile(uri);
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            // TODO profile image 구현하기.
-                            userData = new User(user.getUid(), email, password, profileName.getText().toString()
-                                    , profilePhone.getText().toString()
-                                    , profileType.getText().toString(), filename, "empty");
-                            databaseReference.child(userData.getId()).setValue(userData);
                             sendEmailVerification();
+
                            // updateUI(user);
-                            getActivity().finish();
+
                         } else {
 
                             if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                                Toast.makeText(getContext(), getResources().getString(R.string.already_email_error),
-                                        Toast.LENGTH_SHORT).show();
+                                new SweetAlertDialog(getContext(), SweetAlertDialog.WARNING_TYPE)
+                                        .setTitleText(getResources().getString(R.string.already_email_error))
+                                        .setContentText("다시 한번 확인해주세요.")
+                                        .setConfirmText("확인")
+                                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                            @Override
+                                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                                getActivity().finish();
+                                                //updateUI(null);
+                                            }
+                                        })
+                                        .show();
+                                Toast.makeText(getActivity().getApplication().getApplicationContext(),
+                                        getResources().getString(R.string.already_email_error), Toast.LENGTH_SHORT).show();
+
                             } else {
-                                Toast.makeText(getContext(), getResources().getString(R.string.auth_failed),
-                                        Toast.LENGTH_SHORT).show();
+                                new SweetAlertDialog(getContext(), SweetAlertDialog.WARNING_TYPE)
+                                        .setTitleText(getResources().getString(R.string.auth_failed))
+                                        .setContentText("다시 한번 확인해주세요.")
+                                        .setConfirmText("확인")
+                                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                            @Override
+                                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                                getActivity().finish();
+                                                //updateUI(null);
+                                            }
+                                        })
+                                        .show();
+                                Toast.makeText(getActivity().getApplication().getApplicationContext(),
+                                        getResources().getString(R.string.auth_failed), Toast.LENGTH_SHORT).show();
                             }
-                            //updateUI(null);
+
                         }
                     }
                 });
@@ -197,12 +220,25 @@ public class ProfileFragment extends Fragment {
                     public void onComplete(@NonNull Task<Void> task) {
                         // [START_EXCLUDE]
                         if (task.isSuccessful()) {
-                            Toast.makeText(getActivity(), user.getEmail() + getResources().getString(R.string.sending_email),
-                                    Toast.LENGTH_SHORT).show();
+
+
+                            uploadFile(uri);
+
                         } else {
                             Log.e(TAG, "sendEmailVerification", task.getException());
-                            Toast.makeText(getActivity(), getResources().getString(R.string.sending_email_failed),
-                                    Toast.LENGTH_SHORT).show();
+                            showMessage( user.getEmail() + getResources().getString(R.string.sending_email_failed));
+                            new SweetAlertDialog(getContext(), SweetAlertDialog.WARNING_TYPE)
+                                    .setTitleText(getResources().getString(R.string.auth_failed))
+                                    .setContentText("다시 한번 확인해주세요.")
+                                    .setConfirmText("확인")
+                                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                        @Override
+                                        public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                            getActivity().finish();
+                                            //updateUI(null);
+                                        }
+                                    })
+                                    .show();
                         }
                         // [END_EXCLUDE]
                     }
@@ -237,8 +273,17 @@ public class ProfileFragment extends Fragment {
 
     @OnClick(R.id.profile_done)
     void doneClick() {
-        if (validateForm() == false)
+        if (validateForm() == false) {
             return;
+        }
+//        if(profileImage.getResources() == null) {
+//            new SweetAlertDialog(getContext(), SweetAlertDialog.WARNING_TYPE)
+//                    .setTitleText("프로필 사진을 추가해주세요!")
+//                    .setContentText("나중에 변경할 수 있습니다.")
+//                    .setConfirmText("확인")
+//                    .show();
+//            return;
+//        }
         // 회원가입
         signUpUser();
     }
@@ -301,49 +346,71 @@ public class ProfileFragment extends Fragment {
     }
     // TODO 어싱크나 서비스를 쓰자.
     private void uploadFile(Uri filePath) {
-
+        final SweetAlertDialog pDialog = new SweetAlertDialog(getContext(), SweetAlertDialog.PROGRESS_TYPE);
+        if (filePath == null){ // 프로필 사진을 선택 안한 경우
+            Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://"
+                    + getResources().getResourcePackageName(R.drawable.ic_profileblack) + '/'
+                    + getResources().getResourceTypeName(R.drawable.ic_profileblack) + '/'
+                    + String.valueOf(R.drawable.ic_profileblack ));
+            filePath = imageUri;
+        }
         if (filePath != null) {
 
             java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat(getResources().getString(R.string.date_format));
             Date now = new Date();
             filename = formatter.format(now) + getResources().getString(R.string.file_extension);
-            Log.e(TAG, ">>>>>>>     filename : " + filename);
-            //업로드 진행 Dialog 보이기
-//            final ProgressDialog progressDialog = new ProgressDialog(getContext());
-//            progressDialog.setTitle(getResources().getString(R.string.uploading));
-//            progressDialog.show();
-
             StorageReference storageRef = storage.getReferenceFromUrl(getResources().getString(R.string.firebase_storage))
                     .child(getResources().getString(R.string.storage_profiles_folder) + "/" + filename);
 
+            FirebaseUser user = mAuth.getCurrentUser();
+            userData = new User(user.getUid(), email, password, profileName.getText().toString()
+                    , profilePhone.getText().toString()
+                    , profileType.getText().toString(), filename, "empty", false);
+            databaseReference.child(userData.getId()).setValue(userData);
+
+            pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+            pDialog.setTitleText("Loading");
+            pDialog.setCancelable(false);
+            pDialog.show();
             storageRef.putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//
-//                    progressDialog.dismiss();
+                    pDialog.hide();
+                    showMessage( mAuth.getCurrentUser().getEmail() + getResources().getString(R.string.sending_email));
+
+                    new SweetAlertDialog(getContext(), SweetAlertDialog.SUCCESS_TYPE)
+                            .setTitleText(profileName.getText().toString() + "님 회원가입을 축하드립니다. ")
+                            .setContentText("가입 이메일 인증 후 로그인을 해주세요!")
+                            .setConfirmText("확인")
+                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                    getActivity().finish();
+                                }
+                            })
+                            .show();
+
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-
-//                    progressDialog.dismiss();
-//                    Toast.makeText(getActivity(), getResources().getString(R.string.uploading_failed), Toast.LENGTH_SHORT).show();
+                    showMessage("프로필 사진 업로드에 실패하였습니다.");
                 }
             }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-//                    @SuppressWarnings("VisibleForTests")
-//                    double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-//                    progressDialog.setMessage(getResources().getString(R.string.uploading_progress)
-//                            + ((int) progress)
-//                            + getResources().getString(R.string.uploading_percent));
+
                 }
             });
         } else {
             Log.d(TAG, ">>>>>>      filePath is null");
         }
-    }
 
+    }
+    private void showMessage(String msg) {
+
+        Snackbar.make(snackContainer, msg, Snackbar.LENGTH_SHORT).show();
+    }
 }
 
 

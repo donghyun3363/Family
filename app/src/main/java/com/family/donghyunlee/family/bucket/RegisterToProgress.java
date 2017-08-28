@@ -10,7 +10,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -79,8 +78,6 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
     TextView toprogressEndTime;
     @BindView(R.id.toprogress_shareswitch)
     Switch toprogressShareSwitch;
-    @BindView(R.id.toprogress_withswitch)
-    Switch toprogressWithSwitch;
     @BindView(R.id.toprogress_memo)
     EditText toprogressMemo;
     @BindView(R.id.toprogress_cancel)
@@ -105,6 +102,7 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
     private String imgProfile;
     private String question;
     private String answer;
+    private String wishListKey;
     private int item_position;
     private long now;
     private Date date;
@@ -151,11 +149,11 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
     @OnClick(R.id.toprogress_done)
     void onDoneClick(){
         // Bucket 액티비티에 보낼 번들
-        Intent sendIntent = new Intent(this, Bucket.class);
-        Bundle bundle = new Bundle();
-        bundle.putInt("POSITION", item_position);
-        sendIntent.putExtras(bundle);
-        setResult(RESULT_OK, sendIntent);
+//        Intent sendIntent = new Intent(this, Bucket.class);
+//        Bundle bundle = new Bundle();
+//        bundle.putInt("POSITION", item_position);
+//        sendIntent.putExtras(bundle);
+//        setResult(RESULT_OK, sendIntent);
         if(!validateForm()){
             return;
         }
@@ -164,7 +162,6 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
         }else{
             new RegisterToProgress.AccessDatabaseTask().execute(INDIVIDUALTOSERVER);
         }
-        finish();
     }
     @OnClick(R.id.toprogress_cancel)
     void onCancelClick(){
@@ -193,6 +190,7 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
         }
 
         Intent intent = getIntent();
+        wishListKey = (String) intent.getSerializableExtra("WISHLISTKEY");
         imgProfile =(String) intent.getSerializableExtra("IMGPROFILE");
         question = (String) intent.getSerializableExtra("QUESTION");
         answer = (String) intent.getSerializableExtra("ANSWER");
@@ -209,17 +207,6 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
         toprogressStartTime.setText(CurDateFormat.format(date));
         pref = getSharedPreferences("pref", MODE_PRIVATE);
         groupId = pref.getString("groupId", "");
-
-        toprogressShareSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-               if(isChecked){
-                   toprogressWithSwitch.setEnabled(true);
-               } else{
-                   toprogressWithSwitch.setEnabled(false);
-               }
-
-            }
-        });
 
     }
 
@@ -307,12 +294,12 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
         private DatabaseReference shareReference;
         private DatabaseReference individualReference;
         private DatabaseReference userReference;
+        private DatabaseReference wishListReference;
         private FirebaseAuth mAuth;
         private FirebaseUser currentUser;
         private String key;
         private ToProgressItem toProgressItem;
         private User curUser;
-
         private long now;
         private Date date;
         private SimpleDateFormat CurDateFormat;
@@ -322,10 +309,6 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
             mAuth = FirebaseAuth.getInstance();
             database = FirebaseDatabase.getInstance();
             currentUser = mAuth.getCurrentUser();
-            userReference = database.getReference().child("groups").child(groupId).child("members");
-            shareReference = database.getReference().child("groups").child(groupId).child("shareBucket");
-            individualReference = database.getReference().child("groups").child(groupId).child("members")
-                    .child(currentUser.getUid()).child("individualBucket");
             now = System.currentTimeMillis();
             date = new Date(now);
             CurDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일");
@@ -337,7 +320,12 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
                     , CurDateFormat.format(date),toprogressTitle.getText().toString(), toprogressLocation.getText().toString()
                     , toprogressStartDate.getText().toString(), toprogressEndDate.getText().toString()
                     , toprogressStartTime.getText().toString(), toprogressEndTime.getText().toString()
-                    , toprogressMemo.getText().toString(), toprogressShareSwitch.isChecked(), toprogressWithSwitch.isChecked());
+                    , toprogressMemo.getText().toString(), toprogressShareSwitch.isChecked());
+
+            userReference = database.getReference().child("groups").child(groupId).child("members");
+            shareReference = database.getReference().child("groups").child(groupId).child("shareBucket");
+            individualReference = database.getReference().child("groups").child(groupId).child("individualBucket");
+            wishListReference = database.getReference().child("groups").child(groupId).child("wishList").child(wishListKey);
         }
 
         @Override
@@ -361,11 +349,36 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
                     if (params[0].intValue() == SHARETOSERVER) {
                         key = shareReference.push().getKey();
                         shareReference.child(key).setValue(toProgressItem);
+                        wishListReference.child("color").setValue(1);
+                        wishListReference.child("share").setValue(true);
+                        wishListReference.child("bucketKeyRegistered").setValue(key);
+
+                        Intent sendIntent = new Intent();
+                        sendIntent.putExtra("position", item_position);
+                        sendIntent.putExtra("color", 1);
+                        sendIntent.putExtra("share", true);
+                        sendIntent.putExtra("bucketKeyRegistered", key);
+                        setResult(RESULT_OK, sendIntent);
+                        finish();
+
                         return;
                     }
                     else if(params[0].intValue() == INDIVIDUALTOSERVER){
                         key = individualReference.push().getKey();
                         individualReference.child(key).setValue(toProgressItem);
+                        wishListReference.child("color").setValue(1);
+                        wishListReference.child("share").setValue(false);
+                        wishListReference.child("bucketKeyRegistered").setValue(key);
+
+                        Intent sendIntent = new Intent();
+                        sendIntent.putExtra("position", item_position);
+                        sendIntent.putExtra("color", 1);
+                        sendIntent.putExtra("share", false);
+                        sendIntent.putExtra("bucketKeyRegistered", key);
+                        setResult(RESULT_OK, sendIntent);
+                        setResult(RESULT_OK, sendIntent);
+                        finish();
+
                         return;
                     }
 

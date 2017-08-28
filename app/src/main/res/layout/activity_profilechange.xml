@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000"
+        android:gravity="center">
+
+        <LinearLayout
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="135dp"
+                android:layout_height="135dp"
+                android:layout_gravity="center"
+                android:layout_margin="20dp"
+                android:background="@drawable/circle_solid_shape"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/profilechagne_image"
+                    android:layout_width="130dp"
+                    android:layout_height="130dp"
+                    android:background="@drawable/circle_solid_shape"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_user" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:gravity="center_vertical"
+                android:background="@drawable/editetext_solid_shape">
+                <EditText
+                    android:id="@+id/profilechange_nickname"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="현재 이름"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="@color/main_color_darkgray"
+                    android:textSize="@dimen/edit_textsize"
+                    android:background="@null"
+                    android:textStyle="bold"
+                    android:imeOptions="actionNext|actionDone"/>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:background="@drawable/editetext_solid_shape">
+                <EditText
+                    android:id="@+id/profilechange_state"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="상태 메세지"
+                    android:textColorHint="@color/main_color_darkgray"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="@dimen/edit_textsize"
+                    android:background="@null"
+                    android:textStyle="bold"
+                    android:textColor="@color/main_color_darkgray"
+                    android:imeOptions="actionNext|actionDone"/>
+
+            </LinearLayout>
+            <ImageButton
+                android:id="@+id/profilechange_camera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_camera_main"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginTop="10dp"
+                android:onClick="onCameraClick"
+                android:background="@drawable/editetext_solid_shape"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="130dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:gravity="center"
+                android:orientation="vertical">
+                <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/setting_license_container"
+                    android:background="?attr/selectableItemBackground"
+                    card_view:cardCornerRadius="@dimen/little_cardround"
+                    card_view:cardElevation="5dp">
+                    <TextView
+                        android:id="@+id/profilechange_confirm"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/main_color"
+                        android:gravity="center"
+                        android:onClick="onConfirmClick"
+                        android:text="확인"
+                        android:textColor="@color/colorWhite" />
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp" android:background="?attr/selectableItemBackground"
+                    card_view:cardCornerRadius="@dimen/little_cardround"
+                    card_view:cardElevation="5dp">
+
+                    <TextView
+                        android:id="@+id/profilechange_cancel"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/main_color"
+                        android:gravity="center"
+                        android:onClick="onCancelClick"
+                        android:text="취소"
+                        android:textColor="@color/colorWhite" />
+                </android.support.v7.widget.CardView>
+
+
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+    <ImageButton
+        android:id="@+id/profilechange_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:onClick="onBackClick"
+        android:src="@drawable/ic_back_white" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fam 프로필 설정"
+        android:layout_marginTop="17dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/bar_textsize"
+        android:layout_gravity="center_horizontal"/>
+</RelativeLayout>

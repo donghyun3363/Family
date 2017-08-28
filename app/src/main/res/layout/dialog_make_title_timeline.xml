@@ -15,16 +15,14 @@
             android:layout_width="300dp"
             android:layout_height="50dp"
             android:layout_gravity="center"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
+            android:layout_margin="10dp"
             card_view:cardCornerRadius="@dimen/little_cardround"
             card_view:cardElevation="5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/tea_grean"
+                android:background="@color/main_color_light_a"
                 android:gravity="center"
                 android:orientation="horizontal">
 
@@ -34,7 +32,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:text="타이틀 명"
-                    android:textColor="@color/colorBlack" />
+                    android:textColor="@color/main_color_font" />
 
                 <View
                     android:layout_width="2px"
@@ -47,7 +45,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
-                    android:hint="동이네 가족"
+                    android:hint="ex) 동현이네 가족"
                     android:layout_marginRight="10dp"
                     android:background="@null"
                     android:imeOptions="actionDone"

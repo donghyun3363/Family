@@ -94,7 +94,7 @@
                         android:layout_height="23dp"
                         android:layout_marginRight="8dp"
                         android:layout_marginTop="8dp"
-                        android:background="@android:color/transparent"
+                        android:background="?attr/selectableItemBackground"
                         android:onClick="onDeleteClick"
                         android:scaleType="fitXY"
                         android:src="@drawable/ic_more_black" />
@@ -189,7 +189,7 @@
                         android:scaleType="fitXY"
                         android:layout_marginRight="10dp"
                         android:src="@drawable/ic_dropdown"
-                        android:background="@android:color/transparent"/>
+                        android:background="?attr/selectableItemBackground"/>
                 </LinearLayout>
 
                 <View

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -32,7 +32,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@color/best_grean"
+                        android:background="@color/main_color_light_a"
                         android:orientation="vertical">
 
                         <TextView
@@ -40,6 +40,7 @@
                             android:layout_height="50dp"
                             android:gravity="center"
                             android:text="버킷 리스트 설문조사"
+                            android:textSize="@dimen/bar_textsize"
                             android:textColor="@color/colorWhite" />
 
                         <View
@@ -68,28 +69,30 @@
                             <TextView
                                 android:id="@+id/bucketanswer_cancel"
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="5dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="10dp"
                                 android:onClick="onCancelClick"
                                 android:text="나중에"
+                                android:background="?attr/selectableItemBackground"
+                                android:gravity="center"
                                 android:textColor="@color/colorWhite"
-                                android:textSize="@dimen/small_textsize" />
+                                 />
 
                             <TextView
                                 android:id="@+id/bucketanswer_done"
                                 android:layout_width="40dp"
-                                android:layout_height="wrap_content"
+                                android:layout_height="match_parent"
                                 android:layout_alignParentRight="true"
                                 android:layout_marginRight="5dp"
                                 android:gravity="center"
                                 android:onClick="onDoneClick"
+                                android:background="?attr/selectableItemBackground"
                                 android:text="완료"
-                                android:textColor="@color/colorWhite"
-                                android:textSize="@dimen/small_textsize" />
+                                android:textColor="@color/colorWhite" />
                         </RelativeLayout>
                     </LinearLayout>
                 </android.support.v7.widget.CardView>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
-</LinearLayout>
+</FrameLayout>

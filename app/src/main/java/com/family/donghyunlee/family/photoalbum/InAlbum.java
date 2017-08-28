@@ -9,13 +9,17 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.family.donghyunlee.family.PhotoSel;
@@ -44,6 +48,7 @@ import java.util.Iterator;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import jp.wasabeef.glide.transformations.ColorFilterTransformation;
 
 public class InAlbum extends AppCompatActivity {
@@ -58,6 +63,10 @@ public class InAlbum extends AppCompatActivity {
     ImageView imgalbumPhoto;
     @BindView(R.id.inalbum_temptext)
     TextView inalbumTemptext;
+    @BindView(R.id.inalbum_edit)
+    ImageButton inalbumEdit;
+    @BindView(R.id.fab_inalbum)
+    FloatingActionButton fab;
 
     private static final String TAG = InAlbum.class.getSimpleName();
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 0;
@@ -95,7 +104,7 @@ public class InAlbum extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
+        fab.show();
     }
 
 
@@ -174,23 +183,19 @@ public class InAlbum extends AppCompatActivity {
     @OnClick(R.id.inalbum_back)
     void backClick(){
         // Transition 유지하며 finish()
-
+        fab.hide();
         supportFinishAfterTransition();
     }
 
-    @OnClick(R.id.inalbum_upload)
-    void onInalbumUploadClick(){
-
+    @OnClick(R.id.fab_inalbum)
+    void onFabClick(){
         // 사진 permission
         requestPermission();
         Intent intent = new Intent(InAlbum.this, PhotoSel.class);
         startActivityForResult(intent, GET_INALBUM_PHOTOSEL_REQUESTCODE);
-
     }
-
-    @OnClick(R.id.album_upload)
-    void onAlbumUploadClick(){
-        // 사진 permission
+    @OnClick(R.id.inalbum_edit)
+    void onEditClick(){
         requestPermission();
         Intent intent = new Intent(InAlbum.this, PhotoSel.class);
         startActivityForResult(intent, GET_ALBUM_PHOTOSEL_REQUESTCODE);
@@ -237,17 +242,17 @@ public class InAlbum extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
-                int isExistInAlbum = 0;
+                boolean isExistInAlbum = false;
                 while (child.hasNext()) {
                     MemoryPhotoImage memoryPhotoImage = child.next().getValue(MemoryPhotoImage.class);
                     items.add(memoryPhotoImage);
                     pagerAdapter.notifyDataSetChanged();
-                    isExistInAlbum = 1;
+                    isExistInAlbum = true;
                 }
-                if(isExistInAlbum == 0){
-                    inalbumTemptext.setText(getResources().getString(R.string.album_temptext));
+                if(!isExistInAlbum){
+                    inalbumTemptext.setText(" ");
                 } else{
-                    inalbumTemptext.setText(null);
+                    inalbumTemptext.setVisibility(View.GONE);
                 }
             }
 
@@ -257,8 +262,6 @@ public class InAlbum extends AppCompatActivity {
             }
         });
     }
-
-
 
     // Album 사진을 가져오는 함수.
     public void albumItemGet(){
@@ -298,10 +301,6 @@ public class InAlbum extends AppCompatActivity {
                             // Handle any errors
                         }
                     });
-
-
-
-
                 }
             }
 
@@ -334,7 +333,7 @@ public class InAlbum extends AppCompatActivity {
             java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat(getResources().getString(R.string.date_format));
             Date now = new Date();
             filename = formatter.format(now) + getResources().getString(R.string.file_extension);
-
+            final SweetAlertDialog pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
             if(what_album_flag == INALBUM){
                 Log.e("!!!!!!!!!!", "what_album_flag: " + what_album_flag);
                 StorageReference storageRef = storage.getReferenceFromUrl(getResources().getString(R.string.firebase_storage))
@@ -343,7 +342,7 @@ public class InAlbum extends AppCompatActivity {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         // 실시간 데이터베이스에 저장
-
+                        pDialog.hide();
                         long now = System.currentTimeMillis();
                         Date date = new Date(now);
                         SimpleDateFormat CurDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일");
@@ -355,18 +354,21 @@ public class InAlbum extends AppCompatActivity {
                         groupReference.child(keyMemoryPhotoImage).setValue(memoryPhotoImage);
                         items.add(0, memoryPhotoImage);
                         pagerAdapter.notifyDataSetChanged();
-
-                        Toast.makeText(InAlbum.this, getResources().getString(R.string.uploading_successed), Toast.LENGTH_SHORT).show();
+                        showMessage(getResources().getString(R.string.uploading_successed));
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-
-                        Toast.makeText(getApplication(), getResources().getString(R.string.uploading_failed), Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, ">>>>>>     onFailure");
+                        showMessage(getResources().getString(R.string.uploading_successed));
                     }
                 }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+                        pDialog.setTitleText("Loading");
+                        pDialog.setCancelable(false);
+                        pDialog.show();
                     }
                 });
             }
@@ -376,24 +378,25 @@ public class InAlbum extends AppCompatActivity {
                 storageRef.putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        pDialog.hide();
                         groupReference = groupReference.child(groupId)
                                 .child("memoryPhoto").child(albumId).child("mainImgPath");
                         groupReference.setValue(filename);
-                        Toast.makeText(InAlbum.this, getResources().getString(R.string.uploading_successed), Toast.LENGTH_SHORT).show();
-                        // 사진 업로드!
-
-
+                        showMessage(getResources().getString(R.string.uploading_successed));
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-
-                        Toast.makeText(getApplication(), getResources().getString(R.string.uploading_failed), Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, ">>>>>>     onFailure");
+                        showMessage(getResources().getString(R.string.uploading_successed));
                     }
                 }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-
+                        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+                        pDialog.setTitleText("Loading");
+                        pDialog.setCancelable(false);
+                        pDialog.show();
                     }
                 });
             }
@@ -432,5 +435,9 @@ public class InAlbum extends AppCompatActivity {
             }
             // other case
         }
+    }
+    private void showMessage(String msg) {
+        ViewGroup container = (ViewGroup) findViewById(R.id.snackbar_layout);
+        Snackbar.make(container, msg, Snackbar.LENGTH_SHORT).show();
     }
 }

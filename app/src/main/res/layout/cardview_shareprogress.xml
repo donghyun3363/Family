@@ -144,7 +144,7 @@
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="30dp">
+                            android:layout_marginLeft="10dp">
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
@@ -157,6 +157,7 @@
                                     android:layout_height="match_parent"
                                     android:gravity="center_vertical"
                                     android:text="2017.08.13"
+                                    android:textSize="@dimen/small_textsize"
                                     android:textColor="@color/main_color_font" />
 
                                 <TextView
@@ -165,6 +166,7 @@
                                     android:layout_height="match_parent"
                                     android:gravity="center"
                                     android:text="18:00"
+                                    android:textSize="@dimen/small_textsize"
                                     android:textColor="@color/main_color_font" />
                             </LinearLayout>
 
@@ -189,6 +191,7 @@
                                     android:layout_height="match_parent"
                                     android:layout_marginLeft="10dp"
                                     android:gravity="center_vertical"
+                                    android:textSize="@dimen/small_textsize"
                                     android:text="2017.08.13"
                                     android:textColor="@color/main_color_font" />
 
@@ -198,6 +201,7 @@
                                     android:layout_height="match_parent"
                                     android:gravity="center"
                                     android:text="20:00"
+                                    android:textSize="@dimen/small_textsize"
                                     android:textColor="@color/main_color_font" />
                             </LinearLayout>
                         </LinearLayout>
@@ -231,9 +235,10 @@
                             android:id="@+id/share_location"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_marginLeft="30dp"
+                            android:layout_marginLeft="10dp"
                             android:gravity="center_vertical"
                             android:text="경기도 가평군 00펜션"
+                            android:textSize="@dimen/small_textsize"
                             android:textColor="@color/main_color_font" />
                     </LinearLayout>
 
@@ -271,7 +276,8 @@
                             android:id="@+id/share_memo"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="30dp"
+                            android:layout_marginLeft="10dp"
+                            android:textSize="@dimen/small_textsize"
                             android:text="계곡, 윈드서핑, 바베큐 예정."
                             android:textColor="@color/main_color_font" />
 

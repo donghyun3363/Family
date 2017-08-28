@@ -3,6 +3,7 @@ package com.family.donghyunlee.family.timeline;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,6 +24,7 @@ import com.bumptech.glide.Glide;
 import com.family.donghyunlee.family.PhotoSel;
 import com.family.donghyunlee.family.R;
 import com.family.donghyunlee.family.data.IsCheck;
+import com.family.donghyunlee.family.data.PushItem;
 import com.family.donghyunlee.family.data.TimeLineItem;
 import com.family.donghyunlee.family.data.TimelineCountItem;
 import com.family.donghyunlee.family.data.User;
@@ -42,6 +44,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -73,6 +76,8 @@ public class TimelineWrite extends AppCompatActivity {
     private FirebaseDatabase database;
     private DatabaseReference groupReference;
     private DatabaseReference userReference;
+    private DatabaseReference pushReference;
+    private DatabaseReference memberReference;
     private String groupId;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -152,7 +157,41 @@ public class TimelineWrite extends AppCompatActivity {
         finish();
     }
 
+    private void pushDatabasehAccess(final User userItem){
+
+        pushReference = database.getReference().child("groups").child(groupId).child("push");
+        memberReference = database.getReference().child("groups").child(groupId).child("members");
+        long now = System.currentTimeMillis();
+        final Date date = new Date(now);
+        final SimpleDateFormat CurDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분");
+
+        memberReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
+                while(child.hasNext()){
+                    User curUser = child.next().getValue(User.class);
+                    if(!curUser.getId().equals(currentUser.getUid())){
+                        String data = userItem.getUserNicname() + "님이" + " 타임라인에 게시물을 업로드하였습니다.";
+                        String key;
+                        PushItem item = new PushItem(userItem.getUserImage(), data ,CurDateFormat.format(date));
+                        key = pushReference.child(curUser.getId()).push().getKey();
+                        pushReference.child(curUser.getId()).child(key).setValue(item);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     private void setInit() {
+        if (Build.VERSION.SDK_INT >= 21) {   //상태바 색상 변경
+            getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.light_green));
+        }
         Intent intent = getIntent();
         flag = intent.getExtras().getInt("FLAG");
 
@@ -186,8 +225,7 @@ public class TimelineWrite extends AppCompatActivity {
                 SimpleDateFormat CurDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분");
                 TimeLineItem item;
                 userItem = dataSnapshot.getValue(User.class);
-                Log.i(TAG, "!!!!!!!6" + userItem.getId());
-
+                pushDatabasehAccess(userItem);
                 groupReference = groupReference.child(groupId)
                         .child("timelineCard");
                 key = groupReference.push().getKey();
