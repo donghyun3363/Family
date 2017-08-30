@@ -101,7 +101,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
-                    android:hint="ex) 무엇이 필요하죠?">
+                    android:hint="ex) 이번주 용돈이 부족해요.">
 
                     <EditText
                         android:id="@+id/popup_bucket_answer"

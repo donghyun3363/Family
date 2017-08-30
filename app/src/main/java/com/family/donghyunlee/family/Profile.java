@@ -141,4 +141,9 @@ public class Profile extends AppCompatActivity {
         finish();
         overridePendingTransition(R.anim.y_step_in, R.anim.y_slide_out);
     }
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(R.anim.y_step_in, R.anim.y_slide_out);
+    }
 }

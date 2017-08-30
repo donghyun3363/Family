@@ -1,11 +1,13 @@
 package com.family.donghyunlee.family;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -26,7 +28,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.pedant.SweetAlert.SweetAlertDialog;
 import me.relex.circleindicator.CircleIndicator;
 
 public class MainActivity extends AppCompatActivity {
@@ -51,24 +52,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        new SweetAlertDialog(MainActivity.this, SweetAlertDialog.WARNING_TYPE)
-                .setTitleText("정말 취소하겠습니까?")
-                .setContentText("취소 후 다시 초대를 받아야합니다.")
-                .setCancelText("취소")
-                .setConfirmText("확인")
-                .showCancelButton(true)
-                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                    @Override
-                    public void onClick(SweetAlertDialog sDialog) {
-                        sDialog.cancel();
-                    }
-                })
-                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                    @Override
-                    public void onClick(final SweetAlertDialog sweetAlertDialog) {
-                        finish();
-                    }
-                });
+        AlertDialog.Builder d = new AlertDialog.Builder(this);
+        d.setMessage("정말 종료하시겠습니까?");
+        d.setPositiveButton("예", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                // process전체 종료
+                finish();
+            }
+        });
+        d.setNegativeButton("아니요", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        d.show();
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {

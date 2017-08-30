@@ -184,7 +184,6 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
                 if (commentIndex > -1) {
                     // Remove data from the list
                     mCommentIds.remove(commentIndex);
-                    Toast.makeText(mContext, "제거: + " + items.get(commentIndex).getCommentKey(), Toast.LENGTH_SHORT).show();
                     Log.i(TAG, ">>>>>>>>>>>>>>>>>>     HERE IN ADAPTER:     " +items.get(commentIndex).getCommentKey() + "// index: "+commentIndex);
                     items.remove(commentIndex);
                     notifyDataSetChanged();

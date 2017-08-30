@@ -154,6 +154,11 @@ public class Setting extends AppCompatActivity {
         finish();
         overridePendingTransition(R.anim.step_in, R.anim.slide_out);
     }
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(R.anim.step_in, R.anim.slide_out);
+    }
     @OnClick(R.id.setting_modify)
     void onModifyClick(){
         Intent intent = new Intent(this, ProfileChange.class);

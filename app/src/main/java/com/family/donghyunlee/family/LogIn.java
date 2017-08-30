@@ -136,7 +136,7 @@ public class LogIn extends AppCompatActivity {
                     }
                 } else {
                     Toast.makeText(LogIn.this, R.string.auth_failed, Toast.LENGTH_SHORT).show();
-                    updateUI(null);
+                    pDialog.hide();
                 }
             }
         }).addOnFailureListener(this, new OnFailureListener() {
@@ -160,12 +160,13 @@ public class LogIn extends AppCompatActivity {
                 return;
             }
             Log.i(TAG, ">>>>>>>>>>>>>>>>>>>> HERE invite: " + inviteGroupId);
+            databaseReference = database.getReference().child("users").child(user.getUid()).child("groupId");
+            databaseReference.setValue(inviteGroupId);
             databaseReference = database.getReference().child("users").child(user.getUid());
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     curUser = dataSnapshot.getValue(User.class);
-                    databaseReference.child("groupId").setValue(inviteGroupId);
                     curUser.setGroupId(inviteGroupId);
                     databaseReference = database.getReference().child("groups").child(inviteGroupId).child("members");
                     databaseReference.child(curUser.getId()).setValue(curUser);
@@ -191,6 +192,7 @@ public class LogIn extends AppCompatActivity {
 
         if (user != null) {
             currentUser = mAuth.getCurrentUser();
+            databaseReference = database.getReference("users");
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {

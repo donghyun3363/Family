@@ -513,6 +513,7 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
                         if (currentUser.getUid().equals(userId)) {
                             myItem = dataSnapshot.child(userId).child("myBucketList").getValue(MyBucketList.class);
                             bucketReference.child(currentUser.getUid()).child("myBucketList").setValue(myItem);
+//public WishListRecyclerItem(String wishListKey, String userId, String imgProfilePath, String nickName, String date, String question, String answer, int color) {
 
                             wishlistReference = database.getReference().child("groups").child(groupId)
                                     .child("wishList");
@@ -520,7 +521,7 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
                                 String wishListKey = wishlistReference.push().getKey();
                                 WishListRecyclerItem item = new WishListRecyclerItem(wishListKey, myItem.getUserId(),
                                         curUser.getUserImage(), curUser.getUserNicname(), myItem.getDate(),
-                                        myItem.getAnswer().get(i),  myItem.getQuestion().get(i), 0);
+                                        myItem.getQuestion().get(i), myItem.getAnswer().get(i), 0);
 
                                 wishlistReference.child(wishListKey).setValue(item);
                             }

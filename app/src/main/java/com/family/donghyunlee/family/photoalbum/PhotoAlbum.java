@@ -46,7 +46,6 @@ public class PhotoAlbum extends AppCompatActivity {
         finish();
         overridePendingTransition(R.anim.step_in, R.anim.slide_out);
     }
-
     private void setInit() {
 
         if (Build.VERSION.SDK_INT >= 21) {   //상태바 색상 변경

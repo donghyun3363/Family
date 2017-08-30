@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.family.donghyunlee.family.R;
@@ -73,7 +72,6 @@ public class WishListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                Toast.makeText(context, "변경", Toast.LENGTH_SHORT).show();
                 WishListRecyclerItem wishListRecyclerItem = dataSnapshot.getValue(WishListRecyclerItem.class);
                 String wishListKey = dataSnapshot.getKey();
 

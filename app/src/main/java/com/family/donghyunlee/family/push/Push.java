@@ -64,4 +64,9 @@ public class Push extends AppCompatActivity {
         finish();
         overridePendingTransition(R.anim.step_in, R.anim.slide_out);
     }
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(R.anim.step_in, R.anim.slide_out);
+    }
 }

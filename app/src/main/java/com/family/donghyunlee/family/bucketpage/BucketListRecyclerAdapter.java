@@ -5,6 +5,7 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +24,7 @@ import butterknife.ButterKnife;
 /**
  * Created by DONGHYUNLEE on 2017-08-10.
  */
-public class BucketListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class BucketListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>   {
 
     private static final String TAG = BucketListRecyclerAdapter.class.getSimpleName();
     private Context context;
@@ -70,6 +71,8 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         BucketListRecyclerItem item = items.get(position);
+
+
         ((ViewHolder) holder).cardQuestion.setText(item.getQuestion());
         ((ViewHolder) holder).cardAnswerHint.setHint(item.getAnswerHint());
 
@@ -80,6 +83,7 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
             @Override
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
+                Log.i(TAG, ">>>>>>>>>>>>>>>>>>>>>>>>   hhhhhh:"+s.toString());
                 answerItem[position] = s.toString();
             }
 
@@ -94,6 +98,8 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
 
             }
         });
+
+        Log.i(TAG, ">>>>>>>>>>>>>>>>>>>>>>>>   hhhhhhhhhh:");
     }
 
 

@@ -132,6 +132,7 @@ public class Progress extends AppCompatActivity {
                     final WishListRecyclerItem wishListRecyclerItem = child.next().getValue(WishListRecyclerItem.class);
                     if(wishListRecyclerItem.getUserId().equals(currentUser.getUid())){
                         items.add(wishListRecyclerItem);
+                        Log.i(TAG, ">>>>>>>>>>>>>>>>>>???  " +wishListRecyclerItem.getAnswer());
                         if(wishListRecyclerItem.getBucketKeyRegistered() == null){
                             continue;
                         }
@@ -170,8 +171,8 @@ public class Progress extends AppCompatActivity {
                                                 }
                                             }
 
-                                            recyclerAdapter.setItems(items);
-                                            recyclerAdapter.notifyDataSetChanged();
+
+
                                             progressPercent.setText(String.valueOf(myBucketCount));
                                             myBucketCount = 0;
                                             totoalCount =0;
@@ -190,6 +191,7 @@ public class Progress extends AppCompatActivity {
                             }
                         });
                     }
+                    recyclerAdapter.notifyDataSetChanged();
                 }
                 Log.i(TAG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>?????  5  : " + myBucketCount);
             }
@@ -283,7 +285,9 @@ public class Progress extends AppCompatActivity {
 
                     }
                 });
-                Log.i(TAG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>?????  3  : " + myBucketCount);
+                if(done_items.size() == 0){
+                    recyclerAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override
@@ -301,7 +305,11 @@ public class Progress extends AppCompatActivity {
         finish();
         overridePendingTransition(R.anim.step_in, R.anim.slide_out);
     }
-
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(R.anim.step_in, R.anim.slide_out);
+    }
 
     @OnClick(R.id.progress_sort)
     void onSortClick(){
@@ -320,6 +328,7 @@ public class Progress extends AppCompatActivity {
                     case R.id.menu_my_bucket:
                         items.clear();
                         done_items.clear();
+                        recyclerAdapter.setItems(items);
                         setMyBucket();
                         progressSortText.setText("나의 버컷모음");
                         return true;

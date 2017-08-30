@@ -1,5 +1,6 @@
 package com.family.donghyunlee.family.bucket;
 
+import android.Manifest;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -62,6 +64,7 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 public class RegisterToProgress extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
 
+    private static final int PERMISSION_GRANTED = 100;
     @BindView(R.id.toprogress_profile)
     ImageView toprogressProfile;
     @BindView(R.id.toprogress_question)
@@ -165,7 +168,7 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
     @OnClick(R.id.toprogress_done)
     void onDoneClick() {
 
-        insertEvent();
+        //insertEvent();
 
         if (!validateForm()) {
             return;
@@ -194,7 +197,7 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
                 while(child.hasNext()){
                     User curUser = child.next().getValue(User.class);
                     if(!curUser.getId().equals(currentUser.getUid())){
-                        String data = userItem.getUserNicname() + "님이 새로운 버킷 일정을 추가하였습니다. 일정을 확인해보세요!";
+                        String data = userItem.getUserNicname() + "님이 새로운 버킷 을 추가하였습니다. 버킷을 확인해보세요!";
                         String key;
                         PushItem item = new PushItem(userItem.getUserImage(), data ,CurDateFormat.format(date));
                         key = pushReference.child(curUser.getId()).push().getKey();
@@ -214,8 +217,25 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
 
         finish();
     }
+    private void checkPermissions(int callbackId, String... permissionsId) {
+        boolean permissions = true;
+        for (String p : permissionsId) {
+            permissions = permissions && ContextCompat.checkSelfPermission(this, p) == PERMISSION_GRANTED;
+        }
 
+        if (!permissions)
+            ActivityCompat.requestPermissions(this, permissionsId, callbackId);
+    }
+    @Override
+    public void onRequestPermissionsResult(int callbackId,
+                                           String permissions[], int[] grantResults) {
+
+
+    }
     private void insertEvent() {
+        final int callbackId = 42;
+        checkPermissions(callbackId, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR);
+
         // 디폴트 타임존 구하기
         String timezone = TimeZone.getDefault().getID(); // Asia/Korea
 
