@@ -5,13 +5,14 @@
     <color name="textColorPrimary">#FFFFFF</color>
     <color name="windowBackground">#FFFFFF</color>
     <color name="navigationBarColor">#000000</color>
-    <color name="colorAccent">#c8e8ff</color>
+    <color name="colorAccent">#ff28d7</color>
 
 
 
     <color name="transparent_gray">#99E0E0E0</color>
     <color name="transparent_black">#20000000</color>
     <color name="transparent_black2">#88000000</color>
+    <color name="transparent_black3">#66000000</color>
 
     <color name="light_green">#84BD00</color>
     <color name="tea_grean">#88B04B</color>

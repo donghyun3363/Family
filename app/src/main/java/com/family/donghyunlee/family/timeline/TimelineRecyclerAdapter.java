@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.family.donghyunlee.family.OnSingleClickListener;
 import com.family.donghyunlee.family.Profile;
 import com.family.donghyunlee.family.R;
 import com.family.donghyunlee.family.data.IsCheck;
@@ -391,20 +392,19 @@ public class TimelineRecyclerAdapter extends RecyclerView.Adapter<TimelineRecycl
         } else {
             holder.timelineContentImage.setVisibility(View.GONE);
         }
-
-        holder.timelineLike.setOnClickListener(new View.OnClickListener() {
+        holder.timelineLike.setOnClickListener(new OnSingleClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onSingleClick(View v) {
+                changeLikeCount(holder, position);
+            }
+        });
+        holder.timelineLikeContainer.setOnClickListener(new OnSingleClickListener() {
+            @Override
+            public void onSingleClick(View v) {
                 changeLikeCount(holder, position);
             }
         });
 
-        holder.timelineLikeContainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeLikeCount(holder, position);
-            }
-        });
         holder.timelineCommentContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -71,7 +71,6 @@ import java.util.Iterator;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.pedant.SweetAlert.SweetAlertDialog;
 import jp.wasabeef.glide.transformations.ColorFilterTransformation;
 
 /**
@@ -121,6 +120,7 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
     private DatabaseReference isBucketReference;
     private String inviteGroupId;
     private User curUser;
+
     //  private IOverScrollDecor mVertOverScrollEffect;
     @BindView(R.id.timeline_title)
     TextView timelineTitle;
@@ -164,7 +164,6 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
         mValueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
                 TitleItem titleItem = dataSnapshot.getValue(TitleItem.class);
                 if(titleItem == null){
                     titleItem = new TitleItem("empty", "empty");
@@ -179,9 +178,11 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
                 } else if (titleItem.getTitleImage().equals("empty") && !titleItem.getTitleImage().equals("empty")) {
                     timelineTitle.setText("We are Fam!");
                     titleImageDownload(titleItem.getTitleImage());
+
                 } else {
                     timelineTitle.setText(titleItem.getTitle());
                     titleImageDownload(titleItem.getTitleImage());
+
                 }
 
             }
@@ -264,7 +265,7 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
                     case R.id.menu_edit_reset:
                         TitleItem titleItem = new TitleItem("empty", "empty");
                         titleReference.setValue(titleItem);
-                        showMessage("타이틀 명과 사진이 리셋되었습니다.");
+                        showMessage("타이틀 명과 사진을 기본값으로 설정하였습니다.");
                         return true;
                 }
                 return false;
@@ -273,30 +274,7 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
         popupMenu.show();
 
     }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
 
-        int id = item.getItemId();
-        switch (id) {
-            case R.id.menu_edit_title:
-                AlertDialog.Builder dialog = createDialog();
-                LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-                View layout = inflater.inflate(R.layout.dialog_edit_title, (ViewGroup) findViewById(R.id.popup_edit_root));
-                inputTitle = (EditText) layout.findViewById(R.id.dialog_title);
-                dialog.setView(layout);
-                dialog.show();
-                return true;
-            case R.id.menu_edit_titleimage:
-                Intent intent = new Intent(TimeLine.this, PhotoSel.class);
-                startActivityForResult(intent, TIMELINE_TITLE_REQUESTCODE);
-                return true;
-            case R.id.menu_edit_reset:
-                titleReference.child("titleImage").setValue("empty");
-                titleReference.child("title").setValue("empty");
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
 
     @Override
@@ -354,6 +332,7 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
             case TIMELINE_TITLE_REQUESTCODE: {
                 if (resultCode == RESULT_OK) {
                     uri = data.getParcelableExtra("IMAGE_URI");
+
                     fileUpload(uri);
 
                 } else {
@@ -388,25 +367,23 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
      */
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        new SweetAlertDialog(getApplicationContext(), SweetAlertDialog.WARNING_TYPE)
-                .setTitleText("정말 취소하겠습니까?")
-                .setContentText("취소 후 다시 초대를 받아야합니다.")
-                .setCancelText("취소")
-                .setConfirmText("확인")
-                .showCancelButton(true)
-                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                    @Override
-                    public void onClick(SweetAlertDialog sDialog) {
-                        sDialog.cancel();
-                    }
-                })
-                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                    @Override
-                    public void onClick(final SweetAlertDialog sweetAlertDialog) {
-                        finish();
-                    }
-                });
+
+
+        AlertDialog.Builder d = new AlertDialog.Builder(this);
+        d.setMessage("정말 종료하시겠습니까?");
+        d.setPositiveButton("예", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                // process전체 종료
+                finish();
+            }
+        });
+        d.setNegativeButton("아니요", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        d.show();
     }
     private void showMessage(String msg) {
         ViewGroup container = (ViewGroup) findViewById(R.id.snackbar_layout);
@@ -429,7 +406,7 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     // 실시간 데이터베이스에 저장
                     titleReference.child("titleImage").setValue(filename);
-                    showMessage( "이미지가 업로드 되었습니다.");
+
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -454,12 +431,12 @@ public class TimeLine extends AppCompatActivity implements GoogleApiClient.OnCon
                     public void onClick(DialogInterface dialog, int which) {
 
                         if (inputTitle.length() <= 0) {
-                            showMessage("업로드가 되지않았습니다. 입력 정보를 모두 입력해주세요.");
+                            showMessage("변경이 되지 않았습니다. 입력정보를 다시 입력해주세요.");
 
                         } else {
 
-                            titleReference.child("titleImage").setValue("empty");
                             titleReference.child("title").setValue(inputTitle.getText().toString());
+                            showMessage( "타이틀 명이 변경되었습니다..");
                         }
                     }
                 })

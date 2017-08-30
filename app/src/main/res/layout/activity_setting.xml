@@ -105,10 +105,10 @@
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
         android:background="?attr/selectableItemBackground"
-        android:layout_below="@id/setting_modify_container"
-        android:layout_centerHorizontal="true"
         card_view:cardCornerRadius="@dimen/little_cardround"
-        card_view:cardElevation="5dp">
+        card_view:cardElevation="5dp"
+        android:layout_below="@+id/setting_modify_container"
+        android:layout_alignStart="@+id/setting_modify_container">
 
         <TextView
             android:id="@+id/setting_exit"
@@ -116,7 +116,7 @@
             android:layout_height="match_parent"
             android:background="@color/main_color"
             android:gravity="center"
-            android:onClick="onInquireClick"
+            android:onClick="onExitClick"
             android:text="그룹 혹은 회원 탈퇴"
             android:textColor="@color/colorWhite" />
     </android.support.v7.widget.CardView>
@@ -139,7 +139,7 @@
             android:layout_height="match_parent"
             android:background="@color/main_color"
             android:gravity="center"
-            android:onClick="onInquireClick"
+            android:onClick="onInviteClick"
             android:text="새 그룹원 초대 "
             android:textColor="@color/colorWhite" />
     </android.support.v7.widget.CardView>

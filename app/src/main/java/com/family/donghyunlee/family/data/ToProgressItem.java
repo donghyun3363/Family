@@ -17,6 +17,7 @@ public class ToProgressItem {
     private String nickName;
     private boolean shareCheck;
     private String profilePath;
+    private boolean complete;
 
     public ToProgressItem() {
 
@@ -37,6 +38,11 @@ public class ToProgressItem {
         this.profilePath = profilePath;
         this.date = date;
         this.nickName = nickName;
+        complete = false;
+    }
+
+    public boolean getComplete() {
+        return complete;
     }
 
     public String getUserId() {
@@ -83,10 +89,13 @@ public class ToProgressItem {
         return memo;
     }
 
-    public boolean isShareCheck() {
+    public boolean getShareCheck() {
         return shareCheck;
     }
 
+    public void setComplete(boolean complete) {
+        this.complete = complete;
+    }
 
     public void setUserId(String userId) {
         this.userId = userId;

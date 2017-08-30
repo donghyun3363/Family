@@ -27,6 +27,7 @@ import com.family.donghyunlee.family.R;
 import com.family.donghyunlee.family.data.User;
 import com.family.donghyunlee.family.timeline.ProfileChange;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -60,6 +61,7 @@ public class Setting extends AppCompatActivity {
 
     private static final int REQUESTCODE_PHOTOSEL_PROFILE_MODIFY = 101;
     private static final String TAG = Setting.class.getSimpleName();
+    private static final int REQUEST_INVITE = 100;
     @BindView(R.id.setting_logout)
     TextView settingLogOut;
     @BindView(R.id.setting_profile)
@@ -72,6 +74,8 @@ public class Setting extends AppCompatActivity {
     private FirebaseDatabase database;
     private DatabaseReference groupReference;
     private DatabaseReference changeReference;
+
+    private DatabaseReference inviteReference;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
@@ -85,6 +89,7 @@ public class Setting extends AppCompatActivity {
     private String userId;
     private SharedPreferences pref;
     private Uri uri;
+
     private ViewGroup snackContainer;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -156,7 +161,32 @@ public class Setting extends AppCompatActivity {
         startActivity(intent);
         overridePendingTransition(R.anim.y_slide_in, R.anim.y_step_back);
     }
-
+    @OnClick(R.id.setting_license)
+    void onLicenseClick(){
+        showMessage("현재 작업중인 서비스 입니다.");
+    }
+    @OnClick(R.id.setting_invite)
+    void onInviteClick(){
+        onInviteClicked();
+    }
+    @OnClick(R.id.setting_exit)
+    void onExitClick(){
+        showMessage("현재 작업중인 서비스 입니다.");
+    }
+    @OnClick(R.id.setting_logout)
+    void onLogOutClick(){
+        SharedPreferences pref = getSharedPreferences("pref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.clear();
+        editor.commit();
+        mAuth.signOut();
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
+        overridePendingTransition(R.anim.step_in, R.anim.slide_out);
+    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -168,6 +198,23 @@ public class Setting extends AppCompatActivity {
                 uploadFile(uri);
                 Glide.with(getApplicationContext()).load(uri).centerCrop().crossFade()
                         .bitmapTransform(new CropCircleTransformation(getApplicationContext())).into(settingProfile);
+            }
+        }
+        if(requestCode == REQUEST_INVITE) {
+            if (resultCode == RESULT_OK) {
+                inviteReference = database.getReference().child("invite");
+                // Get the invitation IDs of all sent messages
+                String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
+                for (String id : ids) {
+                    Log.d(TAG, "onActivityResult: sent invitation " + id);
+                    inviteReference.setValue(id);
+                    inviteReference.child(id).setValue(groupId);
+                }
+            } else {
+                // Sending failed or it was canceled, show failure message to the user
+                // [START_EXCLUDE]
+                showMessage(getString(R.string.send_failed));
+                // [END_EXCLUDE]
             }
         }
     }
@@ -212,22 +259,24 @@ public class Setting extends AppCompatActivity {
     }
 
 
-    @OnClick(R.id.setting_logout)
-    void onLogOutClick(){
-        SharedPreferences pref = getSharedPreferences("pref", MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.clear();
-        editor.commit();
-        mAuth.signOut();
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
-        overridePendingTransition(R.anim.step_in, R.anim.slide_out);
-    }
-    private void showMessage(String msg) {
 
+    private void showMessage(String msg) {
+        ViewGroup snackContainer = (ViewGroup) findViewById(R.id.snackbar_layout);
         Snackbar.make(snackContainer, msg, Snackbar.LENGTH_SHORT).show();
+    }
+
+    private void onInviteClicked() {
+
+        Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
+                .setMessage(getString(R.string.invitation_message))
+                .setDeepLink(Uri.parse(getString(R.string.invitation_deep_link)))
+                .setEmailHtmlContent("<html><body>" +
+                        "<h1>Fam</h1>" +
+                        "<h2>회원가입 후에 가족의 공간을 즐겁게 만들어가세요! 시작해볼까요?</h2>" +
+                        "<a href=\"%%APPINVITE_LINK_PLACEHOLDER%%\">지금 시작하기!</a>" +
+                        "<body></html>")
+                .setEmailSubject("FAM")
+                .build();
+        startActivityForResult(intent, REQUEST_INVITE);
     }
 }

@@ -26,6 +26,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import me.relex.circleindicator.CircleIndicator;
 
 public class MainActivity extends AppCompatActivity {
@@ -47,7 +48,28 @@ public class MainActivity extends AppCompatActivity {
 //        currentUser = mAuth.getCurrentUser();
 //        updateUI(currentUser);
     }
+    @Override
+    public void onBackPressed() {
 
+        new SweetAlertDialog(MainActivity.this, SweetAlertDialog.WARNING_TYPE)
+                .setTitleText("정말 취소하겠습니까?")
+                .setContentText("취소 후 다시 초대를 받아야합니다.")
+                .setCancelText("취소")
+                .setConfirmText("확인")
+                .showCancelButton(true)
+                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sDialog) {
+                        sDialog.cancel();
+                    }
+                })
+                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(final SweetAlertDialog sweetAlertDialog) {
+                        finish();
+                    }
+                });
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

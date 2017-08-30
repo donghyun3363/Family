@@ -11,7 +11,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -65,9 +68,16 @@ public class IndividualContentDialogFragment extends DialogFragment {
     TextView individualMemo;
 
     @BindView(R.id.individual_check)
-    CheckBox shareCheck;
+    CheckBox individualCheck;
+    @BindView(R.id.individual_alarm)
+    TextView individualAlarm;
 
-
+    @BindView(R.id.entire_container)
+    RelativeLayout entireContainger;
+    @BindView(R.id.in_container)
+    LinearLayout inContainer;
+    @BindView(R.id.complete_alarm)
+    TextView completeAlarm;
     private static final String TAG = TimelineCardDialogFragment.class.getSimpleName();
     private static final int REQUESTCODE_BUCKETCONTENT = 104;
     private SharedPreferences pref;
@@ -81,17 +91,19 @@ public class IndividualContentDialogFragment extends DialogFragment {
     private StorageReference profile_pathRef;
     private String storageProfileFolder;
     private FirebaseDatabase database;
-    private DatabaseReference individulReference;
+    private DatabaseReference individualReference;
+    private DatabaseReference wishListReference;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
-
+    private String wishListKey;
     public IndividualContentDialogFragment() {
     }
 
-    public static IndividualContentDialogFragment newInstance(Boolean share, String bucketKeyRegistered, int position) {
+    public static IndividualContentDialogFragment newInstance(String wishListKey, Boolean share, String bucketKeyRegistered, int position) {
 
         IndividualContentDialogFragment individualContentDialogFragment = new IndividualContentDialogFragment();
         Bundle args = new Bundle();
+        args.putString("wishListKey", wishListKey);
         args.putBoolean("share", share);
         args.putString("bucketKeyRegistered", bucketKeyRegistered);
         args.putInt("position", position);
@@ -129,10 +141,10 @@ public class IndividualContentDialogFragment extends DialogFragment {
         share = getArguments().getBoolean("share");
         bucketKeyRegistered = getArguments().getString("bucketKeyRegistered");
         position = getArguments().getInt("position");
-
-        individulReference = database.getReference().child("groups").child(groupId)
+        wishListKey = getArguments().getString("wishListKey");
+        individualReference = database.getReference().child("groups").child(groupId)
                 .child("individualBucket").child(bucketKeyRegistered);
-        individulReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        individualReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ToProgressItem toProgressItem = dataSnapshot.getValue(ToProgressItem.class);
@@ -140,6 +152,15 @@ public class IndividualContentDialogFragment extends DialogFragment {
                 Glide.with(getContext()).using(new FirebaseImageLoader()).load(profile_pathRef).centerCrop()
                         .crossFade().bitmapTransform(new CropCircleTransformation(getContext()))
                         .into(individualProfile);
+
+                if(!currentUser.getUid().equals(toProgressItem.getUserId())){
+                    individualAlarm.setVisibility(View.VISIBLE);
+                    individualCheck.setVisibility(View.GONE);
+                } else{
+                    individualAlarm.setVisibility(View.GONE);
+                    individualCheck.setVisibility(View.VISIBLE);
+                }
+
                 individualNickname.setText(toProgressItem.getNickName());
                 individualDate.setText(toProgressItem.getDate());
                 individualTitle.setText(toProgressItem.getTitle());
@@ -157,6 +178,14 @@ public class IndividualContentDialogFragment extends DialogFragment {
                 individualStarttime.setText(toProgressItem.getStartTime());
                 individualLocation.setText(toProgressItem.getLocation());
                 individualMemo.setText(toProgressItem.getMemo());
+
+                if(!toProgressItem.getComplete()){
+                    inContainer.setVisibility(View.INVISIBLE);
+                    individualCheck.setVisibility(View.VISIBLE);
+                } else{
+                    inContainer.setVisibility(View.VISIBLE);
+                    individualCheck.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -164,6 +193,29 @@ public class IndividualContentDialogFragment extends DialogFragment {
 
             }
         });
+
+        individualCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                individualReference = database.getReference().child("groups").child(groupId)
+                        .child("individualBucket").child(bucketKeyRegistered).child("complete");
+                wishListReference = database.getReference().child("groups").child(groupId)
+                        .child("wishList").child(wishListKey).child("color");
+
+                if(isChecked){
+                    individualReference.setValue(true);
+                    wishListReference.setValue(2);
+                } else{
+
+                    individualReference.setValue(false);
+                    wishListReference.setValue(1);
+                    individualCheck.setEnabled(false);
+
+                }
+            }
+        });
+
     }
     @OnClick(R.id.individual_back)
     void onBackClick() {
@@ -172,8 +224,4 @@ public class IndividualContentDialogFragment extends DialogFragment {
         fragmentManager.popBackStack();
     }
 
-    @OnClick(R.id.individual_check)
-    void onCheckClick() {
-        //TODO
-    }
 }

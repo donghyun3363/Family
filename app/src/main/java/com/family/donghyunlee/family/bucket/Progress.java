@@ -1,24 +1,32 @@
 package com.family.donghyunlee.family.bucket;
 
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
+import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.family.donghyunlee.family.R;
 import com.family.donghyunlee.family.data.ToProgressItem;
+import com.family.donghyunlee.family.data.WishListRecyclerItem;
+import com.family.donghyunlee.family.dialog.BucketContentDialogFragment;
+import com.family.donghyunlee.family.dialog.IndividualContentDialogFragment;
+import com.family.donghyunlee.family.dialog.ShareContentDialogFragment;
+import com.family.donghyunlee.family.photoalbum.RecyclerItemClickListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -27,7 +35,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -35,8 +42,6 @@ import java.util.Iterator;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static android.util.Log.i;
 
 /**
  * Created by DONGHYUNLEE on 2017-08-12.
@@ -50,24 +55,36 @@ public class Progress extends AppCompatActivity {
 
     @BindView(R.id.progress_toolbar)
     Toolbar toolbar;
-    @BindView(R.id.rv_share)
-    RecyclerView recyclerViewShare;
-    @BindView(R.id.rv_individual)
-    RecyclerView recyclerViewIndividaul;
-    @BindView(R.id.progress_temp)
-    TextView progressTemp;
+    @BindView(R.id.rv_progress)
+    RecyclerView recyclerView;
 
-    private ArrayList<ToProgressItem> indi_items;
-    private ArrayList<ToProgressItem> shar_items;
-    private IndividualRecyclerAdapter Indi_recyclerAdapter;
-    private ShareRecyclerAdapter shar_recyclerAdapter;
-    private LinearLayoutManager indi_linearLayoutManager;
-    private LinearLayoutManager shar_linearLayoutManager;
+    @BindView(R.id.progress_sort_text)
+    TextView progressSortText;
+    @BindView(R.id.progress_sort)
+    LinearLayout progressSort;
+    @BindView(R.id.progress_percent)
+    TextView progressPercent;
+    private ArrayList<WishListRecyclerItem> items;
+    private ProgressRecyclerAdapter recyclerAdapter;
+    private StaggeredGridLayoutManager layoutManager;
     private String groupId;
     private SharedPreferences pref;
     private FirebaseDatabase database;
     private int changeFlag;
+    private DatabaseReference wishListReference;
 
+    private DatabaseReference individualReference;
+
+    private DatabaseReference shareReference;
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
+
+    private FirebaseStorage storage;
+
+    private ArrayList<WishListRecyclerItem> done_items;
+    private int doneBucketCount;
+    private int myBucketCount;
+    private int totoalCount;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,45 +92,7 @@ public class Progress extends AppCompatActivity {
         ButterKnife.bind(this);
 
         setInit();
-
-    }
-    @OnClick(R.id.progress_back)
-    void backClick(){
-        finish();
-        overridePendingTransition(R.anim.step_in, R.anim.slide_out);
-    }
-    @OnClick(R.id.fab_progress)
-    void onFabClick(){
-
-
-        if(changeFlag == 0){
-            Animation hideAnimation = new AlphaAnimation(1.0f, 0.0f);
-            hideAnimation.setDuration(1000);
-            recyclerViewShare.setVisibility(View.INVISIBLE);
-            recyclerViewShare.setAnimation(hideAnimation);
-
-            Animation showAnimation = new AlphaAnimation(0.0f, 1.0f);
-            showAnimation.setDuration(1500);
-            recyclerViewIndividaul.setVisibility(View.VISIBLE);
-            recyclerViewIndividaul.setAnimation(showAnimation);
-            changeFlag = 1;
-            progressTemp.setText("개인 버킷리스트");
-        }
-        else{
-            Animation hideAnimation = new AlphaAnimation(1.0f, 0.0f);
-            hideAnimation.setDuration(1000);
-            recyclerViewIndividaul.setVisibility(View.INVISIBLE);
-            recyclerViewIndividaul.setAnimation(hideAnimation);
-
-            Animation showAnimation = new AlphaAnimation(0.0f, 1.0f);
-            showAnimation.setDuration(1500);
-            recyclerViewShare.setVisibility(View.VISIBLE);
-            recyclerViewShare.setAnimation(showAnimation);
-
-            changeFlag = 0;
-            progressTemp.setText("공유 버킷리스트");
-        }
-
+        setMyBucket();
     }
     private void setInit() {
         if (Build.VERSION.SDK_INT >= 21) {   //상태바 색상 변경
@@ -123,175 +102,293 @@ public class Progress extends AppCompatActivity {
         changeFlag = 0;
         pref = getSharedPreferences("pref", MODE_PRIVATE);
         groupId = pref.getString("groupId", "");
+        mAuth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
+        storage = FirebaseStorage.getInstance();
 
-        indi_items = new ArrayList<>();
-        shar_items = new ArrayList<>();
-
-        indi_linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        Indi_recyclerAdapter = new IndividualRecyclerAdapter(this, indi_items, R.layout.activity_progress, groupId);
-        recyclerViewIndividaul.setHasFixedSize(true);
-        recyclerViewIndividaul.setLayoutManager(indi_linearLayoutManager);
-        recyclerViewIndividaul.setAdapter(Indi_recyclerAdapter);
-
-        shar_linearLayoutManager = new LinearLayoutManager(this,  LinearLayoutManager.HORIZONTAL, false);
-        shar_recyclerAdapter = new ShareRecyclerAdapter(this, shar_items, R.layout.activity_progress, groupId);
-        recyclerViewShare.setHasFixedSize(true);
-        recyclerViewShare.setLayoutManager(shar_linearLayoutManager);
-        recyclerViewShare.setAdapter(shar_recyclerAdapter);
+        currentUser = mAuth.getCurrentUser();
 
 
-        new AccessDatabaseTask().execute(GETSHAREINTOSERVER);
-        new AccessDatabaseTask().execute(GETINDIVIDUALINTOSERVER);
+        items = new ArrayList<>();
+        done_items = new ArrayList<>();
+        myBucketCount = 0;
+        layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        recyclerAdapter = new ProgressRecyclerAdapter(this, items, R.layout.activity_progress, groupId);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(recyclerAdapter);
+        itemTouchListener();
     }
+    private void setMyBucket() {
+        wishListReference = database.getReference().child("groups").child(groupId).child("wishList");
+        individualReference = database.getReference().child("groups").child(groupId).child("individualBucket");
+        shareReference = database.getReference().child("groups").child(groupId).child("shareBucket");
+        wishListReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
+                while(child.hasNext()) {
+                    ++totoalCount;
+                    final WishListRecyclerItem wishListRecyclerItem = child.next().getValue(WishListRecyclerItem.class);
+                    if(wishListRecyclerItem.getUserId().equals(currentUser.getUid())){
+                        items.add(wishListRecyclerItem);
+                        if(wishListRecyclerItem.getBucketKeyRegistered() == null){
+                            continue;
+                        }
+                        individualReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
+                                Iterator<DataSnapshot> child2 = dataSnapshot.getChildren().iterator();
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return super.onCreateOptionsMenu(menu);
+                                while(child.hasNext()){
+                                    String key = child.next().getKey();
+                                    ToProgressItem toProgressItem = child2.next().getValue(ToProgressItem.class);
+                                    if(wishListRecyclerItem.getBucketKeyRegistered().equals(key)){
+                                        Log.i(TAG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>????? 1    : " + toProgressItem.getComplete());
+                                        if(toProgressItem.getComplete()){
+                                            Log.i(TAG, ">>>>>>>>>>>>>>>>> HERE1");
+                                            ++myBucketCount;
+                                        }
+                                    }
+                                    shareReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
+                                            Iterator<DataSnapshot> child2 = dataSnapshot.getChildren().iterator();
+
+                                            while(child.hasNext()){
+                                                String key = child.next().getKey();
+                                                ToProgressItem toProgressItem = child2.next().getValue(ToProgressItem.class);
+                                                if(wishListRecyclerItem.getBucketKeyRegistered().equals(key)){
+                                                    Log.i(TAG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>????? 2    : " + toProgressItem.getComplete());
+                                                    if(toProgressItem.getComplete()){
+
+                                                        Log.i(TAG, ">>>>>>>>>>>>>>>>> HERE2");
+                                                        ++myBucketCount;
+                                                    }
+                                                }
+                                            }
+
+                                            recyclerAdapter.setItems(items);
+                                            recyclerAdapter.notifyDataSetChanged();
+                                            progressPercent.setText(String.valueOf(myBucketCount));
+                                            myBucketCount = 0;
+                                            totoalCount =0;
+                                        }
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
+                                    Log.i(TAG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>?????  3  : " + myBucketCount);
+                                }
+                            }
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                }
+                Log.i(TAG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>?????  5  : " + myBucketCount);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+        });
+
     }
+    private void setDoneBucket() {
+        individualReference = database.getReference().child("groups").child(groupId).child("individualBucket");
+        shareReference = database.getReference().child("groups").child(groupId).child("shareBucket");
+        wishListReference = database.getReference().child("groups").child(groupId).child("wishList");
+        individualReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
+                Iterator<DataSnapshot> child2 = dataSnapshot.getChildren().iterator();
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+                while(child.hasNext()){
+                    final String key = child.next().getKey();
+                    Log.i(TAG, ">>>>>>>>>>>>    " + key);
+                    ToProgressItem toProgressItem = child2.next().getValue(ToProgressItem.class);
+                    if(toProgressItem.getUserId().equals(currentUser.getUid())){
+                        wishListReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
+                                while(child.hasNext()) {
+                                    WishListRecyclerItem wishListRecyclerItem = child.next().getValue(WishListRecyclerItem.class);
+                                    if(wishListRecyclerItem.getBucketKeyRegistered() == null){
+                                        continue;
+                                    }
+                                    if(wishListRecyclerItem.getBucketKeyRegistered().equals(key)){
+                                        done_items.add(wishListRecyclerItem);
 
-    public class AccessDatabaseTask extends AsyncTask<Integer, String, Long> {
+                                    }
+                                    Log.i(TAG, ">>>>>>>>>>>>      done_items: " + done_items.size());
+                                }
+                            }
 
-        public Long result = null;
-        private DatabaseReference shareReference;
-        private DatabaseReference individualReference;
-        private DatabaseReference groupReference;
-        private FirebaseAuth mAuth;
-        private FirebaseUser currentUser;
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
 
-        private FirebaseStorage storage;
-        private StorageReference storageRef;
-        private StorageReference pathRef;
-        private ArrayList<StorageReference> shareStorageItems;
-        private ArrayList<StorageReference> individualStorageItems;
-        private String storageProfileFolder;
-
-
-        private ToProgressItem toProgressItem;
-        private ToProgressItem shareItem;
-        private ToProgressItem individualItem;
-
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mAuth = FirebaseAuth.getInstance();
-            database = FirebaseDatabase.getInstance();
-            storage = FirebaseStorage.getInstance();
-
-            currentUser = mAuth.getCurrentUser();
-            shareReference = database.getReference().child("groups").child(groupId).child("shareBucket");
-            individualReference = database.getReference().child("groups").child(groupId).child("individualBucket");
-            groupReference = database.getReference().child("groups").child(groupId).child("members");
-            shareStorageItems = new ArrayList<>();
-            individualStorageItems = new ArrayList<>();
-            storageProfileFolder = getResources().getString(R.string.storage_profiles_folder);
-            storageRef = storage.getReferenceFromUrl(getResources().getString(R.string.firebase_storage));
-
-            //avLoadingIndicatorView.show();
-        }
-
-        @Override
-        protected Long doInBackground(Integer... params) {
-            // members user id를 가져와서 user에 대한 qeustion과 answer을 가져온다.
-            if (params[0].intValue() == GETSHAREINTOSERVER) {
+                            }
+                        });
+                    }
+                }
                 shareReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
-                        while(child.hasNext()){
-                            toProgressItem = child.next().getValue(ToProgressItem.class);
+                        Iterator<DataSnapshot> child2 = dataSnapshot.getChildren().iterator();
 
-                            i(TAG, ">>>>>>11111     " + toProgressItem.getUserId());
-                            shareItem = new ToProgressItem(toProgressItem.getUserId(), toProgressItem.getProfilePath(), toProgressItem.getNickName()
-                                    , toProgressItem.getDate(), toProgressItem.getTitle(), toProgressItem.getTitle(), toProgressItem.getStartDate(),
-                                    toProgressItem.getEndDate(), toProgressItem.getStartTime(), toProgressItem.getEndTime(), toProgressItem.getMemo(),
-                                    toProgressItem.isShareCheck());
-                            pathRef = storageRef.child(storageProfileFolder + "/" + toProgressItem.getProfilePath());
-                            shareStorageItems.add(pathRef);
-                            shar_items.add(shareItem);
-
-                        }
-                        shar_recyclerAdapter.setStorageitem(shareStorageItems);
-                        shar_recyclerAdapter.notifyDataSetChanged();
-                        return;
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
-                return result;
-            }
-            else if (params[0].intValue() == GETINDIVIDUALINTOSERVER) {
-                individualReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
-                        while(child.hasNext()) {
-                            toProgressItem = child.next().getValue(ToProgressItem.class);
+                        while (child.hasNext()) {
+                            final String key = child.next().getKey();
+                            ToProgressItem toProgressItem = child2.next().getValue(ToProgressItem.class);
                             if (toProgressItem.getUserId().equals(currentUser.getUid())) {
-                                i(TAG, ">>>>>>22222     " + toProgressItem.getUserId());
-                                individualItem = new ToProgressItem(toProgressItem.getUserId(), toProgressItem.getProfilePath(), toProgressItem.getNickName()
-                                        , toProgressItem.getDate(), toProgressItem.getTitle(), toProgressItem.getTitle(), toProgressItem.getStartDate(),
-                                        toProgressItem.getEndDate(), toProgressItem.getStartTime(), toProgressItem.getEndTime(), toProgressItem.getMemo(),
-                                        toProgressItem.isShareCheck());
-                                pathRef = storageRef.child(storageProfileFolder + "/" + toProgressItem.getProfilePath());
-                                individualStorageItems.add(pathRef);
-                                indi_items.add(individualItem);
-                            }
-                            Indi_recyclerAdapter.setStorageitem(individualStorageItems);
-                            Indi_recyclerAdapter.notifyDataSetChanged();
-                        }
-                        return;
-                    }
+                                wishListReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
 
+                                        while (child.hasNext()) {
+                                            WishListRecyclerItem wishListRecyclerItem = child.next().getValue(WishListRecyclerItem.class);
+                                            if(wishListRecyclerItem.getBucketKeyRegistered() == null){
+                                                continue;
+                                            }
+                                            if (wishListRecyclerItem.getBucketKeyRegistered().equals(key)) {
+                                                done_items.add(wishListRecyclerItem);
+                                            }
+                                        }
+                                        recyclerAdapter.notifyDataSetChanged();
+                                        Log.i(TAG, ">>>>>>>>>>>>      done_items2222222222: " + done_items.size());
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+                        }
+
+
+                    }
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
 
                     }
                 });
+                Log.i(TAG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>?????  3  : " + myBucketCount);
+            }
 
-                return result;
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+
+
+    @OnClick(R.id.progress_back)
+    void backClick(){
+        finish();
+        overridePendingTransition(R.anim.step_in, R.anim.slide_out);
+    }
+
+
+    @OnClick(R.id.progress_sort)
+    void onSortClick(){
+
+        PopupMenu popupMenu = new PopupMenu(this, progressSort);
+        MenuInflater inflater = popupMenu.getMenuInflater();
+        Menu menu = popupMenu.getMenu();
+        inflater.inflate(R.menu.progress_menu, menu);
+
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+
+                switch (item.getItemId()) {
+                    case R.id.menu_my_bucket:
+                        items.clear();
+                        done_items.clear();
+                        setMyBucket();
+                        progressSortText.setText("나의 버컷모음");
+                        return true;
+
+                    case R.id.menu_done_bucket:
+                        items.clear();
+                        done_items.clear();
+                        recyclerAdapter.setItems(done_items);
+                        setDoneBucket();
+                        progressSortText.setText("나의 등록일정");
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
+        popupMenu.show();
+    }
+    private void itemTouchListener() {
+        final FragmentManager fragmentManager = getSupportFragmentManager();
+        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getApplicationContext(),
+                recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                // 등록 및 진행 상황 확인
+
+
+                WishListRecyclerItem item = recyclerAdapter.getItems().get(position);
+                if (item.getColor() == 0) {
+                    BucketContentDialogFragment dialogFragment =
+                            BucketContentDialogFragment.newInstance(item.getWishListKey(), item.getNickName(), item.getImgProfilePath(),
+                                    item.getDate(), item.getQuestion(), item.getAnswer(), position);
+                    fragmentManager.beginTransaction().commit();
+                    dialogFragment.setStyle(DialogFragment.STYLE_NORMAL, 0);
+                    dialogFragment.show(fragmentManager, "bucketContentDialog");
+                } else if (item.getColor() == 1 || item.getColor() == 2) {
+                    // 진행 중
+                    if (item.getShare() == false) {
+                        IndividualContentDialogFragment dialogFragment =
+                                IndividualContentDialogFragment.newInstance(item.getWishListKey(), item.getShare(), item.getBucketKeyRegistered(), position);
+                        fragmentManager.beginTransaction().commit();
+                        dialogFragment.setStyle(DialogFragment.STYLE_NORMAL, 0);
+                        dialogFragment.show(fragmentManager, "individualContentDialog");
+                    } else if (item.getShare() == true) {
+                        ShareContentDialogFragment dialogFragment =
+                                ShareContentDialogFragment.newInstance(item.getWishListKey(), item.getShare(), item.getBucketKeyRegistered(), position);
+                        fragmentManager.beginTransaction().commit();
+                        dialogFragment.setStyle(DialogFragment.STYLE_NORMAL, 0);
+                        dialogFragment.show(fragmentManager, "shareContentDialog");
+                    }
+                }
 
             }
 
-            if (this.isCancelled()) {
-                return null;
+            @Override
+            public void onLongItemClick(View view, int position) {
+                // 이동 및 삭제
             }
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(String... values) {
-            super.onProgressUpdate(values);
-
-
-        }
-        @Override
-        protected void onPostExecute(Long s) {
-            super.onPostExecute(s);
-            i(TAG, ">>>>>> " + s + " <<");
-
-            //avLoadingIndicatorView.hide();
-            return;
-        }
-        @Override
-        protected void onCancelled() {
-            i("TAG", ">>>>> doItBackground 취소");
-            super.onCancelled();
-        }
+        }));
     }
 }
+
+
+
+
+
+
+
+
+
+
  

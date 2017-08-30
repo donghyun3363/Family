@@ -28,6 +28,7 @@ import com.family.donghyunlee.family.PhotoSel;
 import com.family.donghyunlee.family.R;
 import com.family.donghyunlee.family.data.CommentCountItem;
 import com.family.donghyunlee.family.data.CommentItem;
+import com.family.donghyunlee.family.data.PushItem;
 import com.family.donghyunlee.family.data.TimeLineItem;
 import com.family.donghyunlee.family.data.TimelineCountItem;
 import com.family.donghyunlee.family.data.User;
@@ -51,6 +52,7 @@ import com.google.firebase.storage.UploadTask;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -86,6 +88,8 @@ public class Comment extends AppCompatActivity implements CommentCardDialogFragm
     private StorageReference comment_pathRef;
     private String tsorageCommentFolder;
 
+    private DatabaseReference pushReference;
+    private DatabaseReference memberReference;
     private FirebaseDatabase database;
     private DatabaseReference commentReference;
     private DatabaseReference userReference;
@@ -176,6 +180,38 @@ public class Comment extends AppCompatActivity implements CommentCardDialogFragm
         finish();
         overridePendingTransition(R.anim.step_in, R.anim.slide_out);    // 기존, 현재 순
     }
+    private void pushDatabasehAccess(final User userItem){
+
+        pushReference = database.getReference().child("groups").child(groupId).child("push");
+        memberReference = database.getReference().child("groups").child(groupId).child("members");
+        long now = System.currentTimeMillis();
+        final Date date = new Date(now);
+        final SimpleDateFormat CurDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분");
+
+        memberReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
+                while(child.hasNext()){
+                    User curUser = child.next().getValue(User.class);
+                    if(!curUser.getId().equals(currentUser.getUid())){
+                        String data = userItem.getUserNicname() + "님이 " + currentItem.getTimeline_nickName()
+                                + "의 게시물에" + " 댓글을 남겼습니다.";
+                        String key;
+                        PushItem item = new PushItem(userItem.getUserImage(), data ,CurDateFormat.format(date));
+                        key = pushReference.child(curUser.getId()).push().getKey();
+                        pushReference.child(curUser.getId()).child(key).setValue(item);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
 
     @OnClick(R.id.comment_done)
     void onDoneClick() {
@@ -235,9 +271,7 @@ public class Comment extends AppCompatActivity implements CommentCardDialogFragm
                 }
             });
         }
-
-
-
+        pushDatabasehAccess(currentUserItem);
     }
 
     private void changeCommentIncreCount() {

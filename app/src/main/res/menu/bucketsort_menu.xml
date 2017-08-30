@@ -1,0 +1,27 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
+
+    <item
+        android:id="@+id/menu_sort_entire"
+        android:orderInCategory="100"
+        android:title="전체보기"
+        />
+
+    <item
+        android:id="@+id/menu_sort_s"
+        android:orderInCategory="100"
+        android:title="버킷's"
+        />
+    <item
+        android:id="@+id/menu_sort_ing"
+        android:orderInCategory="100"
+        android:title="버킷-ing"
+        />
+    <item
+        android:id="@+id/menu_sort_ed"
+        android:orderInCategory="100"
+        android:title="버킷-ed"
+        />
+</menu>

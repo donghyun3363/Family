@@ -130,7 +130,7 @@
                         android:id="@+id/timeline_contentimage"
                         android:layout_width="match_parent"
                         android:layout_height="250dp"
-                        android:scaleType="centerCrop"
+                        android:scaleType="fitCenter"
                         android:visibility="gone" />
                 </LinearLayout>
 
@@ -246,9 +246,11 @@
 
                             <ImageButton
                                 android:id="@+id/timeline_comment"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp"
+                                android:layout_width="27dp"
+                                android:layout_height="27dp"
                                 android:layout_gravity="center_horizontal"
+                                android:layout_marginRight="4dp"
+                                android:scaleType="fitXY"
                                 android:background="@android:color/transparent"
                                 android:src="@drawable/ic_commend" />
 

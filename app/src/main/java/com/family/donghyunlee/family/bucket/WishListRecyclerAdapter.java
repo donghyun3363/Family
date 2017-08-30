@@ -2,17 +2,24 @@ package com.family.donghyunlee.family.bucket;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.family.donghyunlee.family.R;
 import com.family.donghyunlee.family.data.WishListRecyclerItem;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -34,17 +41,87 @@ public class WishListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
     private FirebaseStorage storage;
     private StorageReference storageRef;
     private StorageReference pathRef;
+    private FirebaseDatabase database;
+    private DatabaseReference wishListReference;
     private String storageProfileFolder;
-
-    public WishListRecyclerAdapter(Context context, ArrayList<WishListRecyclerItem> items, int item_layout, String groupId) {
+    private ChildEventListener mChildEventListener;
+    private ArrayList<String> wishlistId;
+    public WishListRecyclerAdapter(final Context context, final ArrayList<WishListRecyclerItem> items, int item_layout, String groupId) {
         this.context = context;
         this.items = items;
         this.item_layout = item_layout;
         this.groupId = groupId;
-
+        wishlistId = new ArrayList<>();
         storage = FirebaseStorage.getInstance();
         storageProfileFolder = context.getResources().getString(R.string.storage_profiles_folder);
         storageRef = storage.getReferenceFromUrl(context.getResources().getString(R.string.firebase_storage));
+        database = FirebaseDatabase.getInstance();
+        wishListReference = database.getReference().child("groups").child(groupId).child("wishList");
+
+
+        mChildEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
+                wishlistId.add(dataSnapshot.getKey());
+                final WishListRecyclerItem wishListRecyclerItem = dataSnapshot.getValue(WishListRecyclerItem.class);
+
+                items.add(wishListRecyclerItem);
+                notifyDataSetChanged();
+                return;
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                Toast.makeText(context, "변경", Toast.LENGTH_SHORT).show();
+                WishListRecyclerItem wishListRecyclerItem = dataSnapshot.getValue(WishListRecyclerItem.class);
+                String wishListKey = dataSnapshot.getKey();
+
+                // [START_EXCLUDE]
+                int wishListIndex = wishlistId.indexOf(wishListKey);
+                if (wishListIndex > -1) {
+
+                    items.set(wishListIndex, wishListRecyclerItem);
+
+                    notifyItemChanged(wishListIndex);
+                } else {
+                    Log.w(TAG, "onChildChanged:unknown_child:" + wishListKey);
+                }
+                // [END_EXCLUDE]
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+//                String commentKey = dataSnapshot.getKey();
+//                // [START_EXCLUDE]
+//
+//                Log.i(TAG, ">>>>>>>>>>>>>>>>>>>>>>>>>   HERE:" + commentKey);
+//                int commentIndex = mCommentIds.indexOf(commentKey);
+//                if (commentIndex > -1) {
+//                    // Remove data from the list
+//                    mCommentIds.remove(commentIndex);
+//                    Toast.makeText(mContext, "제거: + " + items.get(commentIndex).getCommentKey(), Toast.LENGTH_SHORT).show();
+//                    Log.i(TAG, ">>>>>>>>>>>>>>>>>>     HERE IN ADAPTER:     " +items.get(commentIndex).getCommentKey() + "// index: "+commentIndex);
+//                    items.remove(commentIndex);
+//                    notifyDataSetChanged();
+//                    //notifyItemRemoved(commentIndex + 1);
+//                } else {
+//                    Log.w(TAG, "onChildRemoved:unknown_child:" + commentKey);
+//                }
+//                // [END_EXCLUDE]
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.i(TAG, ">>>>>>>>>>>>>>>>>> onCancelled: " + databaseError.getDetails());
+            }
+        };
+        wishListReference.addChildEventListener(mChildEventListener);
     }
 
     @Override
@@ -111,5 +188,13 @@ public class WishListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     public ArrayList<WishListRecyclerItem> getItems(){
         return items;
+    }
+    public void setItems(ArrayList<WishListRecyclerItem> items){
+        this.items = items;
+    }
+    public void cleanupListener() {
+        if (mChildEventListener != null) {
+            wishListReference.removeEventListener(mChildEventListener);
+        }
     }
 }

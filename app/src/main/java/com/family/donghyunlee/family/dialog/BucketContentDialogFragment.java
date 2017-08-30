@@ -129,9 +129,7 @@ public class BucketContentDialogFragment extends DialogFragment {
     }
     @OnClick(R.id.dialog_share)
     void onShareClick() {
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        fragmentManager.beginTransaction().remove(BucketContentDialogFragment.this).commit();
-        fragmentManager.popBackStack();
+
         Intent intent = new Intent(getActivity(), RegisterToProgress.class);
         intent.putExtra("IMGPROFILE", profileImage);
         intent.putExtra("WISHLISTKEY", wishListKey);
@@ -140,7 +138,23 @@ public class BucketContentDialogFragment extends DialogFragment {
         intent.putExtra("POSITION", position);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivityForResult(intent, REQUESTCODE_BUCKETCONTENT);
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        fragmentManager.beginTransaction().remove(BucketContentDialogFragment.this).commit();
+        fragmentManager.popBackStack();
     }
 
+    /**
+     * Receive the result from a previous call to
+     * {@link #startActivityForResult(Intent, int)}.  This follows the
+     * related Activity API as described there in
+     * {@link Activity#onActivityResult(int, int, Intent)}.
+     *
+     * @param requestCode The integer request code originally supplied to
+     *                    startActivityForResult(), allowing you to identify who this
+     *                    result came from.
+     * @param resultCode  The integer result code returned by the child activity
+     *                    through its setResult().
+     * @param data        An Intent, which can return result data to the caller
+     */
 
 }

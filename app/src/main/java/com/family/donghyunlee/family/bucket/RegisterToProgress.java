@@ -1,10 +1,14 @@
 package com.family.donghyunlee.family.bucket;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +23,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.family.donghyunlee.family.R;
+import com.family.donghyunlee.family.data.PushItem;
 import com.family.donghyunlee.family.data.ToProgressItem;
 import com.family.donghyunlee.family.data.User;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
@@ -44,6 +49,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -90,8 +96,8 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
     private boolean STARTTIMECLICK_flag = false;
     private boolean ENDTIMECLICK_flag = false;
     private int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
-    private static final int INDIVIDUALTOSERVER= 1;
-    private static final int SHARETOSERVER= 0;
+    private static final int INDIVIDUALTOSERVER = 1;
+    private static final int SHARETOSERVER = 0;
     private static final String TAG = RegisterToProgress.class.getSimpleName();
     private SharedPreferences pref;
     private String groupId;
@@ -107,9 +113,15 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
     private long now;
     private Date date;
     private SimpleDateFormat CurDateFormat;
-
+    private DatabaseReference pushReference;
+    private DatabaseReference userReference;
+    private DatabaseReference memberReference;
+    private FirebaseDatabase database;
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
+    private User curUser;
     @OnClick(R.id.toprogress_map)
-    void onMapClick(){
+    void onMapClick() {
         try {
             Intent intent =
                     new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
@@ -123,52 +135,115 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
     }
 
     @OnClick(R.id.toprogress_startdate)
-    void onStartDateClick(){
+    void onStartDateClick() {
         STARTDATECLICK_flag = true;
         ENDDATECLICK_flag = false;
         getDatePicker();
     }
+
     @OnClick(R.id.toprogress_enddate)
-    void onEndDateClick(){
+    void onEndDateClick() {
         STARTDATECLICK_flag = false;
         ENDDATECLICK_flag = true;
         getDatePicker();
     }
+
     @OnClick(R.id.toprogress_starttime)
-    void onStartTimeClick(){
+    void onStartTimeClick() {
         STARTTIMECLICK_flag = true;
         ENDTIMECLICK_flag = false;
         getTimePicker();
     }
+
     @OnClick(R.id.toprogress_endtime)
-    void onEndTimeClick(){
+    void onEndTimeClick() {
         STARTTIMECLICK_flag = false;
         ENDTIMECLICK_flag = true;
         getTimePicker();
     }
+
     @OnClick(R.id.toprogress_done)
-    void onDoneClick(){
-        // Bucket 액티비티에 보낼 번들
-//        Intent sendIntent = new Intent(this, Bucket.class);
-//        Bundle bundle = new Bundle();
-//        bundle.putInt("POSITION", item_position);
-//        sendIntent.putExtras(bundle);
-//        setResult(RESULT_OK, sendIntent);
-        if(!validateForm()){
+    void onDoneClick() {
+
+        insertEvent();
+
+        if (!validateForm()) {
             return;
         }
-        if(toprogressShareSwitch.isChecked()){
+        if (toprogressShareSwitch.isChecked()) {
             new RegisterToProgress.AccessDatabaseTask().execute(SHARETOSERVER);
-        }else{
+        } else {
             new RegisterToProgress.AccessDatabaseTask().execute(INDIVIDUALTOSERVER);
         }
+
+        pushDatabasehAccess(curUser);
+
+    }
+    private void pushDatabasehAccess(final User userItem){
+
+        pushReference = database.getReference().child("groups").child(groupId).child("push");
+        memberReference = database.getReference().child("groups").child(groupId).child("members");
+        long now = System.currentTimeMillis();
+        final Date date = new Date(now);
+        final SimpleDateFormat CurDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분");
+
+        memberReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
+                while(child.hasNext()){
+                    User curUser = child.next().getValue(User.class);
+                    if(!curUser.getId().equals(currentUser.getUid())){
+                        String data = userItem.getUserNicname() + "님이 새로운 버킷 일정을 추가하였습니다. 일정을 확인해보세요!";
+                        String key;
+                        PushItem item = new PushItem(userItem.getUserImage(), data ,CurDateFormat.format(date));
+                        key = pushReference.child(curUser.getId()).push().getKey();
+                        pushReference.child(curUser.getId()).child(key).setValue(item);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
     @OnClick(R.id.toprogress_cancel)
-    void onCancelClick(){
+    void onCancelClick() {
 
         finish();
     }
 
+    private void insertEvent() {
+        // 디폴트 타임존 구하기
+        String timezone = TimeZone.getDefault().getID(); // Asia/Korea
+
+        final String CONTENT_URI = "content://com.android.calendar";
+        Uri uri = Uri.parse(CONTENT_URI + "/calendars");
+        Cursor c = getContentResolver().query(
+                uri, new String[]{"_id"},
+                "selected=?", new String[]{"1"}, null);
+        if (c == null || !c.moveToFirst()) {
+            // 시스템에 캘린더가 존재하지 않음(계정이 등록되어 있지 않음) 오류 처리 필요
+        }
+        final int id = c.getInt(c.getColumnIndex("_id"));
+
+        // 이벤트 추가
+        long nowDate = System.currentTimeMillis();
+        ContentValues values = new ContentValues();
+        values.put(CalendarContract.Events.CALENDAR_ID, id);
+        values.put(CalendarContract.Events.TITLE, "루루루루루루ㅜ룰");
+        values.put(CalendarContract.Events.DESCRIPTION, "디스크립션 테스트");
+        values.put(CalendarContract.Events.DTSTART, nowDate);
+        values.put(CalendarContract.Events.EVENT_TIMEZONE, timezone);
+        values.put(CalendarContract.Events.DTEND, nowDate);
+        values.put(CalendarContract.Events.EVENT_END_TIMEZONE, timezone);
+        values.put(CalendarContract.Events.ALL_DAY, 1);
+        getContentResolver().insert(Uri.parse(CONTENT_URI + "/events"), values);
+
+        return;
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -188,7 +263,9 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
         if (Build.VERSION.SDK_INT >= 21) {   //상태바 색상 변경
             getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.main_color_dark_c));
         }
-
+        database = FirebaseDatabase.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
         Intent intent = getIntent();
         wishListKey = (String) intent.getSerializableExtra("WISHLISTKEY");
         imgProfile =(String) intent.getSerializableExtra("IMGPROFILE");
@@ -207,7 +284,24 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
         toprogressStartTime.setText(CurDateFormat.format(date));
         pref = getSharedPreferences("pref", MODE_PRIVATE);
         groupId = pref.getString("groupId", "");
+        userReference = database.getReference().child("groups").child(groupId).child("members");
+        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
+                while(child.hasNext()){
+                    curUser = child.next().getValue(User.class);
+                    if(currentUser.getUid().equals(curUser.getId())){
+                        return;
+                    }
+                }
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -215,7 +309,7 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
-                toprogressLocation.setText(place.getName());
+                toprogressLocation.setText(place.getAddress().toString() + place.getName().toString());
                 Log.i(TAG, "Place: " + place.getName());
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);
@@ -287,6 +381,14 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
     public void onTimeSet(TimePickerDialog view, int hourOfDay, int minute, int second) {
         String time = hourOfDay+":"+minute;
         Toast.makeText(this, time, Toast.LENGTH_SHORT).show();
+        if(STARTTIMECLICK_flag){
+
+            toprogressStartTime.setText(time);
+        }
+        if(ENDTIMECLICK_flag){
+
+            toprogressEndTime.setText(time);
+        }
     }
     public class AccessDatabaseTask extends AsyncTask<Integer, String, Long> {
         private FirebaseDatabase database;
@@ -360,8 +462,6 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
                         sendIntent.putExtra("bucketKeyRegistered", key);
                         setResult(RESULT_OK, sendIntent);
                         finish();
-
-                        return;
                     }
                     else if(params[0].intValue() == INDIVIDUALTOSERVER){
                         key = individualReference.push().getKey();
@@ -370,16 +470,14 @@ public class RegisterToProgress extends AppCompatActivity implements TimePickerD
                         wishListReference.child("share").setValue(false);
                         wishListReference.child("bucketKeyRegistered").setValue(key);
 
-                        Intent sendIntent = new Intent();
+                        Intent sendIntent = new Intent(RegisterToProgress.this, Bucket.class);
                         sendIntent.putExtra("position", item_position);
                         sendIntent.putExtra("color", 1);
                         sendIntent.putExtra("share", false);
-                        sendIntent.putExtra("bucketKeyRegistered", key);
+                        sendIntent.putExtra("IndividualKeyRegistered", key);
                         setResult(RESULT_OK, sendIntent);
-                        setResult(RESULT_OK, sendIntent);
-                        finish();
 
-                        return;
+                        finish();
                     }
 
                 }

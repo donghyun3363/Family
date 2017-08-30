@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.family.donghyunlee.family.data.User;
 import com.family.donghyunlee.family.timeline.TimeLine;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -109,49 +110,46 @@ public class LogIn extends AppCompatActivity {
         pDialog.setTitleText("Loading");
         pDialog.setCancelable(true);
         pDialog.show();
-        Log.i(TAG, ">>>>>                    ?????");
         email = loginEmail.getText().toString();
         password = loginPassword.getText().toString();
 
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
-                        if (task.isSuccessful()) {
-                            FirebaseUser user = mAuth.getCurrentUser();
 
-                            if (user.isEmailVerified()) {
-                                Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                                updateUI(user);
-                            } else {
-                                pDialog.hide();
-                                new SweetAlertDialog(LogIn.this, SweetAlertDialog.ERROR_TYPE)
-                                        .setTitleText("로그인을 할 수 없습니다.")
-                                        .setContentText("가입" +
-                                                " 이메일 인증 후 로그인을 해주세요!")
-                                        .setConfirmText("확인")
-                                        .show();
-                                Log.d(TAG, "onAuthStateChanged: 이메일 처리 안됨:" + user.getUid());
-                            }
-                        } else {
-                            Toast.makeText(LogIn.this, R.string.auth_failed, Toast.LENGTH_SHORT).show();
-                            updateUI(null);
-                        }
+        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
+                if (task.isSuccessful()) {
+                    FirebaseUser user = mAuth.getCurrentUser();
+
+                    if (user.isEmailVerified()) {
+                        Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                        updateUI(user);
+                    } else {
+                        pDialog.hide();
+                        new SweetAlertDialog(LogIn.this, SweetAlertDialog.ERROR_TYPE)
+                                .setTitleText("로그인을 할 수 없습니다.")
+                                .setContentText("가입" +
+                                        " 이메일 인증 후 로그인을 해주세요!")
+                                .setConfirmText("확인")
+                                .show();
+                        Log.d(TAG, "onAuthStateChanged: 이메일 처리 안됨:" + user.getUid());
                     }
-                });
+                } else {
+                    Toast.makeText(LogIn.this, R.string.auth_failed, Toast.LENGTH_SHORT).show();
+                    updateUI(null);
+                }
+            }
+        }).addOnFailureListener(this, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "addOnFailureListener: " + e.getMessage());
+            }
+        });
 
     }
-
-    //TODO LOG OUT 할 때, 사용
-    private void logOutUser() {
-        mAuth.signOut();
-        updateUI(null);
-    }
-
     private void updateUI(final FirebaseUser user) {
         inviteGroupId = pref.getString("groupId", "");
-        Log.i(TAG, ">>>>>>>>>>>>>>>>>>>>    inviteGroupId" + inviteGroupId);
+        Log.i(TAG, ">>>>>>      inviteGroupId" + inviteGroupId);
         if(!TextUtils.isEmpty(inviteGroupId)){
             if (user == null) {
                 new SweetAlertDialog(LogIn.this, SweetAlertDialog.ERROR_TYPE)

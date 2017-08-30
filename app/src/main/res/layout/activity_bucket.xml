@@ -158,15 +158,16 @@
                         android:gravity="right"
                         android:orientation="horizontal">
 
-                        <LinearLayout
+                        <LinearLayout android:id="@+id/bucket_sort"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
+                            android:clickable="true"
+                            android:background="?attr/selectableItemBackground"
                             android:onClick="onSortClick"
                             android:orientation="horizontal">
 
-                            <TextView
-                                android:id="@+id/bucket_sort"
+                            <TextView android:id="@+id/buck_sort_text"
                                 android:layout_width="wrap_content"
                                 android:layout_height="match_parent"
                                 android:gravity="center"

@@ -5,6 +5,10 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_CALENDAR"/>
+    <uses-permission android:name="android.permission.WRITE_CALENDAR"/>
+    <uses-permission-sdk-23 android:name="android.permission.READ_CALENDAR"/>
+    <uses-permission-sdk-23 android:name="android.permission.WRITE_CALENDAR"/>
 
     <uses-sdk android:minSdkVersion="21"
         android:targetSdkVersion="25"
@@ -45,73 +49,92 @@
 
         <activity android:name=".SignUp"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="adjustResize|stateVisible" >
+            android:windowSoftInputMode="adjustResize|stateVisible"
+            android:screenOrientation="portrait"
+            >
         </activity>
 
         <activity android:name=".LogIn"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="adjustResize|stateVisible" >
+            android:windowSoftInputMode="adjustResize|stateVisible"
+            android:screenOrientation="portrait">
         </activity>
         <activity android:name=".PhotoSel"
-            android:theme="@style/Theme.AppCompat.Translucent" >
+            android:theme="@style/Theme.AppCompat.Translucent"
+            android:screenOrientation="portrait">
         </activity>
         <activity android:name=".Profile"
-            android:theme="@style/Theme.AppCompat.Translucent" >
+            android:theme="@style/Theme.AppCompat.Translucent"
+            android:screenOrientation="portrait">
         </activity>
         <activity android:name=".timeline.ProfileChange"
-            android:theme="@style/Theme.AppCompat.Translucent" >
+            android:theme="@style/Theme.AppCompat.Translucent"
+            android:screenOrientation="portrait">
         </activity>
         <activity android:name=".photoalbum.PhotoAlbum"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait">
 
         </activity>
 
         <activity android:name=".Waiting"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="stateHidden|adjustResize">
+            android:windowSoftInputMode="stateHidden|adjustResize"
+            android:screenOrientation="portrait">
 
         </activity>
         <activity android:name=".timeline.TimeLine"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateHidden|adjustResize">
+            android:windowSoftInputMode="adjustResize|stateHidden"
+            android:screenOrientation="portrait">
         </activity>
 
         <activity android:name=".photoalbum.InAlbum"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait">
         </activity>
         
         <activity android:name=".bucket.Bucket"
-            android:theme="@style/MyMaterialTheme" >
+            android:theme="@style/MyMaterialTheme"
+            android:screenOrientation="portrait">
         </activity>
         <activity android:name=".bucket.Progress"
-            android:theme="@style/MyMaterialTheme" >
+            android:theme="@style/MyMaterialTheme"
+            android:screenOrientation="portrait">
         </activity>
 
         <activity android:name=".setting.Setting"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait">
         </activity>
         <activity android:name=".timeline.TimelineWrite"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="adjustResize|stateVisible" >
+            android:windowSoftInputMode="adjustResize|stateVisible"
+            android:screenOrientation="portrait">
         </activity>
         <activity android:name=".bucket.RegisterToProgress"
-            android:theme="@style/Theme.AppCompat.Translucent" >
+            android:theme="@style/Theme.AppCompat.Translucent"
+            android:screenOrientation="portrait">
         </activity>
 
         <activity android:name=".timeline.Comment"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="adjustResize|stateVisible">
+            android:windowSoftInputMode="adjustResize|stateVisible"
+            android:screenOrientation="portrait">
         </activity>
 
         <activity android:name=".push.Push"
-            android:theme="@style/MyMaterialTheme" >
+            android:theme="@style/MyMaterialTheme"
+            android:screenOrientation="portrait">
         </activity>
 
 
-        <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
+        <activity android:name="com.soundcloud.android.crop.CropImageActivity"
+            android:screenOrientation="portrait"/>
 
         <activity android:name=".DeepLinkActivity"
-            android:theme="@style/Theme.AppCompat.Translucent">
+            android:theme="@style/Theme.AppCompat.Translucent"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
 

@@ -2,7 +2,6 @@ package com.family.donghyunlee.family;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -79,11 +78,7 @@ public class Waiting extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         pref = getSharedPreferences("pref", MODE_PRIVATE);
         editor = pref.edit();
-        pDialog = new SweetAlertDialog(Waiting.this, SweetAlertDialog.PROGRESS_TYPE);
-        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-        pDialog.setTitleText("Loading");
-        pDialog.setCancelable(false);
-        pDialog.show();
+
         new AccessDatabaseTask().execute(CHECKISBUCKET);
 
     }
@@ -132,7 +127,6 @@ public class Waiting extends AppCompatActivity {
 
     void startFragment(final BucketListFragment fragment) {
         Log.i(TAG, ">>>>>>> HERE");
-        pDialog.hide();
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.waiting_container, fragment);
@@ -240,7 +234,6 @@ public class Waiting extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            pDialog.hide();
         }
     }
 

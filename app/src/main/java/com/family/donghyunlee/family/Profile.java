@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.family.donghyunlee.family.data.User;
@@ -132,7 +133,7 @@ public class Profile extends AppCompatActivity {
 
     @OnClick(R.id.profile_bucket)
     void onBucketClick(){
-
+        Toast.makeText(this, "현재 작업중인 서비스 입니다.", Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.profile_back)
